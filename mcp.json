@@ -4,12 +4,15 @@
       "command": "python3",
       "args": ["-m", "mcp_atlassian"],
       "env": {
-        "JIRA_URL": "${JIRA_URL}",
-        "JIRA_EMAIL": "${JIRA_EMAIL}",
-        "JIRA_API_TOKEN": "${JIRA_API_TOKEN}",
-        "CONFLUENCE_URL": "${CONFLUENCE_URL}",
-        "CONFLUENCE_EMAIL": "${CONFLUENCE_EMAIL}",
-        "CONFLUENCE_API_TOKEN": "${CONFLUENCE_API_TOKEN}"
+        "JIRA_URL": "https://gustohq.atlassian.net",
+        "JIRA_EMAIL": "your-email@example.com",
+        "JIRA_API_TOKEN": "your-api-token-here",
+        "CONFLUENCE_URL": "https://gustohq.atlassian.net",
+        "CONFLUENCE_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-api-token-here",
+        "MCP_LOG_LEVEL": "info",
+        "MCP_VERY_VERBOSE": "true",
+        "MCP_LOGGING_STDOUT": "true"
       }
     }
   }

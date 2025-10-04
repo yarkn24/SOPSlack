@@ -97,7 +97,14 @@ pip3 show mcp-atlassian
 
 ### Running MCP Server
 
-The MCP server runs automatically when configured in your AI assistant (Claude Desktop, Cursor, etc.). The configuration in `mcp.json` will launch the server when needed.
+The MCP server runs automatically when configured in your AI assistant (Claude Desktop, Cursor, etc.).
+
+**For local use:**
+1. Copy `mcp.json` to `mcp.local.json`
+2. Add your actual credentials to `mcp.local.json`
+3. Configure your AI assistant to use `mcp.local.json`
+
+**Note:** `mcp.local.json` and `.env` are in `.gitignore` for security - your credentials won't be pushed to GitHub.
 
 ### Authentication Options
 
