@@ -38,6 +38,7 @@ package-lock.json
 
 # Local MCP config with credentials
 mcp.local.json
+.cursor/mcp.json
 
 # IDE
 .vscode/
