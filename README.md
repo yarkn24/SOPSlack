@@ -48,36 +48,61 @@ python mcp_server.py
 
 ## MCP Atlassian Integration
 
-This project provides access to Atlassian services using MCP (Model Context Protocol).
+This project uses [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian), a Python-based MCP server that provides read/write access to Atlassian tools (Confluence, Jira).
 
 ### MCP Server Setup
 
-1. Install MCP server packages:
+1. Install MCP Atlassian:
 ```bash
-npm install -g @modelcontextprotocol/server-atlassian
+pip3 install mcp-atlassian
 ```
 
-2. Configure the MCP configuration file (`mcp.json`):
+2. Configure environment variables in `.env`:
+```env
+# Jira Configuration
+JIRA_URL=https://your-domain.atlassian.net
+JIRA_EMAIL=your-email@example.com
+JIRA_API_TOKEN=your-jira-api-token
+
+# Confluence Configuration
+CONFLUENCE_URL=https://your-domain.atlassian.net
+CONFLUENCE_EMAIL=your-email@example.com
+CONFLUENCE_API_TOKEN=your-confluence-api-token
+```
+
+3. Configure MCP in `mcp.json`:
 ```json
 {
   "mcpServers": {
     "atlassian": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-atlassian"],
+      "command": "python3",
+      "args": ["-m", "mcp_atlassian"],
       "env": {
-        "ATLASSIAN_URL": "https://your-domain.atlassian.net",
-        "ATLASSIAN_EMAIL": "your-email@example.com",
-        "ATLASSIAN_API_TOKEN": "your-api-token"
+        "JIRA_URL": "https://your-domain.atlassian.net",
+        "JIRA_EMAIL": "your-email@example.com",
+        "JIRA_API_TOKEN": "your-jira-api-token",
+        "CONFLUENCE_URL": "https://your-domain.atlassian.net",
+        "CONFLUENCE_EMAIL": "your-email@example.com",
+        "CONFLUENCE_API_TOKEN": "your-confluence-api-token"
       }
     }
   }
 }
 ```
 
-3. Test the MCP server:
+4. Test the MCP server:
 ```bash
-npx @modelcontextprotocol/server-atlassian
+python3 -m mcp_atlassian
 ```
+
+### Authentication Options
+
+MCP Atlassian supports three authentication methods:
+- **API Token** (Recommended): Use Atlassian API tokens for Cloud instances
+- **Personal Access Token (PAT)**: For Jira/Confluence Server/Data Center
+- **OAuth 2.0**: For user-specific authentication with `--oauth-setup` flag
+
+**Note**: Make sure to use the full Atlassian URL format (e.g., `https://your-domain.atlassian.net` for Jira Cloud)
 
 ## Usage
 
@@ -108,8 +133,9 @@ SOPSlack/
 ├── tests/              # Test files
 ├── config/             # Configuration files
 ├── docs/               # Documentation
-├── .env.example        # Example environment variables
+├── env.example         # Example environment variables
 ├── requirements.txt    # Python dependencies
+├── mcp.json            # MCP server configuration
 └── README.md           # This file
 ```
 
