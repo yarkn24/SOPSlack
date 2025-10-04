@@ -1,36 +1,36 @@
 # SOPSlack
 
-Slack entegrasyonu ile Atlassian ürünleri (Jira, Confluence) için SOP (Standard Operating Procedure) yönetim sistemi.
+SOP (Standard Operating Procedure) management system for Atlassian products (Jira, Confluence) with Slack integration.
 
-## Özellikler
+## Features
 
-- 🔗 Slack entegrasyonu
-- 📝 Jira ve Confluence entegrasyonu
-- 🤖 MCP (Model Context Protocol) desteği
-- 📋 SOP yönetimi ve takibi
+- 🔗 Slack integration
+- 📝 Jira and Confluence integration
+- 🤖 MCP (Model Context Protocol) support
+- 📋 SOP management and tracking
 
-## Gereksinimler
+## Requirements
 
 - Python 3.8+
 - Node.js 18+
 - Slack Workspace
-- Atlassian hesabı (Jira/Confluence)
+- Atlassian account (Jira/Confluence)
 
-## Kurulum
+## Installation
 
-### 1. Depoyu klonlayın
+### 1. Clone the repository
 ```bash
-git clone https://github.com/[kullanıcı-adınız]/SOPSlack.git
+git clone https://github.com/yarkn24/SOPSlack.git
 cd SOPSlack
 ```
 
-### 2. Python bağımlılıklarını yükleyin
+### 2. Install Python dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Ortam değişkenlerini ayarlayın
-`.env` dosyası oluşturun:
+### 3. Set up environment variables
+Create a `.env` file:
 ```env
 SLACK_BOT_TOKEN=xoxb-your-token
 SLACK_SIGNING_SECRET=your-signing-secret
@@ -41,23 +41,23 @@ CONFLUENCE_URL=https://your-domain.atlassian.net/wiki
 CONFLUENCE_API_TOKEN=your-confluence-api-token
 ```
 
-### 4. MCP Sunucusunu Başlatın
+### 4. Start the MCP Server
 ```bash
 python mcp_server.py
 ```
 
-## MCP Atlassian Entegrasyonu
+## MCP Atlassian Integration
 
-Bu proje, MCP (Model Context Protocol) kullanarak Atlassian hizmetlerine erişim sağlar.
+This project provides access to Atlassian services using MCP (Model Context Protocol).
 
-### MCP Sunucusu Kurulumu
+### MCP Server Setup
 
-1. MCP sunucu paketlerini yükleyin:
+1. Install MCP server packages:
 ```bash
 npm install -g @modelcontextprotocol/server-atlassian
 ```
 
-2. MCP yapılandırma dosyasını düzenleyin (`mcp.json`):
+2. Configure the MCP configuration file (`mcp.json`):
 ```json
 {
   "mcpServers": {
@@ -74,59 +74,59 @@ npm install -g @modelcontextprotocol/server-atlassian
 }
 ```
 
-3. MCP sunucusunu test edin:
+3. Test the MCP server:
 ```bash
 npx @modelcontextprotocol/server-atlassian
 ```
 
-## Kullanım
+## Usage
 
-### Slack Komutları
+### Slack Commands
 
-- `/sop create` - Yeni SOP oluştur
-- `/sop list` - SOP'ları listele
-- `/sop search [arama terimi]` - SOP ara
-- `/sop sync` - Jira ve Confluence ile senkronize et
+- `/sop create` - Create a new SOP
+- `/sop list` - List all SOPs
+- `/sop search [search term]` - Search for SOPs
+- `/sop sync` - Synchronize with Jira and Confluence
 
 ### API Endpoints
 
-- `GET /api/sops` - Tüm SOP'ları getir
-- `POST /api/sops` - Yeni SOP oluştur
-- `GET /api/sops/:id` - Belirli bir SOP'u getir
-- `PUT /api/sops/:id` - SOP güncelle
-- `DELETE /api/sops/:id` - SOP sil
+- `GET /api/sops` - Get all SOPs
+- `POST /api/sops` - Create a new SOP
+- `GET /api/sops/:id` - Get a specific SOP
+- `PUT /api/sops/:id` - Update an SOP
+- `DELETE /api/sops/:id` - Delete an SOP
 
-## Proje Yapısı
+## Project Structure
 
 ```
 SOPSlack/
 ├── src/
-│   ├── slack/          # Slack entegrasyonu
-│   ├── atlassian/      # Jira ve Confluence entegrasyonu
-│   ├── mcp/            # MCP sunucu yapılandırması
+│   ├── slack/          # Slack integration
+│   ├── atlassian/      # Jira and Confluence integration
+│   ├── mcp/            # MCP server configuration
 │   └── api/            # REST API
-├── tests/              # Test dosyaları
-├── config/             # Yapılandırma dosyaları
-├── docs/               # Dokümantasyon
-├── .env.example        # Örnek ortam değişkenleri
-├── requirements.txt    # Python bağımlılıkları
-└── README.md           # Bu dosya
+├── tests/              # Test files
+├── config/             # Configuration files
+├── docs/               # Documentation
+├── .env.example        # Example environment variables
+├── requirements.txt    # Python dependencies
+└── README.md           # This file
 ```
 
-## Katkıda Bulunma
+## Contributing
 
-1. Fork yapın
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Değişikliklerinizi commit edin (`git commit -m 'Add some amazing feature'`)
-4. Branch'inizi push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
+1. Fork the project
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## Lisans
+## License
 
 MIT License
 
-## İletişim
+## Contact
 
-Proje Sahibi - [@your-username](https://github.com/your-username)
+Project Owner - [@yarkn24](https://github.com/yarkn24)
 
-Proje Linki: [https://github.com/your-username/SOPSlack](https://github.com/your-username/SOPSlack)
+Project Link: [https://github.com/yarkn24/SOPSlack](https://github.com/yarkn24/SOPSlack)
