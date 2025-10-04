@@ -90,10 +90,14 @@ CONFLUENCE_API_TOKEN=your-confluence-api-token
 }
 ```
 
-4. Test the MCP server:
+4. Verify installation:
 ```bash
-python3 -m mcp_atlassian
+pip3 show mcp-atlassian
 ```
+
+### Running MCP Server
+
+The MCP server runs automatically when configured in your AI assistant (Claude Desktop, Cursor, etc.). The configuration in `mcp.json` will launch the server when needed.
 
 ### Authentication Options
 
