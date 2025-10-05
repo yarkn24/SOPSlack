@@ -25,9 +25,9 @@ log("=" * 80)
 
 # Load
 log("\n📂 Loading...")
-df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05.csv', low_memory=False)
+df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
 df['amount'] = df['amount'] / 100
-df['date'] = pd.to_datetime(df['date'])
+df['date'] = pd.to_datetime(df['date'], format='mixed')
 df = df[df['date'] >= '2024-01-01'].copy()
 df = df[df['agent'].notna()].copy()
 
@@ -129,16 +129,29 @@ for idx, row in df.iterrows():
 
 log(f"✅ {df['agent'].nunique()} agents | {len(df):,} transactions after rules")
 
-# Split
+# Split - WITH 30% OF TEST MOVED TO TRAINING
 log("\n🔪 Split...")
 train_end = int(len(df) * 0.70)
 test_end = int(len(df) * 0.85)
 
-train_data = df.iloc[:train_end]
-test_data = df.iloc[train_end:test_end]
+# Initial split
+train_data_initial = df.iloc[:train_end]
+test_data_initial = df.iloc[train_end:test_end]
 val_data = df.iloc[test_end:]
 
-log(f"✅ Train: {len(train_data):,} | Test: {len(test_data):,} | Val: {len(val_data):,}")
+# Move 30% of test to training (random sampling for diversity)
+np.random.seed(42)
+test_sample_size = int(len(test_data_initial) * 0.30)
+test_sample_indices = np.random.choice(test_data_initial.index, size=test_sample_size, replace=False)
+
+test_to_train = test_data_initial.loc[test_sample_indices]
+test_data_remaining = test_data_initial.drop(test_sample_indices)
+
+# Combine training data
+train_data = pd.concat([train_data_initial, test_to_train], ignore_index=True)
+test_data = test_data_remaining.reset_index(drop=True)
+
+log(f"✅ Train: {len(train_data):,} (+{len(test_to_train):,} from test) | Test: {len(test_data):,} (-30%) | Val: {len(val_data):,}")
 
 # Fast features (minimal)
 log("\n🔧 Features...")
