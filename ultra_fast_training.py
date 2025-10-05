@@ -40,28 +40,58 @@ df['agent'] = df['agent'].str.strip()
 
 log(f"✅ {len(df):,} transactions | {df['agent'].nunique()} agents")
 
-# Apply rules
+# Apply rules - UPDATED WITH NEW RULES
 log("\n🔧 Rules...")
+
+# First pass: Find ICP Funding amounts (Chase ICP + JPMORGAN ACCESS TRANSFER FROM)
+icp_funding_amounts = set()
+for idx, row in df.iterrows():
+    if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
+        desc = str(row['description']).upper()
+        if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+            icp_funding_amounts.add(float(row['amount']))
+
+log(f"   📌 ICP Funding amounts: {len(icp_funding_amounts)}")
+
+# Second pass: Apply all rules
 for idx, row in df.iterrows():
     desc = str(row['description']).upper()
     acc = int(row['origination_account_id']) if pd.notna(row['origination_account_id']) else 0
     amt = float(row['amount'])
     pm = int(row['payment_method']) if pd.notna(row['payment_method']) else -1
     
-    if '1TRV' in desc:
+    # PRIORITY ORDER (HIGHEST TO LOWEST)
+    
+    # 1. Payment Method 12 = ZBT
+    if pm == 12:
+        df.at[idx, 'agent'] = 'ZBT'
+    # 2. NIUM = Nium Payment
+    elif 'NIUM' in desc:
+        df.at[idx, 'agent'] = 'Nium Payment'
+    # 3. ICP Funding - Chase ICP + JPMORGAN ACCESS TRANSFER FROM
+    elif acc == 21 and 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+        df.at[idx, 'agent'] = 'ICP Funding'
+    # 4. ICP Funding - Paired transaction (same amount + JPMORGAN)
+    elif amt in icp_funding_amounts and 'REMARK=JPMORGAN ACCESS TRANSFER' in desc:
+        df.at[idx, 'agent'] = 'ICP Funding'
+    # 5. 1TRV = RISK (ANY ACCOUNT - HIGHEST PRIORITY)
+    elif '1TRV' in desc:
         df.at[idx, 'agent'] = 'Risk'
+    # 6. STATE rules
     elif 'STATE OF MONTANA' in desc:
         df.at[idx, 'agent'] = 'MT WH'
     elif 'NYS DTF WT' in desc:
         df.at[idx, 'agent'] = 'NY WH'
     elif 'NYS DOL UI' in desc:
         df.at[idx, 'agent'] = 'NY UI'
+    # 7. Treasury/Money Market
     elif '100% US TREASURY CAPITAL 3163' in desc or 'MONEY MKT MUTUAL FUND' in desc:
         df.at[idx, 'agent'] = 'Money Market Transfer'
     elif 'JPMORGAN ACCESS TRANSFER' in desc:
         df.at[idx, 'agent'] = 'Treasury Transfer'
     elif 'INTEREST ADJUSTMENT' in desc:
         df.at[idx, 'agent'] = 'Interest Adjustment'
+    # 8. Account-specific rules
     elif acc == 16 and 'CREDIT MEMO' in desc:
         df.at[idx, 'agent'] = 'PNC LOI'
     elif 'KEYSTONE' in desc:
@@ -70,13 +100,16 @@ for idx, row in df.iterrows():
         df.at[idx, 'agent'] = 'Check'
     elif pm == 4:
         df.at[idx, 'agent'] = 'ACH'
+    # 9. Recovery accounts (WITHOUT 1TRV)
     elif acc in [7, 28]:
         if 'INTEREST' in desc:
             df.at[idx, 'agent'] = 'Interest Payment'
         else:
             df.at[idx, 'agent'] = 'Recovery Wire'
+    # 10. Risk accounts
     elif acc in [6, 9, 18] and pm == 0:
         df.at[idx, 'agent'] = 'Risk'
+    # 11. Blueridge Operations
     elif acc == 26:
         if amt < 0.5:
             df.at[idx, 'agent'] = 'Bad Debt'
@@ -84,6 +117,7 @@ for idx, row in df.iterrows():
             df.at[idx, 'agent'] = 'BRB'
     elif amt < 0.5 and amt > 0:
         df.at[idx, 'agent'] = 'Bad Debt'
+    # 12. Other patterns
     elif 'LOCKBOX' in desc:
         df.at[idx, 'agent'] = 'Lockbox'
     elif 'TS FX ACCOUNTS RECEIVABLE' in desc or 'JPV' in desc:
@@ -176,27 +210,45 @@ elapsed = (datetime.now() - start).total_seconds()
 log(f"✅ Training: {elapsed:.0f}s")
 
 # Evaluate with HYBRID approach (rules + ML)
-def apply_rules_single(row):
-    """Apply business rules to a single row."""
+def apply_rules_single(row, icp_funding_amounts=None):
+    """Apply business rules to a single row. UPDATED WITH NEW RULES."""
     desc = str(row['description']).upper()
     acc = int(row['origination_account_id']) if pd.notna(row['origination_account_id']) else 0
     amt = float(row['amount'])
     pm = int(row['payment_method']) if pd.notna(row['payment_method']) else -1
     
-    if '1TRV' in desc:
+    # PRIORITY ORDER (HIGHEST TO LOWEST)
+    
+    # 1. Payment Method 12 = ZBT
+    if pm == 12:
+        return 'ZBT'
+    # 2. NIUM = Nium Payment
+    elif 'NIUM' in desc:
+        return 'Nium Payment'
+    # 3. ICP Funding - Chase ICP + JPMORGAN ACCESS TRANSFER FROM
+    elif acc == 21 and 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+        return 'ICP Funding'
+    # 4. ICP Funding - Paired transaction (same amount + JPMORGAN)
+    elif icp_funding_amounts and amt in icp_funding_amounts and 'REMARK=JPMORGAN ACCESS TRANSFER' in desc:
+        return 'ICP Funding'
+    # 5. 1TRV = RISK (ANY ACCOUNT - HIGHEST PRIORITY)
+    elif '1TRV' in desc:
         return 'Risk'
+    # 6. STATE rules
     elif 'STATE OF MONTANA' in desc:
         return 'MT WH'
     elif 'NYS DTF WT' in desc:
         return 'NY WH'
     elif 'NYS DOL UI' in desc:
         return 'NY UI'
+    # 7. Treasury/Money Market
     elif '100% US TREASURY CAPITAL 3163' in desc or 'MONEY MKT MUTUAL FUND' in desc:
         return 'Money Market Transfer'
     elif 'JPMORGAN ACCESS TRANSFER' in desc:
         return 'Treasury Transfer'
     elif 'INTEREST ADJUSTMENT' in desc:
         return 'Interest Adjustment'
+    # 8. Account-specific rules
     elif acc == 16 and 'CREDIT MEMO' in desc:
         return 'PNC LOI'
     elif 'KEYSTONE' in desc:
@@ -205,13 +257,16 @@ def apply_rules_single(row):
         return 'Check'
     elif pm == 4:
         return 'ACH'
+    # 9. Recovery accounts (WITHOUT 1TRV)
     elif acc in [7, 28]:
         if 'INTEREST' in desc:
             return 'Interest Payment'
         else:
             return 'Recovery Wire'
+    # 10. Risk accounts
     elif acc in [6, 9, 18] and pm == 0:
         return 'Risk'
+    # 11. Blueridge Operations
     elif acc == 26:
         if amt < 0.5:
             return 'Bad Debt'
@@ -219,6 +274,7 @@ def apply_rules_single(row):
             return 'BRB'
     elif amt < 0.5 and amt > 0:
         return 'Bad Debt'
+    # 12. Other patterns
     elif 'LOCKBOX' in desc:
         return 'Lockbox'
     elif 'TS FX ACCOUNTS RECEIVABLE' in desc or 'JPV' in desc:
@@ -233,7 +289,7 @@ def apply_rules_single(row):
 y_pred_test_ml = model.predict(X_test)
 y_pred_test_hybrid = []
 for i, idx in enumerate(test_data.index):
-    rule_pred = apply_rules_single(test_data.loc[idx])
+    rule_pred = apply_rules_single(test_data.loc[idx], icp_funding_amounts)
     if rule_pred and rule_pred in le_agent.classes_:
         y_pred_test_hybrid.append(le_agent.transform([rule_pred])[0])
     else:
@@ -243,7 +299,7 @@ for i, idx in enumerate(test_data.index):
 y_pred_val_ml = model.predict(X_val)
 y_pred_val_hybrid = []
 for i, idx in enumerate(val_data.index):
-    rule_pred = apply_rules_single(val_data.loc[idx])
+    rule_pred = apply_rules_single(val_data.loc[idx], icp_funding_amounts)
     if rule_pred and rule_pred in le_agent.classes_:
         y_pred_val_hybrid.append(le_agent.transform([rule_pred])[0])
     else:

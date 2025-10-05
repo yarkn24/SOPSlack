@@ -12,28 +12,45 @@ from scipy.sparse import hstack
 from sklearn.preprocessing import LabelEncoder
 from datetime import datetime
 
-def apply_rules(row):
-    """Apply business rules. Returns agent name if rule matches, None otherwise."""
+def apply_rules(row, icp_funding_amounts=None):
+    """Apply business rules. Returns agent name if rule matches, None otherwise. UPDATED WITH NEW RULES."""
     desc = str(row['description']).upper()
     acc = int(row['origination_account_id']) if pd.notna(row['origination_account_id']) else 0
     amt = float(row['amount'])
     pm = int(row['payment_method']) if pd.notna(row['payment_method']) else -1
     
-    # Apply rules in priority order
-    if '1TRV' in desc:
+    # PRIORITY ORDER (HIGHEST TO LOWEST)
+    
+    # 1. Payment Method 12 = ZBT
+    if pm == 12:
+        return 'ZBT'
+    # 2. NIUM = Nium Payment
+    elif 'NIUM' in desc:
+        return 'Nium Payment'
+    # 3. ICP Funding - Chase ICP + JPMORGAN ACCESS TRANSFER FROM
+    elif acc == 21 and 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+        return 'ICP Funding'
+    # 4. ICP Funding - Paired transaction (same amount + JPMORGAN)
+    elif icp_funding_amounts and amt in icp_funding_amounts and 'REMARK=JPMORGAN ACCESS TRANSFER' in desc:
+        return 'ICP Funding'
+    # 5. 1TRV = RISK (ANY ACCOUNT - HIGHEST PRIORITY)
+    elif '1TRV' in desc:
         return 'Risk'
+    # 6. STATE rules
     elif 'STATE OF MONTANA' in desc:
         return 'MT WH'
     elif 'NYS DTF WT' in desc:
         return 'NY WH'
     elif 'NYS DOL UI' in desc:
         return 'NY UI'
+    # 7. Treasury/Money Market
     elif '100% US TREASURY CAPITAL 3163' in desc or 'MONEY MKT MUTUAL FUND' in desc:
         return 'Money Market Transfer'
     elif 'JPMORGAN ACCESS TRANSFER' in desc:
         return 'Treasury Transfer'
     elif 'INTEREST ADJUSTMENT' in desc:
         return 'Interest Adjustment'
+    # 8. Account-specific rules
     elif acc == 16 and 'CREDIT MEMO' in desc:
         return 'PNC LOI'
     elif 'KEYSTONE' in desc:
@@ -42,13 +59,16 @@ def apply_rules(row):
         return 'Check'
     elif pm == 4:
         return 'ACH'
+    # 9. Recovery accounts (WITHOUT 1TRV)
     elif acc in [7, 28]:
         if 'INTEREST' in desc:
             return 'Interest Payment'
         else:
             return 'Recovery Wire'
+    # 10. Risk accounts
     elif acc in [6, 9, 18] and pm == 0:
         return 'Risk'
+    # 11. Blueridge Operations
     elif acc == 26:
         if amt < 0.5:
             return 'Bad Debt'
@@ -56,6 +76,7 @@ def apply_rules(row):
             return 'BRB'
     elif amt < 0.5 and amt > 0:
         return 'Bad Debt'
+    # 12. Other patterns
     elif 'LOCKBOX' in desc:
         return 'Lockbox'
     elif 'TS FX ACCOUNTS RECEIVABLE' in desc or 'JPV' in desc:
@@ -67,7 +88,7 @@ def apply_rules(row):
     
     return None  # No rule matched
 
-def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment):
+def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts=None):
     """Hybrid prediction: Rules first, then ML model."""
     
     predictions = []
@@ -75,7 +96,7 @@ def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment):
     
     for idx, row in data.iterrows():
         # Try rules first
-        rule_prediction = apply_rules(row)
+        rule_prediction = apply_rules(row, icp_funding_amounts)
         
         if rule_prediction is not None:
             predictions.append(rule_prediction)
@@ -131,8 +152,20 @@ df['agent'] = df['agent'].str.strip()
 
 # Apply rules to training data (same as before)
 print("\n📂 Preparing data...")
+
+# First pass: Find ICP Funding amounts
+icp_funding_amounts = set()
 for idx, row in df.iterrows():
-    rule_agent = apply_rules(row)
+    if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
+        desc = str(row['description']).upper()
+        if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+            icp_funding_amounts.add(float(row['amount']))
+
+print(f"   📌 Found {len(icp_funding_amounts)} ICP Funding amounts")
+
+# Second pass: Apply all rules
+for idx, row in df.iterrows():
+    rule_agent = apply_rules(row, icp_funding_amounts)
     if rule_agent:
         df.at[idx, 'agent'] = rule_agent
 
@@ -157,7 +190,7 @@ print(f"✅ Validation: {len(val_data_filtered):,} transactions")
 # Hybrid prediction
 print("\n🔧 Running hybrid prediction...")
 start = datetime.now()
-predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment)
+predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
 elapsed = (datetime.now() - start).total_seconds()
 
 val_data_filtered['predicted'] = predictions
