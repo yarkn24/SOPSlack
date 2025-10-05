@@ -46,7 +46,95 @@ CONFLUENCE_API_TOKEN=your-confluence-api-token
 python mcp_server.py
 ```
 
-## MCP Atlassian Integration
+## 📊 What the Bot Knows
+
+The bot has access to **67+ Confluence pages** in the Platform Operations space, including:
+
+- ✅ **Reconciliations & Reporting** (21 pages)
+  - BAI File Reconciliations
+  - Daily Bank Transaction Reconciliation
+  - Modern Treasury integration
+  - All reconciliation tools and SOPs
+
+- ✅ **Payment Investigations** (11 pages)
+  - How to review investigations
+  - Payment investigation hashtags
+  - Write-off procedures
+  - Quality assurance
+
+- ✅ **Internal Knowledge Base** (3 pages)
+  - ACH Payment Overview
+  - Financial Audit Cleanup
+  - Incident Response Framework
+
+- ✅ **Manual Checks** (2 pages)
+  - Customer Cash Completeness Checks
+  - Manual Reconciliation Checks
+
+**Total:** 67 pages covering all Platform Operations procedures
+
+## 🔧 Technical Architecture
+
+### Components
+
+1. **Slack Bot** (`gemini_confluence_bot.py`)
+   - Listens for mentions and slash commands
+   - Handles user interactions
+
+2. **Confluence Search**
+   - Uses Atlassian Python API
+   - Searches Platform Operations space with CQL
+   - Retrieves page content
+
+3. **Gemini AI**
+   - Analyzes Confluence documentation
+   - Generates contextual answers
+   - Cites sources
+
+4. **Response Formatter**
+   - Presents answers in Slack markdown
+   - Includes clickable links to sources
+
+### Data Flow
+
+```
+User Question (Slack)
+    ↓
+Confluence Search (CQL)
+    ↓
+Retrieve Documentation
+    ↓
+Gemini AI (Context + Question)
+    ↓
+Formatted Answer + Sources
+    ↓
+Slack Response
+```
+
+## 💰 Cost Estimate
+
+### Gemini API (Free Tier)
+- **Included:** 15 requests/minute, 1M tokens/month
+- **Cost after free tier:** $0.15 per 1M input tokens, $0.60 per 1M output tokens
+
+**Typical usage:**
+- Question: ~100 tokens
+- Confluence context: ~10,000 tokens  
+- Answer: ~500 tokens
+- **Cost per question: ~$0.002** (0.2 cents)
+
+**Monthly estimate:**
+- 50 questions/day = 1,500 questions/month
+- **Cost: ~$3/month** (well within free tier)
+
+## 🔒 Security
+
+- ✅ All tokens stored in `.env` (gitignored)
+- ✅ Confluence API uses secure OAuth tokens
+- ✅ Socket Mode (no public webhooks needed)
+- ✅ Bot only accesses Platform Operations space
+
+## MCP Atlassian Integration (Optional)
 
 This project uses [sooperset/mcp-atlassian](https://github.com/sooperset/mcp-atlassian), a Python-based MCP server that provides read/write access to Atlassian tools (Confluence, Jira).
 

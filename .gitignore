@@ -69,3 +69,9 @@ credentials.json
 # MCP
 mcp-cache/
 .mcp/
+
+# ML Models
+*.pkl
+
+# Data files
+*.csv
