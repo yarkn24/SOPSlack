@@ -97,13 +97,13 @@ CONFLUENCE DOCUMENTATION:
 
 USER QUESTION: {question}
 
-Please provide a clear, helpful answer in Turkish. Include relevant links to Confluence pages."""
+Please provide a clear, helpful answer in English. Include relevant links to Confluence pages."""
 
     try:
         response = model.generate_content(prompt)
         return response.text
     except Exception as e:
-        return f"❌ Gemini API hatası: {str(e)}"
+        return f"❌ Gemini API error: {str(e)}"
 
 @app.event("app_mention")
 def handle_mentions(event, say, logger):
@@ -143,7 +143,7 @@ def handle_mentions(event, say, logger):
         
     except Exception as e:
         logger.error(f"Error handling mention: {e}")
-        say(f"❌ Bir hata oluştu: {str(e)}")
+        say(f"❌ An error occurred: {str(e)}")
 
 @app.command("/confluence")
 def handle_confluence_search(ack, command, say):
@@ -153,19 +153,19 @@ def handle_confluence_search(ack, command, say):
     text = command.get('text', '').strip()
     
     if not text:
-        say("📖 Kullanım: `/confluence [arama terimi]`\nÖrnek: `/confluence reconciliation nasıl yapılır`")
+        say("📖 Usage: `/confluence [search term]`\nExample: `/confluence reconciliation procedures`")
         return
     
     # Search Confluence
-    say(f"🔍 Confluence'da arıyorum: *{text}*")
+    say(f"🔍 Searching Confluence for: *{text}*")
     pages = search_confluence(text)
     
     if not pages:
-        say(f"❌ '{text}' hakkında bir şey bulamadım.")
+        say(f"❌ No results found for '{text}'.")
         return
     
     # Return search results
-    response = f"*'{text}' için bulunan dökümanlar:*\n\n"
+    response = f"*Documents found for '{text}':*\n\n"
     for i, page in enumerate(pages, 1):
         response += f"{i}. <{page['url']}|{page['title']}>\n"
     
@@ -180,48 +180,48 @@ def handle_sop_command(ack, command, say):
     
     if not text:
         say("""
-🤖 *SOPSlack Komutları:*
-• `/sop ask [soru]` - AI'ya Platform Operations sorusu sor
-• `/confluence [arama]` - Confluence'da doğrudan ara
-• Bot'u mention ederek soru sorabilirsiniz: @SOPSlack [soru]
+🤖 *SOPSlack Commands:*
+• `/sop ask [question]` - Ask AI about Platform Operations
+• `/confluence [search]` - Search directly in Confluence
+• You can also mention the bot: @SOPSlack [question]
 
-*Örnek Sorular:*
-• Reconciliation nasıl yapılır?
-• BAI file nedir?
-• Double cashed check nasıl handle edilir?
-• Payment investigation hashtags nelerdir?
+*Example Questions:*
+• How to perform reconciliation?
+• What is a BAI file?
+• How to handle double cashed checks?
+• What are the payment investigation hashtags?
         """)
         return
     
     if text.startswith('ask'):
         question = text.replace('ask', '').strip()
         if not question:
-            say("❌ Lütfen bir soru sorun. Örnek: `/sop ask reconciliation nasıl yapılır`")
+            say("❌ Please ask a question. Example: `/sop ask how to perform reconciliation`")
             return
         
-        say(f"🔍 Confluence dökümanlarında arıyorum: *{question}*")
+        say(f"🔍 Searching Confluence documentation: *{question}*")
         pages = search_confluence(question)
         
         if not pages:
-            say(f"❌ '{question}' hakkında bir şey bulamadım.")
+            say(f"❌ No results found for '{question}'.")
             return
         
         context = create_context_from_pages(pages)
         answer = ask_gemini(question, context)
         
-        response = f"*Cevap:*\n{answer}\n\n"
-        response += f"📚 *Kaynaklar:*\n"
+        response = f"*Answer:*\n{answer}\n\n"
+        response += f"📚 *Sources:*\n"
         for page in pages:
             response += f"• <{page['url']}|{page['title']}>\n"
         
         say(response)
     else:
-        say("❌ Bilinmeyen komut. `/sop` yazarak yardımı görebilirsiniz.")
+        say("❌ Unknown command. Type `/sop` to see available commands.")
 
 @app.message("hello")
 def handle_hello(message, say):
     """Handle 'hello' messages"""
-    say(f"Merhaba <@{message['user']}>! 👋 Bana Platform Operations hakkında sorular sorabilirsin!")
+    say(f"Hello <@{message['user']}>! 👋 Feel free to ask me questions about Platform Operations!")
 
 @app.event("message")
 def handle_message_events(body, logger):
@@ -243,8 +243,8 @@ if __name__ == "__main__":
     missing_vars = [var for var in required_vars if not os.environ.get(var)]
     
     if missing_vars:
-        print(f"❌ Eksik environment variables: {', '.join(missing_vars)}")
-        print("\n.env dosyasını oluşturun ve şu değişkenleri ekleyin:")
+        print(f"❌ Missing environment variables: {', '.join(missing_vars)}")
+        print("\nCreate a .env file and add these variables:")
         for var in missing_vars:
             print(f"  {var}=...")
         exit(1)
