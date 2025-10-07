@@ -1,0 +1,44 @@
+Hi team! 👋
+
+I'm working on a daily reconciliation automation bot for Platform Operations and need Slack admin approval.
+
+**App Name:** SlackSOPTest
+**Purpose:** Automate daily bank transaction reconciliation messages
+**Status:** Pending approval in admin queue
+
+**What it does:**
+• Posts daily reconciliation summaries to #platform-operations
+• Shows agent predictions (ACH, Check, Risk, etc.) with ML model (98.64% accuracy)
+• Alerts on high-volume transactions (40+, 50+ warnings)
+• Flags high-value ICP transactions ($300K+)
+• Provides clickable SOP links for the team
+• Warns about upcoming US banking holidays
+
+**Permissions needed:**
+• chat:write - send messages
+• chat:write.public - post to public channels
+• channels:read - view channel info
+• users:read - display user names
+
+**Business impact:**
+• Current: ~5 min/transaction manual labeling (50-150 daily)
+• After: <1 second prediction per transaction
+• Saves: 4-12 hours/day for the team
+
+**Security:**
+✅ Cannot read private messages or DMs
+✅ Cannot access message history
+✅ Only posts to public channels
+✅ No data stored externally
+
+**Who can approve this?**
+
+You can find "SlackSOPTest" in the pending apps queue:
+https://gusto.enterprise.slack.com/admin/apps/pending
+
+Or let me know who I should contact for app approvals.
+
+**Full documentation:** https://github.com/yarkn24/SOPSlack/blob/main/SLACK_ADMIN_REQUEST.md
+
+Thanks! 🙏
+
