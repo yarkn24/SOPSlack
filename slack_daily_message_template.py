@@ -84,8 +84,8 @@ def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None)
     message += "---\n\n"
     message += "📚 **Here are the suggested SOPs for those:**\n\n"
     
-    # Always add Daily Operations first
-    message += "1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)\n"
+    # Always add Daily Operations first (Slack hyperlink format: <URL|Text>)
+    message += "1. <https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile|Daily Operations: How to Label & Reconcile>\n"
     
     # Add all unique SOPs collected from agents
     counter = 2
@@ -110,13 +110,13 @@ def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None)
         if not title:
             title = "SOP Document"
         
-        message += f"{counter}. [{title}]({sop_link})\n"
+        message += f"{counter}. <{sop_link}|{title}>\n"
         counter += 1
     
     # Always add Daily Bank Transaction Reconciliation at the end if not already present
     daily_recon_link = "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type"
     if daily_recon_link not in all_sops:
-        message += f"{counter}. [Daily Bank Transaction Reconciliation by Bank Transaction Type]({daily_recon_link})\n"
+        message += f"{counter}. <{daily_recon_link}|Daily Bank Transaction Reconciliation by Bank Transaction Type>\n"
     
     message += "\n_Good luck with today's reconciliation! 🚀_"
     
