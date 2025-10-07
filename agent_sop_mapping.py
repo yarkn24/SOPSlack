@@ -29,10 +29,9 @@ AGENT_SOP_MAPPING = {
             "Check for 1TRV code compliance",
             "Validate origination account and amount",
         ],
-        "confluence_pages": [
-            "Daily Bank Transaction Reconciliation",
-            "Wire Transfer Procedures",
-            "Risk Payment Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "HIGH",
         "criticality": "CRITICAL",
@@ -49,9 +48,9 @@ AGENT_SOP_MAPPING = {
             "Match with expected recovery payments",
             "Check if mistakenly sent to wrong account (if 1TRV present, should be Risk)",
         ],
-        "confluence_pages": [
-            "Daily Bank Transaction Reconciliation",
-            "Recovery Wire Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "HIGH",
         "criticality": "CRITICAL",
@@ -67,10 +66,11 @@ AGENT_SOP_MAPPING = {
             "Verify Nium payment details",
             "Match with contractor payment records",
             "Check for proper NIUM descriptor",
+            "If amount > $300K, escalate using Cross-Functional Stakeholders process",
         ],
-        "confluence_pages": [
-            "International Contractor Payments",
-            "ACH Payment Overview",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "HIGH",
@@ -90,10 +90,11 @@ AGENT_SOP_MAPPING = {
             "Verify paired transaction exists with matching amount",
             "Confirm both legs of the transfer (ICP → Ops, Ops → ICP)",
             "Match with internal funding records",
+            "If amount > $300K, escalate using Cross-Functional Stakeholders process",
         ],
-        "confluence_pages": [
-            "ICP Funding Procedures",
-            "Internal Transfer Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "HIGH",
@@ -109,13 +110,14 @@ AGENT_SOP_MAPPING = {
             "Verify treasury transfer authorization",
             "Match with internal transfer records",
             "Confirm both sides of transfer",
+            "Check Unintended Overpayment Account Use Cases SOP for treasury funding",
         ],
-        "confluence_pages": [
-            "Treasury Transfer Procedures",
-            "Internal Transfer Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "MEDIUM",
+        "note": "Unintended Overpayment Account Use Cases SOP applies for Treasury Funding",
     },
     
     "Money Market Transfer": {
@@ -126,13 +128,14 @@ AGENT_SOP_MAPPING = {
         "reconciliation_steps": [
             "Verify money market account movement",
             "Match with treasury management records",
+            "Check Unintended Overpayment Account Use Cases SOP",
         ],
-        "confluence_pages": [
-            "Money Market Reconciliation",
-            "Treasury Management SOPs",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "MEDIUM",
+        "note": "Unintended Overpayment Account Use Cases SOP applies",
     },
     
     "ZBT": {
@@ -144,9 +147,8 @@ AGENT_SOP_MAPPING = {
             "Verify ZBT sweep configuration",
             "Match with expected balance transfers",
         ],
-        "confluence_pages": [
-            "Zero Balance Transfer SOPs",
-            "Daily Bank Transaction Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "MEDIUM",
@@ -167,9 +169,8 @@ AGENT_SOP_MAPPING = {
             "Match with bad debt records",
             "Confirm amount threshold",
         ],
-        "confluence_pages": [
-            "Bad Debt Processing",
-            "Blueridge Operations Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "LOW",
@@ -185,8 +186,8 @@ AGENT_SOP_MAPPING = {
             "Verify BRB transaction details",
             "Match with Blueridge records",
         ],
-        "confluence_pages": [
-            "Blueridge Operations Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "MEDIUM",
@@ -200,13 +201,14 @@ AGENT_SOP_MAPPING = {
         "reconciliation_steps": [
             "Verify interest adjustment calculation",
             "Match with bank interest records",
+            "Check Unintended Overpayment Account Use Cases SOP for Interest Income",
         ],
-        "confluence_pages": [
-            "Interest Reconciliation",
-            "Daily Bank Transaction Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "LOW",
+        "note": "Unintended Overpayment Account Use Cases SOP applies for Interest Income",
     },
     
     # ============================================================
@@ -224,9 +226,8 @@ AGENT_SOP_MAPPING = {
             "Match with expected ACH payments",
             "Check payment method classification",
         ],
-        "confluence_pages": [
-            "ACH Payment Overview",
-            "Daily Bank Transaction Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "HIGH",
         "criticality": "MEDIUM",
@@ -246,9 +247,8 @@ AGENT_SOP_MAPPING = {
             "Match with check register",
             "Confirm payee information",
         ],
-        "confluence_pages": [
-            "Check Reconciliation",
-            "Daily Bank Transaction Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "MEDIUM",
@@ -262,8 +262,8 @@ AGENT_SOP_MAPPING = {
             "Verify lockbox deposit details",
             "Match with lockbox reports",
         ],
-        "confluence_pages": [
-            "Lockbox Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "LOW",
@@ -282,10 +282,11 @@ AGENT_SOP_MAPPING = {
             "Verify ICP return reason",
             "Match with original ICP transaction",
             "Check ticket number in Jira",
+            "If amount > $300K, escalate using Cross-Functional Stakeholders process",
         ],
-        "confluence_pages": [
-            "ICP Return Processing",
-            "International Contractor Payment Issues",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "MEDIUM",
@@ -299,9 +300,11 @@ AGENT_SOP_MAPPING = {
         "reconciliation_steps": [
             "Verify refund reason and amount",
             "Match with original ICP payment",
+            "If amount > $300K, escalate using Cross-Functional Stakeholders process",
         ],
-        "confluence_pages": [
-            "ICP Refund Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "MEDIUM",
@@ -319,12 +322,12 @@ AGENT_SOP_MAPPING = {
             "Verify NY withholding tax amount",
             "Match with payroll records",
         ],
-        "confluence_pages": [
-            "Payroll Tax Reconciliation",
-            "State Withholding Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "HIGH",
+        "note": "No specific SOP available - use general reconciliation procedures",
     },
     
     "NY UI": {
@@ -335,12 +338,12 @@ AGENT_SOP_MAPPING = {
             "Verify NY UI payment amount",
             "Match with payroll records",
         ],
-        "confluence_pages": [
-            "Payroll Tax Reconciliation",
-            "Unemployment Insurance Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "MEDIUM",
         "criticality": "HIGH",
+        "note": "No specific SOP available - use general reconciliation procedures",
     },
     
     "MT WH": {
@@ -351,12 +354,12 @@ AGENT_SOP_MAPPING = {
             "Verify MT withholding tax amount",
             "Match with payroll records",
         ],
-        "confluence_pages": [
-            "Payroll Tax Reconciliation",
-            "State Withholding Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "HIGH",
+        "note": "No specific SOP available - use general reconciliation procedures",
     },
     
     "PA UI": {
@@ -367,12 +370,12 @@ AGENT_SOP_MAPPING = {
             "Verify PA UI payment amount",
             "Match with payroll records",
         ],
-        "confluence_pages": [
-            "Payroll Tax Reconciliation",
-            "Unemployment Insurance Processing",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "HIGH",
+        "note": "No specific SOP available - use general reconciliation procedures",
     },
     
     "York Adams": {
@@ -384,8 +387,8 @@ AGENT_SOP_MAPPING = {
             "Verify York Adams tax payment",
             "Match with local tax records",
         ],
-        "confluence_pages": [
-            "Local Tax Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "MEDIUM",
@@ -402,10 +405,11 @@ AGENT_SOP_MAPPING = {
         "reconciliation_steps": [
             "Verify LOI (Letter of Indemnity) details",
             "Match with PNC credit memo records",
+            "Follow Letter of Indemnity Process and Reconciliation SOP",
         ],
-        "confluence_pages": [
-            "LOI Processing",
-            "PNC Account Reconciliation",
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554/Letter+of+Indemnity+Process+and+Reconciliation",
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "LOW",
         "criticality": "MEDIUM",
@@ -431,19 +435,19 @@ def get_agent_sop(agent_name):
     return AGENT_SOP_MAPPING.get(agent_name)
 
 
-def get_confluence_pages_for_agent(agent_name):
+def get_confluence_links_for_agent(agent_name):
     """
-    Get list of Confluence pages relevant to an agent.
+    Get list of Confluence links relevant to an agent.
     
     Args:
         agent_name: Name of the agent
         
     Returns:
-        List of Confluence page titles, or empty list if not found
+        List of Confluence URLs, or empty list if not found
     """
     agent_info = AGENT_SOP_MAPPING.get(agent_name)
     if agent_info:
-        return agent_info.get("confluence_pages", [])
+        return agent_info.get("confluence_links", [])
     return []
 
 
@@ -471,7 +475,7 @@ def export_for_fine_tuning():
         # Create a prompt-completion pair
         rules_text = "\n".join(f"- {rule}" for rule in info["labeling_rules"])
         recon_text = "\n".join(f"- {step}" for step in info["reconciliation_steps"])
-        sop_text = "\n".join(f"- {page}" for page in info["confluence_pages"])
+        sop_text = "\n".join(f"- {link}" for link in info.get("confluence_links", []))
         
         prompt = f"Agent: {agent_name}\n\nLabeling Rules:\n{rules_text}"
         
@@ -479,7 +483,7 @@ def export_for_fine_tuning():
 Reconciliation Steps:
 {recon_text}
 
-Relevant SOPs:
+Relevant SOP Links:
 {sop_text}
 
 Frequency: {info.get('frequency', 'N/A')}

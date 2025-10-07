@@ -1,9 +1,8 @@
 # Agent-SOP Mapping Report
 
-**Date:** October 6, 2025  
+**Date:** October 7, 2025  
 **Total Agents in Model:** 96  
-**Mapped Agents:** 21 (21.9%)  
-**Unmapped Agents:** 75 (78.1%)
+**Mapped Agents:** 21 (21.9%)
 
 ---
 
@@ -24,9 +23,8 @@
 - Validate origination account and amount
 
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
-2. [Zero Balance Transfer Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411752)
-3. [Reconciliation Queue & Dashboard Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410903)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -44,8 +42,8 @@
 - Check if mistakenly sent to wrong account (if 1TRV present, should be Risk)
 
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
-2. [Reconciliation Queue & Dashboard Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410903)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -59,10 +57,15 @@
 - Account 21 (Chase International Contractor Payments)
 - Payment Method 10 (ACH External)
 
+**Reconciliation Steps:**
+- Verify Nium payment details
+- Match with contractor payment records
+- Check for proper NIUM descriptor
+- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+
 **Confluence SOPs:**
-1. [International Contractor Payment (ICP)](https://gustohq.atlassian.net/wiki/spaces/BIZT/pages/75345345)
-2. [International Contractor Payments Support](https://gustohq.atlassian.net/wiki/spaces/PymtOps/pages/76384014)
-3. [ACH Payment Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/168920198)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -74,11 +77,17 @@
 - Paired transactions: Same amount to/from Chase Ops
 - Payment Method 8 (Unknown) - but this is expected for these transfers
 
+**Reconciliation Steps:**
+- Verify paired transaction exists with matching amount
+- Confirm both legs of the transfer (ICP → Ops, Ops → ICP)
+- Match with internal funding records
+- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+
 **Note:** Rare but financially critical - requires paired transaction logic
 
 **Confluence SOPs:**
-1. [International Contractor Payment Funding](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411829)
-2. [International Contractor Payments Support](https://gustohq.atlassian.net/wiki/spaces/PymtOps/pages/76384014)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -88,9 +97,14 @@
 **Labeling Rules:**
 - Description: 'NYS DTF WT' (New York State withholding tax)
 
+**Reconciliation Steps:**
+- Verify NY withholding tax amount
+- Match with payroll records
+
+**Note:** No specific SOP available - use general reconciliation procedures
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
-2. [Zero Balance Transfer Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411752)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -100,8 +114,14 @@
 **Labeling Rules:**
 - Description: 'NYS DOL UI' (New York State unemployment insurance)
 
+**Reconciliation Steps:**
+- Verify NY UI payment amount
+- Match with payroll records
+
+**Note:** No specific SOP available - use general reconciliation procedures
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -111,8 +131,14 @@
 **Labeling Rules:**
 - Description: 'STATE OF MONTANA' (Montana withholding)
 
+**Reconciliation Steps:**
+- Verify MT withholding tax amount
+- Match with payroll records
+
+**Note:** No specific SOP available - use general reconciliation procedures
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -122,8 +148,14 @@
 **Labeling Rules:**
 - Description: 'ORIG CO NAME=KEYSTONE'
 
+**Reconciliation Steps:**
+- Verify PA UI payment amount
+- Match with payroll records
+
+**Note:** No specific SOP available - use general reconciliation procedures
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -137,9 +169,13 @@
 - Payment Method 4 (ACH) - 97.1% confidence
 - NOT Company Balance Transfer (discontinued)
 
+**Reconciliation Steps:**
+- Verify ACH transaction details
+- Match with expected ACH payments
+- Check payment method classification
+
 **Confluence SOPs:**
-1. [ACH Payment Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/168920198)
-2. [Reconciliation Queue & Dashboard Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410903)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -150,9 +186,16 @@
 - Description: 'REMARK=JPMORGAN ACCESS TRANSFER' (not to/from ICP)
 - Internal treasury movements
 
+**Reconciliation Steps:**
+- Verify treasury transfer authorization
+- Match with internal transfer records
+- Confirm both sides of transfer
+- Check Unintended Overpayment Account Use Cases SOP for treasury funding
+
+**Note:** Unintended Overpayment Account Use Cases SOP applies for Treasury Funding
+
 **Confluence SOPs:**
-1. [Modern Treasury](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76385861)
-2. [Zero Balance Transfer Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411752)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -163,8 +206,12 @@
 - Payment Method 12 (definitive)
 - Zero Balance Transfer operations
 
+**Reconciliation Steps:**
+- Verify ZBT sweep configuration
+- Match with expected balance transfers
+
 **Confluence SOPs:**
-1. [Zero Balance Transfer Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411752)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -175,9 +222,13 @@
 - Payment Method 2 (Check)
 - Description contains 'check' patterns
 
+**Reconciliation Steps:**
+- Verify check number and amount
+- Match with check register
+- Confirm payee information
+
 **Confluence SOPs:**
-1. [Manual Reconciliation Checks](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412024)
-2. [Reconciliation Queue & Dashboard Overview](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410903)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -189,8 +240,12 @@
 - Amount > $0.50
 - If description has 'check' or 'interest', label accordingly
 
+**Reconciliation Steps:**
+- Verify BRB transaction details
+- Match with Blueridge records
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -201,9 +256,15 @@
 - Description: 'TS FX ACCOUNTS RECEIVABLE'
 - Description: 'JPV' followed by numbers (ticket number, e.g., 'JPV230104')
 
+**Reconciliation Steps:**
+- Verify ICP return reason
+- Match with original ICP transaction
+- Check ticket number in Jira
+- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+
 **Confluence SOPs:**
-1. [International Contractor Payments Support](https://gustohq.atlassian.net/wiki/spaces/PymtOps/pages/76384014)
-2. [Cancel International Contractor Payment SOP](https://gustohq.atlassian.net/wiki/spaces/PymtOps/pages/76385396)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -214,8 +275,14 @@
 - Description contains 'WISE'
 - Amount typically < $50K
 
+**Reconciliation Steps:**
+- Verify refund reason and amount
+- Match with original ICP payment
+- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+
 **Confluence SOPs:**
-1. [International Contractor Payments Support](https://gustohq.atlassian.net/wiki/spaces/PymtOps/pages/76384014)
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -226,8 +293,12 @@
 - Description: 'York Adams Tax' or 'York Adams Tax EIT'
 - Consolidated label (previously separate)
 
+**Reconciliation Steps:**
+- Verify York Adams tax payment
+- Match with local tax records
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -237,8 +308,14 @@
 **Labeling Rules:**
 - Description: 'CREDIT MEMO' + PNC account (e.g., Account 16)
 
+**Reconciliation Steps:**
+- Verify LOI (Letter of Indemnity) details
+- Match with PNC credit memo records
+- Follow Letter of Indemnity Process and Reconciliation SOP
+
 **Confluence SOPs:**
-1. [Letter of Indemnity Process and Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554)
+1. [Letter of Indemnity Process and Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554/Letter+of+Indemnity+Process+and+Reconciliation)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -249,8 +326,15 @@
 - Description: 'REMARK=100% US TREASURY CAPITAL 3163 AT NAV OF 1.0000' (definitive)
 - Description: 'MONEY MKT MUTUAL FUND'
 
+**Reconciliation Steps:**
+- Verify money market account movement
+- Match with treasury management records
+- Check Unintended Overpayment Account Use Cases SOP
+
+**Note:** Unintended Overpayment Account Use Cases SOP applies
+
 **Confluence SOPs:**
-1. [Modern Treasury](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76385861)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -264,9 +348,13 @@
 - Amount < $0.50 (definitive for small amounts)
 - Description: 'ITT GUSTO CORPORATE CCD'
 
+**Reconciliation Steps:**
+- Verify bad debt classification
+- Match with bad debt records
+- Confirm amount threshold
+
 **Confluence SOPs:**
-1. [Bad Debt Write Off SOP](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169377977)
-2. [Write Off SOP + Bad Debt Lifecycle](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410711)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -277,8 +365,15 @@
 - Description: 'INTEREST ADJUSTMENT' (definitive)
 - Account 28 (Blueridge Recovery) + 'INTEREST' in description
 
+**Reconciliation Steps:**
+- Verify interest adjustment calculation
+- Match with bank interest records
+- Check Unintended Overpayment Account Use Cases SOP for Interest Income
+
+**Note:** Unintended Overpayment Account Use Cases SOP applies for Interest Income
+
 **Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -288,8 +383,12 @@
 **Labeling Rules:**
 - Description contains 'LOCKBOX' (definitive)
 
+**Reconciliation Steps:**
+- Verify lockbox deposit details
+- Match with lockbox reports
+
 **Confluence SOPs:**
-1. [Lockbox Investigations](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411804)
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -308,46 +407,70 @@
 
 ### Coverage:
 - **Mapped:** 21/96 agents (21.9%)
-- **Unmapped:** 75/96 agents (78.1%)
 
 ---
 
-## 🔴 TOP UNMAPPED AGENTS (Need Immediate Attention)
+## 🎯 KEY MAPPING RULES
 
-### High Priority Unmapped:
-1. **ACH Return**
-2. **Wire Return**
-3. **Risk Return**
-4. **IRS / IRS Wire**
-5. **Company Balance Transfer**
-6. **Chase Levy / Levy**
-7. **Unclaimed Property** (+ variants)
+### 🚨 **Escalation Rule (>$300K)**
+For ICP-related agents with amounts **over $300,000**, use:
+- [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
 
-### State Tax Unmapped:
-8. **IL UI, HI UI, KS Tax, KY UI, NM UI, OH WH, OK UI, VA UI, WA UI** (+ variants)
+**Applies to:**
+- Nium Payment
+- ICP Funding
+- ICP Return
+- ICP Refund
 
-### Local Tax Unmapped:
-9. **Berks EIT, HAB EIT, Lancaster WH, PA EIT** (+ variants)
+### 📄 **Unintended Overpayment Account Use Cases SOP**
+For treasury-related transactions, refer to Unintended Overpayment Account Use Cases SOP:
+- Treasury Transfer (Treasury Funding)
+- Money Market Transfer
+- Interest Adjustment (Interest Income)
 
-### ICP Variants Unmapped:
-10. **ICP, ICP ACH, ICP Credit, ICP Transfer, ICP ZBT**
+### 🔄 **Default Reconciliation SOP**
+All agents include as baseline:
+- [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
----
-
-## 🎯 NEXT STEPS
-
-### For Fine-Tuning:
-1. **Immediate:** Use these 21 agents for initial fine-tuning
-2. **Phase 2:** Map top 19 high-priority unmapped agents
-3. **Phase 3:** Complete full 96-agent coverage
-
-### For Production Deployment:
-1. **Slack Integration:** When agent is predicted, attach relevant Confluence SOP links
-2. **Daily Operations:** Auto-suggest reconciliation procedures based on agent type
-3. **Knowledge Base:** Link agents to specific SOP documentation for training
+### ⚠️ **No Specific SOP Available**
+These agents use general reconciliation procedures only:
+- NY WH
+- NY UI
+- MT WH
+- PA UI
 
 ---
 
-**Report Generated:** October 6, 2025  
-**Repository:** https://github.com/yarkn24/SOPSlack
+## 🎯 NEXT STEPS FOR SLACK INTEGRATION
 
+### When Bot Predicts Agent:
+1. **Show Agent Name** (e.g., "Risk")
+2. **Display Confidence** (e.g., "98.5%")
+3. **Show Relevant SOP Links** (unique, no duplicates)
+4. **Add Escalation Warning** (if ICP + amount >$300K)
+5. **Include Quick Actions** (e.g., "View in Modern Treasury", "Check Jira Ticket")
+
+### Example Slack Message:
+```
+🎯 Transaction Classified: Risk (98.5% confidence)
+
+📋 Reconciliation Steps:
+• Verify wire transfer details in Modern Treasury
+• Match with expected incoming Risk payments
+• Check for 1TRV code compliance
+
+📚 Relevant SOPs:
+1. Escalating Reconciliation Issues to Cross-Functional Stakeholders
+   https://gustohq.atlassian.net/.../460194134/...
+2. Daily Bank Transaction Reconciliation by Bank Transaction Type
+   https://gustohq.atlassian.net/.../169411126/...
+
+⚡ Quick Actions:
+[View in Modern Treasury] [Mark as Reconciled]
+```
+
+---
+
+**Report Generated:** October 7, 2025  
+**Repository:** https://github.com/yarkn24/SOPSlack  
+**Status:** ✅ Ready for Slack Integration
