@@ -54,6 +54,21 @@ DAILY_FUN_FACTS = [
     "💡 **Invention Story:** The decimal point was first used by John Napier in 1614. Before that, financial calculations were... interesting. Thanks, John! 📍",
     
     "🌐 **Network Effect:** Metcalfe's Law states that a network's value is proportional to the square of its users. Your collaboration makes the team exponentially more valuable! 🤝",
+    
+    # Gusto-specific milestones and history
+    "🎉 **Gusto History:** Did you know? Gusto was founded in 2012 as 'ZenPayroll' by Joshua Reeves, Edward Kim, and Tomer London. The mission: make payroll, benefits, and HR delightfully simple! 🚀",
+    
+    "📅 **On This Day (2015):** ZenPayroll officially became Gusto! The rebrand reflected our expanded mission: not just payroll, but supporting every aspect of taking care of your team. 💜",
+    
+    "🦄 **Gusto Milestone (2019):** Gusto became a unicorn with a valuation over $1 billion! From a Y Combinator startup to unicorn status in 7 years. Dreams do come true! 🦄",
+    
+    "💰 **Gusto Growth:** Gusto reached a $9.5 billion valuation and serves over 300,000 businesses. Every transaction you reconcile is part of this incredible growth story! 📈",
+    
+    "💡 **Gusto Values:** Our core value 'Put People First' isn't just words—it's why we exist. You reconciling transactions helps real businesses pay their people on time. That's impact! 🎯",
+    
+    "🌍 **Gusto Global:** We've grown from US payroll to serving contractors in 120+ countries. Your work on ICP transactions connects people across continents! 🌐",
+    
+    "🎓 **Fun Gusto Fact:** The name 'Gusto' means enthusiasm and energy. That's the spirit behind every feature, every transaction, and yes, every reconciliation! ⚡",
 ]
 
 
