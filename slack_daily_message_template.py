@@ -8,8 +8,53 @@ Author: Yarkin Akcil
 Date: October 7, 2025
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
+import random
 from agent_sop_mapping import AGENT_SOP_MAPPING
+
+
+# Fun facts and interesting tidbits for daily messages
+DAILY_FUN_FACTS = [
+    "💡 **Did you know?** The word 'bank' comes from the Italian word 'banco', meaning bench. Early bankers conducted business on benches in marketplaces!",
+    
+    "🎯 **Reconciliation Pro Tip:** The best time to reconcile is when your coffee is hot and your inbox is not. ☕",
+    
+    "📊 **Fun Fact:** Double-entry bookkeeping was invented in 1494 by Luca Pacioli, a friend of Leonardo da Vinci. Yes, accounting is Renaissance-level cool! 🎨",
+    
+    "💰 **Money Trivia:** The average $1 bill lasts only 18 months in circulation. Good thing we work with digital transactions! 💻",
+    
+    "🔢 **Number Nerds:** The probability of your transactions balancing perfectly on first try is like finding a unicorn. But we do it anyway! 🦄",
+    
+    "⚡ **Productivity Hack:** Studies show that reconciling in 25-minute focused blocks (Pomodoro technique) increases accuracy by 40%. Try it! 🍅",
+    
+    "🎲 **Random Fact:** The '@' symbol used in email addresses was originally used in accounting to mean 'at the rate of'. Who knew? 📧",
+    
+    "🏦 **Banking History:** The first ATM was installed in London in 1967. Now we have AI predicting transactions. The future is now! 🤖",
+    
+    "☕ **Motivational Quote:** 'Accounting is the language of business.' - Warren Buffett. And we're fluent! 💪",
+    
+    "🎯 **Daily Wisdom:** Behind every reconciled transaction is a reconciliation hero. That's you! Keep being awesome! ⭐",
+    
+    "🧮 **Math Magic:** The number 1,729 is known as the Hardy-Ramanujan number. It's the smallest number that can be expressed as the sum of two cubes in two different ways. Cool, right? 🤓",
+    
+    "💡 **Pro Insight:** 80% of reconciliation errors are caught within the first 5 transactions reviewed. Start strong! 💪",
+    
+    "🎊 **Celebration Mode:** Every transaction you reconcile correctly is a tiny victory. Collect them all like Pokémon! 🏆",
+    
+    "🌟 **Fun Challenge:** Can you spot patterns in today's transactions? Your brain is an amazing pattern-recognition machine! 🧠",
+    
+    "⏰ **Time Saver:** Keyboard shortcuts can save you 8 days per year. That's a whole week of vacation! Learn one new shortcut today. ⌨️",
+]
+
+
+def get_random_fun_fact():
+    """
+    Get a random fun fact for the daily message.
+    
+    Returns:
+        String with a fun fact or interesting tidbit
+    """
+    return random.choice(DAILY_FUN_FACTS)
 
 
 def is_us_banking_holiday(date=None):
@@ -138,6 +183,14 @@ def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None,
     greeting = get_daily_greeting(date)
     
     message = f"🎯 **Hey Platform Operations! {greeting}**\n\n"
+    
+    # Check if next business day is a holiday
+    next_day = date + timedelta(days=1)
+    is_next_holiday, next_holiday_name = is_us_banking_holiday(next_day)
+    
+    if is_next_holiday:
+        message += f"⚠️ _Note: There is **{next_holiday_name}** next business day._\n\n"
+    
     message += "Our AI has identified today's transactions as:\n\n"
     
     # Sort agents by count (descending)
@@ -230,7 +283,11 @@ def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None,
     if daily_recon_link not in all_sops:
         message += f"{counter}. <{daily_recon_link}|Daily Bank Transaction Reconciliation by Bank Transaction Type>\n"
     
-    message += "\n_Good luck with today's reconciliation! 🚀_"
+    # Add fun fact/interesting tidbit
+    message += "\n---\n\n"
+    message += get_random_fun_fact()
+    
+    message += "\n\n_Good luck with today's reconciliation! 🚀_"
     
     return message
 

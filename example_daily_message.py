@@ -56,9 +56,29 @@ print(generate_daily_recon_message(agent_counts, high_value_icp, date=independen
 
 print("\n\n")
 
-# Example 4: Today (actual date)
+# Example 4: Day before Independence Day (July 3rd)
 print("=" * 80)
-print("EXAMPLE 4: TODAY (ACTUAL DATE)")
+print("EXAMPLE 4: DAY BEFORE INDEPENDENCE DAY (JULY 3RD)")
+print("=" * 80)
+print()
+july_3rd = datetime(2025, 7, 3)  # Day before July 4th
+print(generate_daily_recon_message(agent_counts, high_value_icp, date=july_3rd))
+
+print("\n\n")
+
+# Example 5: Day before Thanksgiving
+print("=" * 80)
+print("EXAMPLE 5: DAY BEFORE THANKSGIVING")
+print("=" * 80)
+print()
+day_before_thanksgiving = datetime(2025, 11, 26)  # Nov 26 (Thanksgiving is Nov 27, 2025)
+print(generate_daily_recon_message(agent_counts, high_value_icp, date=day_before_thanksgiving))
+
+print("\n\n")
+
+# Example 6: Today (actual date)
+print("=" * 80)
+print("EXAMPLE 6: TODAY (ACTUAL DATE)")
 print("=" * 80)
 print()
 print(generate_daily_recon_message(agent_counts, high_value_icp))
