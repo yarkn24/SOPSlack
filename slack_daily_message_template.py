@@ -15,35 +15,45 @@ from agent_sop_mapping import AGENT_SOP_MAPPING
 
 # Fun facts and interesting tidbits for daily messages
 DAILY_FUN_FACTS = [
-    "💡 **Did you know?** The word 'bank' comes from the Italian word 'banco', meaning bench. Early bankers conducted business on benches in marketplaces!",
+    "🌍 **On This Day in History (1610):** Galileo Galilei observed the moons of Jupiter, proving not everything orbits Earth. A reminder that challenging assumptions leads to breakthroughs! 🔭",
     
-    "🎯 **Reconciliation Pro Tip:** The best time to reconcile is when your coffee is hot and your inbox is not. ☕",
+    "🧮 **On This Day (1931):** Kurt Gödel published his Incompleteness Theorems, proving that in any mathematical system, there are true statements that cannot be proven. Mind-blowing math at its finest! 🤯",
     
-    "📊 **Fun Fact:** Double-entry bookkeeping was invented in 1494 by Luca Pacioli, a friend of Leonardo da Vinci. Yes, accounting is Renaissance-level cool! 🎨",
+    "💡 **Historical Fact:** In 1202, Leonardo Fibonacci introduced Hindu-Arabic numerals to Europe. Before that, try doing accounting with Roman numerals (MMXXV ÷ XII = ?)! Thanks, Fibonacci! 📜",
     
-    "💰 **Money Trivia:** The average $1 bill lasts only 18 months in circulation. Good thing we work with digital transactions! 💻",
+    "🔢 **Mathematical Beauty:** The number π (3.14159...) has been calculated to over 62 trillion digits. Yet we only need 39 digits to calculate the circumference of the observable universe to the accuracy of a hydrogen atom! 🌌",
     
-    "🔢 **Number Nerds:** The probability of your transactions balancing perfectly on first try is like finding a unicorn. But we do it anyway! 🦄",
+    "📊 **Banking History:** Double-entry bookkeeping was invented in 1494 by Luca Pacioli, a friend of Leonardo da Vinci. Yes, accounting is literally Renaissance-level cool! 🎨",
     
-    "⚡ **Productivity Hack:** Studies show that reconciling in 25-minute focused blocks (Pomodoro technique) increases accuracy by 40%. Try it! 🍅",
+    "🚀 **Tech Milestone:** The first computer bug was an actual moth found in Harvard's Mark II computer in 1947. Grace Hopper taped it in the logbook with the note 'First actual case of bug being found.' 🦋",
     
-    "🎲 **Random Fact:** The '@' symbol used in email addresses was originally used in accounting to mean 'at the rate of'. Who knew? 📧",
+    "⚛️ **Physics Fun:** The double-slit experiment proves light acts as both a wave AND a particle. Quantum mechanics is weird, but it's the reason your computer works! 💻",
     
-    "🏦 **Banking History:** The first ATM was installed in London in 1967. Now we have AI predicting transactions. The future is now! 🤖",
+    "🌟 **Astronomical Scale:** Light from the Sun takes 8 minutes and 20 seconds to reach Earth. That means we see the Sun as it was 8 minutes ago. Time travel is real! ⏰",
     
-    "☕ **Motivational Quote:** 'Accounting is the language of business.' - Warren Buffett. And we're fluent! 💪",
+    "🧬 **Biology Fact:** You share about 60% of your DNA with bananas. Despite this, bananas are terrible at reconciliation. You're doing great! 🍌",
     
-    "🎯 **Daily Wisdom:** Behind every reconciled transaction is a reconciliation hero. That's you! Keep being awesome! ⭐",
+    "💰 **Financial Innovation:** The concept of paper money was first used in China during the Tang Dynasty (618-907 AD). Europe didn't adopt it until the 17th century! 📜",
     
-    "🧮 **Math Magic:** The number 1,729 is known as the Hardy-Ramanujan number. It's the smallest number that can be expressed as the sum of two cubes in two different ways. Cool, right? 🤓",
+    "🎯 **Productivity Science:** The human brain can focus for about 90-120 minutes before needing a break. Take breaks strategically—your accuracy will thank you! 🧠",
     
-    "💡 **Pro Insight:** 80% of reconciliation errors are caught within the first 5 transactions reviewed. Start strong! 💪",
+    "🏦 **Banking Milestone:** The first ATM was installed in London in 1967. Now we have AI predicting transactions in milliseconds. The future arrived fast! 🤖",
     
-    "🎊 **Celebration Mode:** Every transaction you reconcile correctly is a tiny victory. Collect them all like Pokémon! 🏆",
+    "📐 **Geometry Wonder:** Euclid's 'Elements' (300 BC) is the most influential mathematics textbook ever written. It was used for over 2,000 years. Talk about standing the test of time! 📚",
     
-    "🌟 **Fun Challenge:** Can you spot patterns in today's transactions? Your brain is an amazing pattern-recognition machine! 🧠",
+    "🔬 **Scientific Method:** Philosopher Karl Popper argued that for a theory to be scientific, it must be falsifiable. This principle revolutionized how we think about knowledge! 🎓",
     
-    "⏰ **Time Saver:** Keyboard shortcuts can save you 8 days per year. That's a whole week of vacation! Learn one new shortcut today. ⌨️",
+    "⚡ **Energy Insight:** Einstein's E=mc² means the energy in a single raisin could power New York City for a day (if we could convert it all). Physics is wild! ⚡",
+    
+    "🌊 **Wave-Particle Duality:** Light travels at 299,792,458 meters per second. Nothing can go faster. Not even that urgent Slack message from your manager! 💬",
+    
+    "🎲 **Probability Theory:** The birthday paradox: In a room of just 23 people, there's a 50% chance two share a birthday. In 70 people, it's 99.9%! Math is counterintuitive. 🎂",
+    
+    "🧮 **Ancient Computing:** The Antikythera mechanism (100 BC) was an ancient Greek analog computer used to predict astronomical positions. Ancient tech was surprisingly sophisticated! ⚙️",
+    
+    "💡 **Invention Story:** The decimal point was first used by John Napier in 1614. Before that, financial calculations were... interesting. Thanks, John! 📍",
+    
+    "🌐 **Network Effect:** Metcalfe's Law states that a network's value is proportional to the square of its users. Your collaboration makes the team exponentially more valuable! 🤝",
 ]
 
 
