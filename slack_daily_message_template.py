@@ -8,9 +8,114 @@ Author: Yarkin Akcil
 Date: October 7, 2025
 """
 
+from datetime import datetime
 from agent_sop_mapping import AGENT_SOP_MAPPING
 
-def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None):
+
+def is_us_banking_holiday(date=None):
+    """
+    Check if a given date is a US banking holiday.
+    
+    Args:
+        date: datetime object (default: today)
+    
+    Returns:
+        Tuple: (is_holiday, holiday_name)
+    """
+    if date is None:
+        date = datetime.now()
+    
+    month = date.month
+    day = date.day
+    weekday = date.weekday()  # Monday=0, Sunday=6
+    
+    # Fixed date holidays
+    fixed_holidays = {
+        (1, 1): "New Year's Day",
+        (7, 4): "Independence Day",
+        (11, 11): "Veterans Day",
+        (12, 25): "Christmas Day",
+    }
+    
+    if (month, day) in fixed_holidays:
+        return True, fixed_holidays[(month, day)]
+    
+    # Floating holidays (calculated)
+    # Martin Luther King Jr. Day: 3rd Monday of January
+    if month == 1 and weekday == 0:
+        if 15 <= day <= 21:
+            return True, "Martin Luther King Jr. Day"
+    
+    # Presidents' Day: 3rd Monday of February
+    if month == 2 and weekday == 0:
+        if 15 <= day <= 21:
+            return True, "Presidents' Day"
+    
+    # Memorial Day: Last Monday of May
+    if month == 5 and weekday == 0:
+        if day >= 25:
+            return True, "Memorial Day"
+    
+    # Labor Day: 1st Monday of September
+    if month == 9 and weekday == 0:
+        if day <= 7:
+            return True, "Labor Day"
+    
+    # Columbus Day: 2nd Monday of October
+    if month == 10 and weekday == 0:
+        if 8 <= day <= 14:
+            return True, "Columbus Day"
+    
+    # Thanksgiving: 4th Thursday of November
+    if month == 11 and weekday == 3:  # Thursday
+        if 22 <= day <= 28:
+            return True, "Thanksgiving"
+    
+    return False, None
+
+
+def get_daily_greeting(date=None):
+    """
+    Get personalized greeting based on day of week and holidays.
+    
+    Args:
+        date: datetime object (default: today)
+    
+    Returns:
+        String with greeting
+    """
+    if date is None:
+        date = datetime.now()
+    
+    # Check for US banking holiday
+    is_holiday, holiday_name = is_us_banking_holiday(date)
+    
+    if is_holiday:
+        return f"🎉 Happy {holiday_name}! 🎉"
+    
+    # Regular day greetings
+    day_names = [
+        "Monday", "Tuesday", "Wednesday", "Thursday", 
+        "Friday", "Saturday", "Sunday"
+    ]
+    
+    day_name = day_names[date.weekday()]
+    
+    # Special messages for each day
+    day_messages = {
+        "Monday": "Happy Monday! ☕",
+        "Tuesday": "Happy Tuesday! 💪",
+        "Wednesday": "Happy Wednesday! 🐪",  # Hump day
+        "Thursday": "Happy Thursday! 🎯",
+        "Friday": "Happy Friday! 🎊",
+        "Saturday": "Happy Saturday! 🌞",
+        "Sunday": "Happy Sunday! 🌅",
+    }
+    
+    return day_messages.get(day_name, f"Happy {day_name}!")
+
+
+def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None, date=None):
     """
     Generate daily reconciliation message for Slack.
     
@@ -20,12 +125,19 @@ def generate_daily_recon_message(agent_counts, high_value_icp_transactions=None)
         high_value_icp_transactions: List of dicts with high-value ICP details
                      Example: [{'agent': 'Nium Payment', 'amount': 450000, 
                                'description': 'DLOCAL PAYMENT', 'id': '12345'}]
+        date: datetime object (default: today)
     
     Returns:
         String with formatted Slack message
     """
     
-    message = "🎯 **Hey Platform Operations!**\n\n"
+    if date is None:
+        date = datetime.now()
+    
+    # Get personalized greeting
+    greeting = get_daily_greeting(date)
+    
+    message = f"🎯 **Hey Platform Operations! {greeting}**\n\n"
     message += "Our AI has identified today's transactions as:\n\n"
     
     # Sort agents by count (descending)
