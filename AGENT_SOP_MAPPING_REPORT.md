@@ -26,6 +26,11 @@
 1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
 2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
 ### 2. **Recovery Wire**
@@ -45,6 +50,11 @@
 1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
 2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
 ## 🟠 HIGH PRIORITY AGENTS (6)
@@ -61,11 +71,16 @@
 - Verify Nium payment details
 - Match with contractor payment records
 - Check for proper NIUM descriptor
-- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+- If amount > $300K, escalate using Cross-Functional Stakeholders process
 
 **Confluence SOPs:**
 1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
 2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -81,7 +96,7 @@
 - Verify paired transaction exists with matching amount
 - Confirm both legs of the transfer (ICP → Ops, Ops → ICP)
 - Match with internal funding records
-- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
+- If amount > $300K, escalate using Cross-Functional Stakeholders process
 
 **Note:** Rare but financially critical - requires paired transaction logic
 
@@ -89,9 +104,14 @@
 1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
 2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
-### 5. **NY WH** (New York Withholding Tax)
+### 5. **NY WH**
 **Frequency:** MEDIUM | **Criticality:** HIGH
 
 **Labeling Rules:**
@@ -106,9 +126,13 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
-### 6. **NY UI** (New York Unemployment Insurance)
+### 6. **NY UI**
 **Frequency:** MEDIUM | **Criticality:** HIGH
 
 **Labeling Rules:**
@@ -123,9 +147,13 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
-### 7. **MT WH** (Montana Withholding)
+### 7. **MT WH**
 **Frequency:** LOW | **Criticality:** HIGH
 
 **Labeling Rules:**
@@ -140,9 +168,13 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
-### 8. **PA UI** (Pennsylvania Unemployment Insurance)
+### 8. **PA UI**
 **Frequency:** LOW | **Criticality:** HIGH
 
 **Labeling Rules:**
@@ -157,29 +189,15 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
 ## 🟡 MEDIUM PRIORITY AGENTS (10)
 
-### 9. **ACH**
-**Frequency:** HIGH | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Payment Method 10 (ACH External) - high confidence
-- Payment Method 4 (ACH) - 97.1% confidence
-- NOT Company Balance Transfer (discontinued)
-
-**Reconciliation Steps:**
-- Verify ACH transaction details
-- Match with expected ACH payments
-- Check payment method classification
-
-**Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 10. **Treasury Transfer**
+### 9. **Treasury Transfer**
 **Frequency:** MEDIUM | **Criticality:** MEDIUM
 
 **Labeling Rules:**
@@ -197,129 +215,13 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
----
-
-### 11. **ZBT** (Zero Balance Transfer)
-**Frequency:** MEDIUM | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Payment Method 12 (definitive)
-- Zero Balance Transfer operations
-
-**Reconciliation Steps:**
-- Verify ZBT sweep configuration
-- Match with expected balance transfers
-
-**Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 12. **Check**
-**Frequency:** MEDIUM | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Payment Method 2 (Check)
-- Description contains 'check' patterns
-
-**Reconciliation Steps:**
-- Verify check number and amount
-- Match with check register
-- Confirm payee information
-
-**Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 13. **BRB**
-**Frequency:** MEDIUM | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Account 26 (Blueridge Operations)
-- Amount > $0.50
-- If description has 'check' or 'interest', label accordingly
-
-**Reconciliation Steps:**
-- Verify BRB transaction details
-- Match with Blueridge records
-
-**Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 14. **ICP Return**
-**Frequency:** LOW | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Description: 'TS FX ACCOUNTS RECEIVABLE'
-- Description: 'JPV' followed by numbers (ticket number, e.g., 'JPV230104')
-
-**Reconciliation Steps:**
-- Verify ICP return reason
-- Match with original ICP transaction
-- Check ticket number in Jira
-- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
-
-**Confluence SOPs:**
-1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
 2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
-### 15. **ICP Refund**
-**Frequency:** LOW | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Description contains 'WISE'
-- Amount typically < $50K
-
-**Reconciliation Steps:**
-- Verify refund reason and amount
-- Match with original ICP payment
-- **If amount > $300K, escalate using Cross-Functional Stakeholders process**
-
-**Confluence SOPs:**
-1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
-2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 16. **York Adams** (Local Tax)
-**Frequency:** LOW | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Description: 'York Adams Tax' or 'York Adams Tax EIT'
-- Consolidated label (previously separate)
-
-**Reconciliation Steps:**
-- Verify York Adams tax payment
-- Match with local tax records
-
-**Confluence SOPs:**
-1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 17. **LOI** (Letter of Indemnity)
-**Frequency:** LOW | **Criticality:** MEDIUM
-
-**Labeling Rules:**
-- Description: 'CREDIT MEMO' + PNC account (e.g., Account 16)
-
-**Reconciliation Steps:**
-- Verify LOI (Letter of Indemnity) details
-- Match with PNC credit memo records
-- Follow Letter of Indemnity Process and Reconciliation SOP
-
-**Confluence SOPs:**
-1. [Letter of Indemnity Process and Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554/Letter+of+Indemnity+Process+and+Reconciliation)
-2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
-
----
-
-### 18. **Money Market Transfer**
+### 10. **Money Market Transfer**
 **Frequency:** LOW | **Criticality:** MEDIUM
 
 **Labeling Rules:**
@@ -335,6 +237,183 @@
 
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 11. **ZBT**
+**Frequency:** MEDIUM | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Payment Method 12 (definitive - this is ZBT by definition)
+- Zero Balance Transfer operations
+
+**Reconciliation Steps:**
+- Verify ZBT sweep configuration
+- Match with expected balance transfers
+
+**Confluence SOPs:**
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 12. **BRB**
+**Frequency:** MEDIUM | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Account 26 (Blueridge Operations)
+- Amount > $0.50
+- If description has 'check' or 'interest', label accordingly
+
+**Reconciliation Steps:**
+- Verify BRB transaction details
+- Match with Blueridge records
+
+**Confluence SOPs:**
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 13. **ACH**
+**Frequency:** HIGH | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Payment Method 10 (ACH External) - high confidence
+- Payment Method 4 (ACH) - 97.1% confidence
+- NOT Company Balance Transfer (discontinued)
+
+**Reconciliation Steps:**
+- Verify ACH transaction details
+- Match with expected ACH payments
+- Check payment method classification
+
+**Confluence SOPs:**
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 14. **Check**
+**Frequency:** MEDIUM | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Payment Method 2 (Check)
+- Description contains 'check' patterns
+
+**Reconciliation Steps:**
+- Verify check number and amount
+- Match with check register
+- Confirm payee information
+
+**Confluence SOPs:**
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 15. **ICP Return**
+**Frequency:** LOW | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Description: 'TS FX ACCOUNTS RECEIVABLE'
+- Description: 'JPV' followed by numbers (ticket number, e.g., 'JPV230104')
+
+**Reconciliation Steps:**
+- Verify ICP return reason
+- Match with original ICP transaction
+- Check ticket number in Jira
+- If amount > $300K, escalate using Cross-Functional Stakeholders process
+
+**Confluence SOPs:**
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 16. **ICP Refund**
+**Frequency:** LOW | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Description contains 'WISE'
+- Amount typically < $50K
+
+**Reconciliation Steps:**
+- Verify refund reason and amount
+- Match with original ICP payment
+- If amount > $300K, escalate using Cross-Functional Stakeholders process
+
+**Confluence SOPs:**
+1. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders) *(for >$300K)*
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 17. **York Adams**
+**Frequency:** LOW | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Description: 'York Adams Tax' or 'York Adams Tax EIT'
+- Consolidated label (previously separate)
+
+**Reconciliation Steps:**
+- Verify York Adams tax payment
+- Match with local tax records
+
+**Confluence SOPs:**
+1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+---
+
+### 18. **LOI**
+**Frequency:** LOW | **Criticality:** MEDIUM
+
+**Labeling Rules:**
+- Description: 'CREDIT MEMO' + PNC account (e.g., Account 16)
+
+**Reconciliation Steps:**
+- Verify LOI (Letter of Indemnity) details
+- Match with PNC credit memo records
+- Follow Letter of Indemnity Process and Reconciliation SOP
+
+**Confluence SOPs:**
+1. [Letter of Indemnity Process and Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554/Letter+of+Indemnity+Process+and+Reconciliation)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Letter of Indemnity Process and Reconciliation](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554/Letter+of+Indemnity+Process+and+Reconciliation)
+3. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -356,6 +435,10 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
 ### 20. **Interest Adjustment**
@@ -375,6 +458,10 @@
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
 ---
 
 ### 21. **Lockbox**
@@ -389,6 +476,10 @@
 
 **Confluence SOPs:**
 1. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
+
+**Also, suggested SOPs to check:**
+1. [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+2. [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
 ---
 
@@ -412,6 +503,12 @@
 
 ## 🎯 KEY MAPPING RULES
 
+### 🏆 **Master SOP (All Agents)**
+**Daily Operations: How to Label & Reconcile** is the primary SOP for all transactions:
+- [Daily Operations: How to Label & Reconcile](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232/Daily+Operations+How+to+Label+Reconcile)
+
+This comprehensive guide covers all transaction types and labeling procedures.
+
 ### 🚨 **Escalation Rule (>$300K)**
 For ICP-related agents with amounts **over $300,000**, use:
 - [Escalating Reconciliation Issues to Cross-Functional Stakeholders](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders)
@@ -428,7 +525,7 @@ For treasury-related transactions, refer to Unintended Overpayment Account Use C
 - Money Market Transfer
 - Interest Adjustment (Interest Income)
 
-### 🔄 **Default Reconciliation SOP**
+### 🔄 **Default Baseline SOP**
 All agents include as baseline:
 - [Daily Bank Transaction Reconciliation by Bank Transaction Type](https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type)
 
@@ -460,9 +557,11 @@ These agents use general reconciliation procedures only:
 • Check for 1TRV code compliance
 
 📚 Relevant SOPs:
-1. Escalating Reconciliation Issues to Cross-Functional Stakeholders
+1. Daily Operations: How to Label & Reconcile
+   https://gustohq.atlassian.net/.../535003232/...
+2. Escalating Reconciliation Issues to Cross-Functional Stakeholders
    https://gustohq.atlassian.net/.../460194134/...
-2. Daily Bank Transaction Reconciliation by Bank Transaction Type
+3. Daily Bank Transaction Reconciliation by Bank Transaction Type
    https://gustohq.atlassian.net/.../169411126/...
 
 ⚡ Quick Actions:
