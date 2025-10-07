@@ -35,17 +35,14 @@ ACCOUNT_MAPPING = {
     'Chase Wire In': 9,
     'SVB Wire In': 10,
     'Sunrise': 11,  # Also 14, 15
-    'Chase Flex Pay Revenue': 13,
     'PNC Operations': 16,
-    'PNC Corporate Cash': 17,
     'PNC Customer Wire Ins': 18,
     'BRB Customer Operations Old': 19,
-    'BRB Corporate Cash': 20,
     'Chase International Contractor Payments': 21,
-    'Brex Operations': 22,
     'BRB Customer Operations': 26,
-    'Grasshopper Operations': 31,
 }
+
+# Note: Any account with "Corporate" in name is OUT OF SCOPE
 
 # Reverse mapping for display
 PAYMENT_METHOD_REVERSE = {v: k for k, v in PAYMENT_METHOD_MAPPING.items()}
@@ -66,6 +63,21 @@ def map_payment_method(pm_text: str) -> int:
     return PAYMENT_METHOD_MAPPING.get(pm_text, 8)  # Default: 8 (unknown)
 
 
+def is_corporate_account(account_text: str) -> bool:
+    """
+    Check if account is corporate (out of scope).
+    Any account with "Corporate" in the name is ignored.
+    
+    Args:
+        account_text: Account text
+    
+    Returns:
+        True if corporate account (should be ignored)
+    """
+    account_text = str(account_text).strip()
+    return 'corporate' in account_text.lower()
+
+
 def map_account(account_text: str) -> int:
     """
     Convert account text to numeric code.
@@ -74,9 +86,14 @@ def map_account(account_text: str) -> int:
         account_text: Account text (e.g., "Chase Wire In")
     
     Returns:
-        Numeric code (e.g., 7)
+        Numeric code (e.g., 9), or -1 if corporate account
     """
     account_text = str(account_text).strip()
+    
+    # Check if corporate (out of scope)
+    if is_corporate_account(account_text):
+        return -1  # Special code for corporate accounts
+    
     return ACCOUNT_MAPPING.get(account_text, 0)  # Default: 0 (unknown)
 
 
