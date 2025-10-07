@@ -73,5 +73,5 @@ mcp-cache/
 # ML Models
 *.pkl
 
-# Data files
+# Data files (stored in ~/Desktop/cursor_data)
 *.csv
