@@ -15,9 +15,9 @@ from agent_sop_mapping import AGENT_SOP_MAPPING
 
 # Fun facts and interesting tidbits for daily messages
 DAILY_FUN_FACTS = [
-    "🌍 **On This Day in History (1610):** Galileo Galilei observed the moons of Jupiter, proving not everything orbits Earth. A reminder that challenging assumptions leads to breakthroughs! 🔭",
+    "🌍 **On This Day - January 7th:** In 1610, Galileo Galilei observed the moons of Jupiter, proving not everything orbits Earth. A reminder that challenging assumptions leads to breakthroughs! 🔭",
     
-    "🧮 **On This Day (1931):** Kurt Gödel published his Incompleteness Theorems, proving that in any mathematical system, there are true statements that cannot be proven. Mind-blowing math at its finest! 🤯",
+    "🧮 **On This Day - September 14th:** In 1931, Kurt Gödel published his Incompleteness Theorems, proving that in any mathematical system, there are true statements that cannot be proven. Mind-blowing math at its finest! 🤯",
     
     "💡 **Historical Fact:** In 1202, Leonardo Fibonacci introduced Hindu-Arabic numerals to Europe. Before that, try doing accounting with Roman numerals (MMXXV ÷ XII = ?)! Thanks, Fibonacci! 📜",
     
