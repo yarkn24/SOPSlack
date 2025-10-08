@@ -7,24 +7,225 @@ Generates formatted Slack messages from labeled transactions.
 
 import pandas as pd
 import random
+import json
+import os
 from datetime import datetime
 
-# Fun facts database
+# VARIED FUN FACTS - 50% Finance, 50% Everything Else!
 FUN_FACTS = [
-    ":moneybag: Financial Innovation: The concept of paper money was first used in China during the Tang Dynasty (618-907 AD). Europe didn't adopt it until the 17th century! :scroll:",
-    ":bank: Did you know? The first bank in the United States was the Bank of North America, established in 1781 in Philadelphia! :classical_building:",
-    ":credit_card: Credit Card History: The first credit card was introduced by Diners Club in 1950. It was initially meant for restaurant dining! :fork_and_knife:",
-    ":chart_with_upwards_trend: Stock Market: The New York Stock Exchange was founded in 1792 under a buttonwood tree on Wall Street! :deciduous_tree:",
-    ":coin: Ancient Currency: The first coins were minted in Lydia (modern Turkey) around 600 BC, made from electrum (gold-silver alloy)! :sparkles:",
-    ":dollar: Fun Fact: The dollar sign ($) is believed to have evolved from the Spanish peso symbol! :es:",
-    ":atm: ATM Innovation: The first ATM was installed in London in 1967. The inventor received a gold bar for his idea! :medal:",
-    ":money_with_wings: Paper Bills: U.S. paper currency is actually made of 75% cotton and 25% linen, not paper! :yarn:",
+    # Finance & Banking (50%)
+    ":moneybag: The concept of paper money was first used in China during the Tang Dynasty (618-907 AD)! :scroll:",
+    ":dollar: Roman soldiers were paid in salt - that's where the word 'salary' comes from! :salt:",
+    ":atm: The first ATM was installed in London in 1967. The inventor got a gold bar as reward! :medal:",
+    ":credit_card: The first credit card (Diners Club, 1950) was meant only for restaurants! :fork_and_knife:",
+    ":chart_with_upwards_trend: The NYSE was founded in 1792 under a buttonwood tree on Wall Street! :deciduous_tree:",
+    ":bank: The first U.S. bank opened in Philadelphia in 1781 - Bank of North America! :classical_building:",
+    ":coin: The first coins (600 BC) were made in Turkey from electrum (gold-silver mix)! :sparkles:",
+    ":money_with_wings: U.S. paper money is 75% cotton, 25% linen - not actually paper! :yarn:",
+    ":heavy_dollar_sign: Hungary had inflation so bad in 1946 that prices doubled every 15 hours! :chart_with_downwards_trend:",
+    ":scales: Double-entry bookkeeping was invented in 1494 by Italian mathematician Luca Pacioli! :it:",
+    ":receipt: The first paper check was used in ancient Persia around 321 BC! :writing_hand:",
+    ":briefcase: The first stock exchange opened in Amsterdam in 1602 for Dutch East India Company! :netherlands:",
+    ":closed_lock_with_key: Swiss banking secrecy laws started in 1713! :switzerland:",
+    ":revolving_hearts: Bitcoin's creator, Satoshi Nakamoto, identity remains unknown! :detective:",
+    ":classical_building: The Fed was created after a secret 1913 meeting on Jekyll Island! :island:",
+    
+    # Science & Discovery (20%)
+    ":telescope: Galileo discovered Jupiter's 4 largest moons in 1610! Changed everything! :milky_way:",
+    ":atom_symbol: John Dalton discovered the atom in 1808, but we didn't see one until 1981! :microscope:",
+    ":apple: Newton's apple incident (1666) led to the theory of gravity! :green_apple:",
+    ":dna: DNA's double helix was discovered in 1953 by Watson & Crick! :test_tube:",
+    ":bulb: Edison tested 3,000+ designs before perfecting the light bulb! :zap:",
+    ":scroll: Archimedes shouted 'Eureka!' discovering water displacement in his bath! :bathtub:",
+    
+    # History & Philosophy (15%)
+    ":classical_building: Aristotle tutored Alexander the Great and founded the first university! :books:",
+    ":pyramid: The Great Pyramid was Earth's tallest structure for 3,800 years! :egypt:",
+    ":books: Alexandria's Library held 700,000 scrolls before burning! :fire:",
+    ":boat: Cleopatra lived closer to Moon landing than to Great Pyramid construction! :calendar:",
+    ":musical_note: The shortest war (Anglo-Zanzibar, 1896) lasted 38-45 minutes! :hourglass:",
+    
+    # Space (10%)
+    ":rocket: Voyager 1 (launched 1977) is 15 billion miles away and still transmitting! :satellite:",
+    ":moon: 600 million people watched Neil Armstrong's first Moon steps! :tv:",
+    ":ringed_planet: Saturn's rings are billions of ice chunks, some tiny as sand! :snowflake:",
+    ":clock3: A day on Venus (243 Earth days) is longer than its year! :dizzy_face:",
+    
+    # Nature & Random (5%)
+    ":honey_pot: Honey never spoils! 3,000-year-old honey from Egypt was still edible! :bee:",
+    ":octopus: Octopuses have 3 hearts and blue blood! :ocean:",
+    ":earth_americas: More trees on Earth than stars in Milky Way! (3T vs 400B) :evergreen_tree:",
+    ":rainbow: Rainbows are full circles - we just see arcs from ground! :sunny:",
+    ":coffee: Coffee was discovered by a shepherd whose goats ate berries and got energetic! :goat:",
+    ":computer: The first computer bug was an actual moth found in 1947! :bug:",
 ]
+
+# Greeting variations - Dynamic & Creative!
+GREETINGS = [
+    "Hey Platform Operations! Happy {day}! :coffee:",
+    "Good morning Platform Ops! Happy {day}! :sunrise:",
+    "Hello team! Happy {day}! :wave:",
+    "Yo Platform Operations! Happy {day}! :fire:",
+    "Hey folks! Happy {day}! :rocket:",
+    "Morning Platform Ops! Happy {day}! :sunny:",
+    "Greetings Platform Ops! Hope your {day} is going great! :star2:",
+    "What's up team! Happy {day}! :sunglasses:",
+    "Hey everyone! Happy {day}! Let's do this! :muscle:",
+    "Good vibes Platform Ops! Happy {day}! :sparkles:",
+]
+
+# Special day celebrations (US-focused, dynamically checked)
+def get_special_day_message():
+    """Get special message if today is a notable US holiday"""
+    today = datetime.now()
+    month = today.month
+    day = today.day
+    
+    # US Holidays & Special Days
+    special_days = {
+        # Major US Holidays
+        (1, 1): "Happy New Year! :tada: Fresh start for reconciliations!",
+        (1, 20): "Happy Martin Luther King Jr. Day! :fist: Dreaming of perfectly balanced books!",
+        (2, 14): "Happy Valentine's Day! :heart: We love good recons!",
+        (2, 19): "Happy Presidents' Day! :flag-us: Presidential-level accuracy in recons!",
+        (3, 17): "Happy St. Patrick's Day! :four_leaf_clover: Luck of the Irish for today's recons!",
+        (5, 27): "Happy Memorial Day! :flag-us: Honoring accuracy and dedication!",
+        (6, 19): "Happy Juneteenth! :star: Freedom and accurate books for all!",
+        (7, 4): "Happy Independence Day! :flag-us::fireworks: Freedom through accurate reconciliations!",
+        (9, 2): "Happy Labor Day! :hammer_and_wrench: Celebrating the hard work of reconciliation!",
+        (11, 11): "Happy Veterans Day! :military_medal: Precision and discipline in our recons!",
+        (11, 28): "Happy Thanksgiving! :turkey: Grateful for accurate recons and great teammates!",
+        (12, 25): "Merry Christmas! :christmas_tree: Best gift: balanced books!",
+        (12, 31): "Happy New Year's Eve! :champagne: Finishing the year strong!",
+        
+        # Fun Days
+        (3, 14): "Happy Pi Day! :pie: 3.14159... transactions to reconcile!",
+        (4, 1): "Happy April Fools! :clown_face: But these transactions are 100% real!",
+        (4, 22): "Happy Earth Day! :earth_americas: Sustainable reconciliation practices!",
+        (5, 4): "May the Fourth be with you! :jedi: Strong recon skills you have!",
+        (10, 3): "Happy Mean Girls Day! :pink_heart: On Wednesdays we wear pink and reconcile!",
+        (10, 31): "Happy Halloween! :jack_o_lantern: These transactions aren't scary... or are they?",
+    }
+    
+    return special_days.get((month, day), None)
+
+
+def get_tomorrow_holiday_reminder():
+    """Get reminder about tomorrow's holiday (1 day before)"""
+    today = datetime.now()
+    # Check tomorrow
+    from datetime import timedelta
+    tomorrow = today + timedelta(days=1)
+    month = tomorrow.month
+    day = tomorrow.day
+    
+    # Holiday explanations (max 3 sentences)
+    holiday_info = {
+        (1, 1): ":calendar: Tomorrow is New Year's Day! We celebrate the beginning of a fresh year with new opportunities and goals. It's a federal holiday in the US!",
+        (1, 20): ":calendar: Tomorrow is Martin Luther King Jr. Day! We honor Dr. King's legacy and his fight for civil rights and equality. It became a federal holiday in 1986!",
+        (2, 14): ":calendar: Tomorrow is Valentine's Day! A day to celebrate love and appreciation for the people we care about. Fun fact: Americans spend over $20 billion on Valentine's Day!",
+        (2, 19): ":calendar: Tomorrow is Presidents' Day! We honor all US presidents, especially George Washington and Abraham Lincoln. It's always celebrated on the third Monday of February!",
+        (3, 17): ":calendar: Tomorrow is St. Patrick's Day! Originally celebrating Ireland's patron saint, it's now a global celebration of Irish culture. Fun fact: Chicago dyes its river green!",
+        (5, 27): ":calendar: Tomorrow is Memorial Day! We honor and remember the brave men and women who died serving in the US military. It became a federal holiday in 1971!",
+        (6, 19): ":calendar: Tomorrow is Juneteenth! Commemorates the end of slavery in the US on June 19, 1865. It became a federal holiday in 2021!",
+        (7, 4): ":calendar: Tomorrow is Independence Day! The US declared independence from Great Britain on July 4, 1776. It's America's birthday - celebrated with fireworks, BBQs, and parades!",
+        (9, 2): ":calendar: Tomorrow is Labor Day! We celebrate the contributions and achievements of American workers. It marks the unofficial end of summer!",
+        (11, 11): ":calendar: Tomorrow is Veterans Day! We honor all military veterans who served in the US Armed Forces. Originally called Armistice Day, marking the end of WWI!",
+        (11, 28): ":calendar: Tomorrow is Thanksgiving! Americans gather with family to give thanks and share a feast. The first Thanksgiving was celebrated by Pilgrims in 1621!",
+        (12, 25): ":calendar: Tomorrow is Christmas! Christians celebrate the birth of Jesus Christ, and it's a federal holiday. It's become a major cultural celebration with gift-giving and family gatherings!",
+        (12, 31): ":calendar: Tomorrow is New Year's Eve! The last day of the year, celebrated with parties and countdowns to midnight. It's time to reflect on the past year and prepare for the new one!",
+        (3, 14): ":calendar: Tomorrow is Pi Day! Mathematicians celebrate π (3.14159...) on March 14 (3/14). Fun fact: It's also Albert Einstein's birthday!",
+        (4, 1): ":calendar: Tomorrow is April Fools' Day! A day of pranks and jokes celebrated in many countries. The origin is unclear, but it's been around since the 1500s!",
+        (4, 22): ":calendar: Tomorrow is Earth Day! Founded in 1970, it's now a global movement to support environmental protection. Over 1 billion people participate worldwide!",
+        (5, 4): ":calendar: Tomorrow is May 4th! Star Wars fans celebrate with 'May the Fourth be with you' (a play on 'May the Force be with you'). It's become an unofficial Star Wars Day!",
+        (10, 3): ":calendar: Tomorrow is Mean Girls Day! In the movie, Aaron asks Cady what day it is: 'It's October 3rd.' It's become a pop culture phenomenon!",
+        (10, 31): ":calendar: Tomorrow is Halloween! Originating from ancient Celtic harvest festivals, it's now celebrated with costumes and candy. Americans spend over $10 billion on Halloween!",
+    }
+    
+    return holiday_info.get((month, day), None)
+
+
+# Track used fun facts to ensure uniqueness
+USED_FACTS_FILE = os.path.join(os.path.dirname(__file__), 'used_fun_facts.json')
+
+def get_unique_fun_fact():
+    """
+    Get a unique fun fact that hasn't been used recently.
+    Tracks usage in JSON file to avoid repetition.
+    """
+    # Load used facts
+    try:
+        with open(USED_FACTS_FILE, 'r') as f:
+            used_facts = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        used_facts = []
+    
+    # Find unused facts
+    unused_facts = [f for f in FUN_FACTS if f not in used_facts]
+    
+    # If all used, reset!
+    if not unused_facts:
+        print("   🔄 All fun facts used! Resetting for variety...")
+        used_facts = []
+        unused_facts = FUN_FACTS.copy()
+    
+    # Select random unused fact
+    selected_fact = random.choice(unused_facts)
+    
+    # Mark as used
+    used_facts.append(selected_fact)
+    
+    # Save updated list
+    with open(USED_FACTS_FILE, 'w') as f:
+        json.dump(used_facts, f, indent=2)
+    
+    return selected_fact
+
+# Warning messages for high count (>100)
+HIGH_COUNT_WARNINGS = [
+    ":rotating_light: Be careful for this agent - something looks broken!",
+    ":rotating_light: Whoa! That's a lot! Please investigate this agent.",
+    ":rotating_light: Alert! Unusually high volume - might need attention!",
+    ":rotating_light: This seems unusual! Better check what's going on.",
+    ":rotating_light: High volume alert! Something might be off here.",
+]
+
+# Warning messages for medium count (>50)
+MEDIUM_COUNT_WARNINGS = [
+    ":warning: Hmm there are many of those. Please ping leads if you need any help.",
+    ":warning: That's quite a few! Reach out to leads if needed.",
+    ":warning: Higher than usual. Feel free to ask for assistance!",
+    ":warning: Notable volume today. Don't hesitate to reach out!",
+    ":warning: A bit more than typical. Leads are here to help!",
+]
+
+# High-value alert messages
+HIGH_VALUE_ALERTS = [
+    ":warning: This can indicate there is a batch remained unreconciled.",
+    ":warning: High-value transaction! Please verify batch reconciliation.",
+    ":warning: Alert: Check if this is part of an unreconciled batch.",
+    ":warning: Attention needed: Verify batch completion status.",
+    ":warning: Important: Ensure all related batches are reconciled.",
+]
+
+# Closing messages
+CLOSING_MESSAGES = [
+    "Good luck with today's reconciliation! :rocket:",
+    "Happy reconciling! You've got this! :muscle:",
+    "Let's crush it today! :fire:",
+    "Have a great reconciliation day! :star2:",
+    "Rock those recons! :guitar:",
+    "May the recon force be with you! :jedi:",
+]
+
+# Header emojis
+HEADER_EMOJIS = [":dart:", ":target:", ":bullseye:", ":direct_hit:"]
 
 
 def generate_slack_message(df, high_value_threshold=300000):
     """
     Generate formatted Slack message from labeled transactions.
+    VARIED & CREATIVE - Each message is unique!
     
     Args:
         df: DataFrame with columns: id, predicted_agent, amount, description, sop_links
@@ -38,31 +239,48 @@ def generate_slack_message(df, high_value_threshold=300000):
     days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     today = days[datetime.now().weekday()]
     
-    # Header
-    message = f":dart: Hey Platform Operations! Happy {today}! :coffee:\n"
+    # Check for special day
+    special_day = get_special_day_message()
+    
+    # Header with random greeting and emoji
+    header_emoji = random.choice(HEADER_EMOJIS)
+    
+    if special_day:
+        # Use special day message
+        message = f"{header_emoji} {special_day}\n"
+    else:
+        # Use regular greeting
+        greeting = random.choice(GREETINGS).format(day=today)
+        message = f"{header_emoji} {greeting}\n"
+    
     message += "Our AI has identified today's transactions as:\n"
     
     # Count by agent
     agent_counts = df['predicted_agent'].value_counts()
     
-    # Add each agent with special markers
+    # Add each agent with special markers (RANDOMIZED warnings!)
     for agent, count in agent_counts.items():
         message += f"• {agent}: {count} transactions"
         
-        # Add warnings for specific cases
+        # Add warnings for specific cases - VARIED each time!
         if count > 100:
-            message += " :rotating_light: Be careful for this agent - something looks broken!"
+            message += " " + random.choice(HIGH_COUNT_WARNINGS)
         elif count > 50:
-            message += " :warning: Hmm there are many of those. Please ping leads if you need any help."
+            message += " " + random.choice(MEDIUM_COUNT_WARNINGS)
         
         message += "\n"
     
-    # High-value ICP alerts
+    # High-value alerts (EXCLUDING Treasury Transfers!)
+    # Filter for important high-value transactions only
     high_value = df[df['amount'] >= high_value_threshold].copy()
+    
+    # Exclude Treasury Transfer and internal movements from alerts
+    excluded_agents = ['Treasury Transfer', 'Money Market Transfer', 'ZBT', 'ICP Funding']
+    high_value = high_value[~high_value['predicted_agent'].isin(excluded_agents)]
     
     if len(high_value) > 0:
         message += "---\n"
-        message += ":red_circle: High-Value ICP Alert:\n"
+        message += ":red_circle: High-Value Transaction Alert:\n"
         
         for idx, row in high_value.iterrows():
             message += f"• Transaction ID: {row['id']}\n"
@@ -70,20 +288,21 @@ def generate_slack_message(df, high_value_threshold=300000):
             message += f"  Amount: ${row['amount']:,.2f}\n"
             desc = row['description'][:80] + "..." if len(row['description']) > 80 else row['description']
             message += f"  Description: {desc}\n"
-            message += f"  :warning: This can indicate there is a batch remained unreconciled.\n"
+            # VARIED warning message each time!
+            message += f"  {random.choice(HIGH_VALUE_ALERTS)}\n"
     
-    # SOP Links
+    # SOP Links - INTELLIGENTLY SELECTED by AI based on agent mapping!
     message += "---\n"
-    message += ":books: Here are the suggested SOPs for those:\n"
+    message += ":books: Suggested SOPs (precisely tailored by AI for today's agents):\n"
     
-    # Collect unique SOP links
+    # Collect unique SOP links from agent mapping
     unique_sops = set()
     for sop_links in df['sop_links']:
         if pd.notna(sop_links) and 'No SOP' not in str(sop_links):
             for link in str(sop_links).split(' | '):
                 unique_sops.add(link.strip())
     
-    # Add standard SOPs
+    # Add core SOPs that are always relevant
     standard_sops = [
         ("Daily Operations: How to Label & Reconcile", 
          "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"),
@@ -98,12 +317,21 @@ def generate_slack_message(df, high_value_threshold=300000):
     for i, (title, link) in enumerate(standard_sops, 1):
         message += f"{i}. {title}\n   {link}\n"
     
-    # Fun fact
+    # Fun fact OR tomorrow's holiday info (SMART!)
     message += "---\n"
-    message += random.choice(FUN_FACTS) + "\n"
     
-    # Footer
-    message += "Good luck with today's reconciliation! :rocket:\n"
+    # Check if tomorrow is a special day
+    tomorrow_holiday = get_tomorrow_holiday_reminder()
+    
+    if tomorrow_holiday:
+        # Use historical fact about tomorrow's holiday instead of random fun fact
+        message += tomorrow_holiday + "\n"
+    else:
+        # Use regular unique fun fact
+        message += get_unique_fun_fact() + "\n"
+    
+    # Footer (RANDOMIZED closing message!)
+    message += random.choice(CLOSING_MESSAGES) + "\n"
     
     return message
 
