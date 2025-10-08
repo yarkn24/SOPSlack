@@ -61,6 +61,10 @@ try:
     
     print(f"   ✅ Fetched {len(df):,} transactions\n")
     
+    if len(df) == 0:
+        print("⚠️  No transactions to process. Exiting.")
+        exit(0)
+    
 except Exception as e:
     print(f"   ❌ Error: {e}")
     exit(1)
