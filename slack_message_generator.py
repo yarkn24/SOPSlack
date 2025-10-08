@@ -317,8 +317,9 @@ def generate_slack_message(df, high_value_threshold=300000):
     
     message += "Our AI has identified today's transactions as:\n"
     
-    # Count by agent
-    agent_counts = df['predicted_agent'].value_counts()
+    # Count by agent (exclude empty/unlabeled)
+    labeled_df = df[df['predicted_agent'].notna() & (df['predicted_agent'] != '')]
+    agent_counts = labeled_df['predicted_agent'].value_counts()
     
     # Add each agent with special markers (RANDOMIZED warnings!)
     for agent, count in agent_counts.items():
@@ -352,6 +353,20 @@ def generate_slack_message(df, high_value_threshold=300000):
             message += f"  Description: {desc}\n"
             # VARIED warning message each time!
             message += f"  {random.choice(HIGH_VALUE_ALERTS)}\n"
+    
+    # Unlabeled Transactions (only show if any exist)
+    unlabeled_df = df[(df['predicted_agent'].isna()) | (df['predicted_agent'] == '')]
+    if len(unlabeled_df) > 0:
+        message += "---\n"
+        message += ":warning: *Unlabeled Transactions*\n"
+        message += f"Total: {len(unlabeled_df)} transaction(s) not labeled due to business rules\n\n"
+        
+        # Group by labeling_comment if available
+        if 'labeling_comment' in unlabeled_df.columns:
+            comment_counts = unlabeled_df[unlabeled_df['labeling_comment'].notna()]['labeling_comment'].value_counts()
+            for reason, count in comment_counts.items():
+                if reason:  # Only show non-empty reasons
+                    message += f"• {count} transaction(s): {reason}\n"
     
     # SOP Links - INTELLIGENTLY SELECTED by AI based on agent mapping!
     message += "---\n"

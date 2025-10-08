@@ -19,6 +19,7 @@ from predict_with_rules import apply_rules, normalize_label
 from data_mapping import ACCOUNT_MAPPING, PAYMENT_METHOD_MAPPING
 from agent_sop_mapping import get_confluence_links_for_agent
 from slack_message_generator import save_slack_message
+from labeling_rules import should_skip_labeling, get_unlabeled_summary
 
 # Redash configuration
 REDASH_API_KEY = "wPoSJ9zxm7gAu5GYU44w3bY9hBmagjTMg7LfqDBH"
@@ -155,6 +156,18 @@ if len(ml_df) > 0:
 df_pred.loc[rule_mask, 'predicted_agent'] = df_pred.loc[rule_mask, 'rule_pred']
 df_pred.loc[~rule_mask, 'predicted_agent'] = ml_df['ml_pred']
 
+# Apply labeling rules (ZBT, Chase Payroll Account 6 TODAY, etc.)
+print("   🔍 Applying labeling rules...")
+skip_results = df_pred.apply(lambda row: should_skip_labeling(row), axis=1)
+df_pred['skip_labeling'] = skip_results.apply(lambda x: x[0])
+df_pred['skip_reason'] = skip_results.apply(lambda x: x[1])
+
+# Clear predicted_agent for skipped transactions
+skipped_count = df_pred['skip_labeling'].sum()
+if skipped_count > 0:
+    df_pred.loc[df_pred['skip_labeling'], 'predicted_agent'] = ''
+    print(f"   ⚠️  {skipped_count} transaction(s) not labeled (business rules)")
+
 elapsed = time.time() - start_time
 print(f"   ✅ {rule_mask.sum()}/{len(df)} rule-based, {(~rule_mask).sum()}/{len(df)} ML-based")
 print(f"   ✅ Completed in {elapsed:.2f}s\n")
@@ -162,14 +175,24 @@ print(f"   ✅ Completed in {elapsed:.2f}s\n")
 # 5. Prepare output with text values and SOP links
 print("💾 Step 5/5: Preparing output with SOP links...")
 
-# Get SOP links for each predicted agent
+# Get SOP links for each predicted agent (only for labeled ones)
 sop_links = []
-for agent in df_pred['predicted_agent']:
-    links = get_confluence_links_for_agent(agent)
-    if links:
-        sop_links.append(' | '.join(links))  # Multiple links separated by |
+comments = []
+for idx, row in df_pred.iterrows():
+    agent = row['predicted_agent']
+    skip = row['skip_labeling']
+    skip_reason = row['skip_reason']
+    
+    if skip or agent == '':
+        sop_links.append('')  # No SOP for unlabeled
+        comments.append(skip_reason if skip_reason else '')
     else:
-        sop_links.append('No SOP available')
+        links = get_confluence_links_for_agent(agent)
+        if links:
+            sop_links.append(' | '.join(links))
+        else:
+            sop_links.append('No SOP available')
+        comments.append('')
 
 # Create output dataframe with text values
 output_df = pd.DataFrame({
@@ -182,6 +205,7 @@ output_df = pd.DataFrame({
     'predicted_agent': df_pred['predicted_agent'],
     'sop_links': sop_links,
     'prediction_method': ['Rule-based' if r else 'ML-based' for r in rule_mask],
+    'labeling_comment': comments,
 })
 
 # Save CSV to Downloads
