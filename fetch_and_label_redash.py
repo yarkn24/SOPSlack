@@ -212,8 +212,24 @@ elapsed = time.time() - start_time
 print(f"   ✅ Prediction completed in {elapsed:.2f}s ({elapsed/len(df)*1000:.2f}ms per txn)")
 print()
 
-# 5. Save results
-print("💾 Step 5: Saving results...")
+# 5. Convert IDs back to text for output
+print("🔄 Step 5: Converting IDs to text...")
+
+# Convert payment_method ID to text
+df['payment_method_text'] = df['payment_method'].map(PAYMENT_METHOD_MAPPING).fillna('unknown')
+
+# Convert origination_account_id to text
+df['account_text'] = df['origination_account_id'].map(ACCOUNT_MAPPING).fillna('Unknown Account')
+
+# Replace numeric columns with text
+df['payment_method'] = df['payment_method_text']
+df['origination_account_id'] = df['account_text']
+
+# Drop temporary columns
+df = df.drop(columns=['payment_method_text', 'account_text'])
+
+# 6. Save results
+print("💾 Step 6: Saving results...")
 
 output_file = f"redash_labeled_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
 df.to_csv(output_file, index=False)
@@ -221,7 +237,7 @@ df.to_csv(output_file, index=False)
 print(f"   ✅ Saved to: {output_file}")
 print()
 
-# 6. Summary
+# 7. Summary
 print("=" * 100)
 print("📊 PREDICTION SUMMARY")
 print("=" * 100)
