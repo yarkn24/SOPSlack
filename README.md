@@ -38,10 +38,17 @@ python3 code7.py
 
 ### 🏦 Banking Holiday System
 - **11 US Federal Banking Holidays** tracked
-- **TODAY is holiday** → Funny "working alone" message
+- **TODAY is holiday** → Positive celebration message
 - **TOMORROW is holiday** → Educational 3-sentence fact
 - Complete calendar coverage (New Year's to Christmas)
-- Work-appropriate humor acknowledging the irony
+- Work-appropriate tone (no triggering language)
+
+### 🚫 Agent Labeling Business Rules
+- **ZBT (Zero Balance Transfer)** → Never labeled (business rule)
+- **Account 6 (Chase Payroll Incoming Wires)** → TODAY transactions skipped (Risk, needs T+1)
+- **Account 9 (Chase Wire In)** → Normal labeling (different from Account 6!)
+- **CSV Output** → Unlabeled transactions have blank predicted_agent + labeling_comment
+- **Slack Message** → "Unlabeled Transactions" section only appears if unlabeled exist
 
 ### 📚 SOP Management
 - Confluence integration
@@ -73,10 +80,9 @@ The system automatically detects and announces all 11 US Federal Banking Holiday
 
 ### Banking Holiday Messages
 
-**Example: Working on Christmas**
+**Example: Christmas Day**
 ```
-🎯 It's Christmas - a banking holiday! Someone's working hard while others 
-   enjoy presents! 🎄🎁
+🎯 Merry Christmas! 🎄🎁 Today is a banking holiday - banks are closed! 🏦
 
    Our AI has identified today's transactions as...
 ```
@@ -139,6 +145,101 @@ Our AI has identified today's transactions as:
 
 Have a great day! 🚀
 ```
+
+---
+
+## 🚫 Agent Labeling Business Rules (Detailed)
+
+### Rule 1: ZBT (Zero Balance Transfer)
+**Never label ZBT transactions**
+
+```
+Reasoning: Business policy - ZBT transactions require special handling
+Impact: 
+  - CSV: predicted_agent column = BLANK
+  - CSV: labeling_comment = "ZBT transactions are never labeled (business rule)"
+  - Slack: If any ZBT unlabeled → Shows in "Unlabeled Transactions" section
+```
+
+### Rule 2: Chase Payroll Incoming Wires (Account 6)
+**TODAY transactions are NOT labeled (need T+1 settlement)**
+
+```
+Account Details:
+  - Account ID: 6
+  - Account Name: Chase Incoming Wires (PAYROLL WIRE ACCOUNT)
+  - NOT the same as Account 9 (Chase Wire In - normal wires)
+
+Reasoning: Risk agent classification requires T+1 settlement verification
+
+Impact:
+  - TODAY transactions → NOT labeled
+  - Yesterday+ transactions → Labeled normally (as Risk)
+  - CSV: predicted_agent = BLANK for today's transactions
+  - CSV: labeling_comment = "Account 6 - same-day transactions not labeled (Risk, needs T+1)"
+  - Slack: Shows in "Unlabeled Transactions" section if any exist
+
+Example:
+  - Transaction date: 2025-10-08 (TODAY)
+  - Current date: 2025-10-08
+  - Result: NOT labeled (wait until tomorrow)
+  
+  - Transaction date: 2025-10-07 (YESTERDAY)
+  - Current date: 2025-10-08
+  - Result: Labeled as Risk (normal processing)
+```
+
+### Rule 3: 1-Day Lag Context
+**Reconciliation data is typically 1 day behind**
+
+```
+Background Information:
+  - Reconciliation data reflects transactions from 1 day ago
+  - Banking holidays can extend this lag
+  - Example: Friday transaction → Monday holiday → Appears Tuesday
+
+Impact on Users:
+  - This is normal business practice
+  - No action needed from CODE7 users
+  - Rules automatically account for this timing
+```
+
+### Unlabeled Transactions in Slack
+
+**Section only appears if unlabeled transactions exist**
+
+```
+Example (when unlabeled exist):
+---
+⚠️ *Unlabeled Transactions*
+Total: 5 transaction(s) not labeled due to business rules
+
+• 3 transaction(s): ZBT transactions are never labeled (business rule)
+• 2 transaction(s): Account 6 - same-day transactions not labeled (Risk, needs T+1)
+---
+
+Example (when NO unlabeled):
+  [Section not shown at all]
+```
+
+---
+
+## 📊 CSV Output Format
+
+Every CSV includes these columns:
+
+| Column | Description | Example |
+|--------|-------------|---------|
+| `id` | Transaction ID | 12345678 |
+| `date` | Transaction date | 2025-10-08 |
+| `amount` | Dollar amount | 1500.00 |
+| `payment_method` | Text method | wire_in |
+| `account` | Text account name | Chase Incoming Wires |
+| `description` | Transaction description | JPMORGAN... |
+| `predicted_agent` | **Agent prediction** (blank if unlabeled) | Risk |
+| `sop_links` | Confluence URLs (blank if unlabeled) | https://... |
+| `prediction_method` | Rule-based or ML-based | Rule-based |
+| `labeling_comment` | Why unlabeled (if applicable) | Account 6 - same-day... |
 
 ---
 
