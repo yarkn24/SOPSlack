@@ -9,50 +9,50 @@ ML model uses numeric codes (e.g., 4, 21)
 
 # Payment Method Mapping: Text (Redash) → Number (Training Data)
 PAYMENT_METHOD_MAPPING = {
-    'wire_in': 0,
-    'wire_out': 1,
-    'check_paid': 2,
-    'ach_return': 3,
-    'ach_transaction': 4,
-    'check_returned': 5,
-    'known_unknown': 7,
-    'unknown_method': 8,
-    'transfer': 9,
-    'ach_external': 10,
-    'wire_return': 11,
-    'zero_balance_transfer': 12,
-    'interest_and_charges': 13,
-    'unknown': 14,
+    0: 'wire_in',
+    1: 'wire_out',
+    2: 'check_paid',
+    3: 'ach_return',
+    4: 'ach_transaction',
+    5: 'check_returned',
+    7: 'known_unknown',
+    8: 'unknown_method',
+    9: 'transfer',
+    10: 'ach_external',
+    11: 'wire_return',
+    12: 'zero_balance_transfer',
+    13: 'interest_and_charges',
+    14: 'unknown',
 }
 
-# Account Mapping: Text (Redash) → Number (Training Data)
-ACCOUNT_MAPPING = {
-    'SVB Operations': 1,
-    'Chase Operations': 3,
-    'Chase Incoming Wires': 6,
-    'Chase Recovery': 7,
-    'Chase Flex Pay': 8,
-    'Chase Wire In': 9,
-    'SVB Wire In': 10,
-    'Sunrise': 11,  # Also 14, 15
-    'Chase Flex Pay Revenue': 13,
-    'PNC Operations': 16,
-    'PNC Corporate Cash': 17,
-    'PNC Customer Wire Ins': 18,
-    'BRB Customer Operations Old': 19,
-    'BRB Corporate Cash': 20,
-    'Chase International Contractor Payments': 21,
-    'Brex Operations': 22,
-    'BRB Customer Operations': 26,
-    'PNC Recovery': 28,  # Recovery account
-    'Chase Money Market': 29,  # Treasury/Money Market account
-    'Grasshopper Operations': 31,
-}
-
-# Note: Any account with "Corporate" in name is OUT OF SCOPE
-
-# Reverse mapping for display
+# Reverse mapping: Text → Number
 PAYMENT_METHOD_REVERSE = {v: k for k, v in PAYMENT_METHOD_MAPPING.items()}
+
+# Account Mapping: Number (ID) → Text (Name) - FROM REDASH QUERY
+ACCOUNT_MAPPING = {
+    1: 'SVB Operations',
+    3: 'Chase Operations',
+    6: 'Chase Incoming Wires',
+    7: 'Chase Recovery',
+    8: 'Chase Flex Pay',
+    9: 'Chase Wire In',
+    10: 'SVB Wire In',
+    11: 'Sunrise',
+    13: 'Chase Flex Pay Revenue',
+    14: 'Sunrise',
+    15: 'Sunrise',
+    16: 'PNC Operations',
+    17: 'PNC Corporate Cash',
+    18: 'PNC Customer Wire Ins',
+    19: 'BRB Customer Operations Old',
+    20: 'BRB Corporate Cash',
+    21: 'Chase International Contractor Payments',
+    22: 'Brex Operations',
+    26: 'BRB Customer Operations',
+    31: 'Grasshopper Operations',
+}
+
+# Reverse mapping: Text → Number
 ACCOUNT_REVERSE = {v: k for k, v in ACCOUNT_MAPPING.items()}
 
 
@@ -64,10 +64,10 @@ def map_payment_method(pm_text: str) -> int:
         pm_text: Payment method text (e.g., "ach_external")
     
     Returns:
-        Numeric code (e.g., 4)
+        Numeric code (e.g., 10)
     """
     pm_text = str(pm_text).lower().strip()
-    return PAYMENT_METHOD_MAPPING.get(pm_text, 8)  # Default: 8 (unknown)
+    return PAYMENT_METHOD_REVERSE.get(pm_text, 8)  # Default: 8 (unknown)
 
 
 def is_corporate_account(account_text: str) -> bool:
@@ -101,7 +101,7 @@ def map_account(account_text: str) -> int:
     if is_corporate_account(account_text):
         return -1  # Special code for corporate accounts
     
-    return ACCOUNT_MAPPING.get(account_text, 0)  # Default: 0 (unknown)
+    return ACCOUNT_REVERSE.get(account_text, 0)  # Default: 0 (unknown)
 
 
 def normalize_amount(amount: float) -> float:
