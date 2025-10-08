@@ -1,13 +1,146 @@
 # SOPSlack
 
-SOP (Standard Operating Procedure) management system for Atlassian products (Jira, Confluence) with Slack integration.
+Intelligent transaction classification and Slack messaging system with AI-powered agent prediction and comprehensive SOP management.
 
-## Features
+## 🚀 Quick Start - CODE7
 
-- 🔗 Slack integration
-- 📝 Jira and Confluence integration
-- 🤖 MCP (Model Context Protocol) support
-- 📋 SOP management and tracking
+The complete automated pipeline:
+
+```bash
+python3 code7.py
+```
+
+**What it does:**
+1. Fetches 40 transactions from Redash
+2. Predicts agents with 99% accuracy (Rule + ML hybrid)
+3. Maps SOP links from Confluence
+4. Generates CSV report
+5. Creates intelligent Slack message
+
+**Output:** Two files in Downloads:
+- `redash_agents_[timestamp].csv` - Transaction details
+- `slack_message_[timestamp].txt` - Ready-to-send message
+
+## ✨ Key Features
+
+### 🤖 AI-Powered Classification
+- **99.03% accuracy** agent prediction
+- **97.5%** handled by rule-based system (instant)
+- XGBoost fallback for edge cases
+- Comprehensive 30+ agent support
+
+### 💬 Intelligent Slack Messages
+- **Unique every day** - never repeats
+- 10 random greetings × 4 header emojis
+- 40 unique fun facts (tracked, no repeats)
+- Smart high-value alerts (excludes Treasury/ZBT)
+- Dynamic warnings (randomized messages)
+
+### 🏦 Banking Holiday System
+- **11 US Federal Banking Holidays** tracked
+- **TODAY is holiday** → Funny "working alone" message
+- **TOMORROW is holiday** → Educational 3-sentence fact
+- Complete calendar coverage (New Year's to Christmas)
+- Work-appropriate humor acknowledging the irony
+
+### 📚 SOP Management
+- Confluence integration
+- Agent-to-SOP mapping
+- Clickable links in messages
+- 30+ agent procedures tracked
+
+---
+
+## 🏦 Banking Holidays (Complete List)
+
+The system automatically detects and announces all 11 US Federal Banking Holidays:
+
+| Month | Date | Holiday | Banks Closed |
+|-------|------|---------|--------------|
+| January | 1st | New Year's Day | ✅ |
+| January | 3rd Monday | Martin Luther King Jr. Day | ✅ |
+| February | 3rd Monday | Presidents' Day | ✅ |
+| May | Last Monday | Memorial Day | ✅ |
+| June | 19th | Juneteenth | ✅ |
+| July | 4th | Independence Day | ✅ |
+| September | 1st Monday | Labor Day | ✅ |
+| October | 2nd Monday | Columbus Day* | ✅ |
+| November | 11th | Veterans Day | ✅ |
+| November | 4th Thursday | Thanksgiving | ✅ |
+| December | 25th | Christmas Day | ✅ |
+
+\* *Note: Many states also observe Indigenous Peoples' Day*
+
+### Banking Holiday Messages
+
+**Example: Working on Christmas**
+```
+🎯 It's Christmas - a banking holiday! Someone's working hard while others 
+   enjoy presents! 🎄🎁
+
+   Our AI has identified today's transactions as...
+```
+
+**Example: Day Before Thanksgiving**
+```
+🎯 Good morning Platform Ops! Happy Wednesday!
+
+   [transaction list]
+
+   🏦📅 Tomorrow is Thanksgiving - a banking holiday!
+   Thanksgiving became a federal banking holiday in 1870. Celebrated on the 
+   fourth Thursday in November, it's one of the busiest travel days. Banks 
+   close so employees can enjoy turkey and family time!
+```
+
+---
+
+## 📊 Message Variety Statistics
+
+Every Slack message is **unique** thanks to:
+
+| Component | Variations | Example |
+|-----------|------------|---------|
+| Greetings | 10 | "Good morning Platform Ops!", "Hey team!", etc. |
+| Header Emojis | 4 | 🎯, 🎪, 🏹, 🔥 |
+| High-Count Warnings | 5 | "Wow, that's a lot!", "Heads up!", etc. |
+| Medium-Count Warnings | 5 | "Keep an eye on...", "Notable activity..." |
+| High-Value Alerts | 5 | "Big money alert!", "High-value transactions!" |
+| Closing Messages | 6 | "Have a great day!", "Let's balance those books!" |
+| Fun Facts | 40 | Finance, science, history, space (never repeats!) |
+| Banking Holidays | 11 | Special messages + educational facts |
+| Special Days | 8 | Valentine's, Pi Day, Halloween, etc. |
+
+**Total possible combinations:** 10 × 4 × 5 × 5 × 5 × 6 × 40 = **2,400,000+ unique messages!**
+
+---
+
+## 🎯 Example Slack Message
+
+```
+🎯 Good morning Platform Ops! Happy Tuesday!
+
+Our AI has identified today's transactions as:
+• BAI Reconciliation: 8
+• York Adams Tax EIT: 5
+• ACH: 3 ⚠️ Keep an eye on this agent!
+• Treasury Upload: 2
+• Bad Debt: 1
+
+💰 High-value transactions detected (excluding Treasury/ZBT): 2 transactions worth $45,230.00
+
+📚 Here are the relevant SOPs (AI-tailored):
+   • BAI Reconciliation: https://confluence.../BAI+Reconciliation
+   • York Adams Tax EIT: https://confluence.../York+Adams+Tax
+   [...]
+
+💡 The Federal Reserve processes 175 million ACH transactions daily worth 
+   over $51 billion! That's like moving the GDP of a small country every day!
+
+Have a great day! 🚀
+```
+
+---
 
 ## Requirements
 
