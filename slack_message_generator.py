@@ -79,59 +79,59 @@ BANKING_HOLIDAYS = {
     # Fixed dates
     (1, 1): {
         "name": "New Year's Day",
-        "message": "It seems today is a banking holiday (New Year's Day), but we're here keeping the books balanced! :bank::robot:",
+        "message": "Happy New Year's Day! :tada: Today is a banking holiday - banks are closed! :bank:",
         "fact": "New Year's Day has been a federal banking holiday since 1870. Banks close to give employees time to celebrate and recover from New Year's Eve festivities. Fun fact: The first organized New Year's celebration dates back 4,000 years to ancient Babylon!"
     },
     (7, 4): {
         "name": "Independence Day",
-        "message": "It's a banking holiday (Independence Day), but someone's gotta reconcile! :flag-us::fireworks:",
+        "message": "Happy Independence Day! :flag-us::fireworks: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Independence Day celebrates the signing of the Declaration of Independence on July 4, 1776. Banks have been closed on this day since it became a federal holiday in 1870. Over 150 million hot dogs are consumed on this day!"
     },
     (11, 11): {
         "name": "Veterans Day",
-        "message": "Banking holiday today (Veterans Day), but our dedication to accurate recons never takes a day off! :military_medal:",
+        "message": "Happy Veterans Day! :military_medal: Today is a banking holiday - banks are closed to honor our veterans! :bank:",
         "fact": "Veterans Day honors all military veterans who served in the US Armed Forces. Originally called Armistice Day, it marks the end of WWI on November 11, 1918, at 11 AM. Banks close to honor those who served!"
     },
     (12, 25): {
         "name": "Christmas Day",
-        "message": "It's Christmas - a banking holiday! Someone's working hard while others enjoy presents! :christmas_tree::gift:",
+        "message": "Merry Christmas! :christmas_tree::gift: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Christmas has been a federal banking holiday since 1870. Banks close nationwide, making it one of the few days with zero banking transactions. Fun fact: The tradition of Christmas trees started in Germany in the 16th century!"
     },
     
     # Variable dates (approximate - these need calendar checking)
     (1, 20): {
         "name": "Martin Luther King Jr. Day",
-        "message": "It's MLK Day - banks are closed, but we're keeping the dream of balanced books alive! :fist:",
+        "message": "Happy MLK Day! :fist: Today is a banking holiday - banks are closed to honor Dr. King! :bank:",
         "fact": "MLK Day honors civil rights leader Dr. Martin Luther King Jr. It became a federal banking holiday in 1986, making it the newest banking holiday. It's observed on the third Monday in January, near Dr. King's birthday (January 15)!"
     },
     (2, 17): {
         "name": "Presidents' Day",
-        "message": "Presidents' Day banking holiday! Even presidents took days off, but not us! :flag-us:",
+        "message": "Happy Presidents' Day! :flag-us: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Presidents' Day honors George Washington (Feb 22) and Abraham Lincoln (Feb 12). Celebrated on the third Monday in February, banks close nationwide. Fun fact: Washington's birthday was the first individual's birthday to become a federal holiday!"
     },
     (5, 26): {
         "name": "Memorial Day", 
-        "message": "Memorial Day banking holiday - honoring the fallen while we keep financial records accurate! :flag-us:",
+        "message": "Happy Memorial Day! :flag-us: Today is a banking holiday - banks are closed to honor the fallen! :bank:",
         "fact": "Memorial Day honors those who died serving in the US military. Originally called Decoration Day after the Civil War, it became a federal banking holiday in 1971. Always observed on the last Monday in May!"
     },
     (6, 19): {
         "name": "Juneteenth",
-        "message": "Juneteenth banking holiday! Banks closed, but freedom includes financial accuracy! :star:",
+        "message": "Happy Juneteenth! :star: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Juneteenth commemorates the end of slavery in the US on June 19, 1865. It became a federal banking holiday in 2021, making it the newest addition! Banks across America close to honor this important day in US history!"
     },
     (9, 1): {
         "name": "Labor Day",
-        "message": "Labor Day banking holiday! Celebrating workers... by working! The irony is not lost on us :hammer_and_wrench::sweat_smile:",
+        "message": "Happy Labor Day! :hammer_and_wrench: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Labor Day honors American workers and their contributions. Banks close on the first Monday in September. Fun fact: The first Labor Day was celebrated in 1882, and it became a federal banking holiday in 1894!"
     },
     (10, 13): {
         "name": "Columbus Day",
-        "message": "Columbus Day banking holiday! Banks discovered the day off, but we're still navigating these transactions! :boat:",
+        "message": "Happy Columbus Day! :boat: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Columbus Day commemorates Christopher Columbus's arrival in the Americas in 1492. Banks close on the second Monday in October. Note: Many states now observe Indigenous Peoples' Day instead!"
     },
     (11, 27): {
         "name": "Thanksgiving",
-        "message": "Happy Thanksgiving - a banking holiday! We're thankful for... working while banks are closed? :turkey::laughing:",
+        "message": "Happy Thanksgiving! :turkey: Today is a banking holiday - banks are closed! :bank:",
         "fact": "Thanksgiving became a federal banking holiday in 1870. Celebrated on the fourth Thursday in November, it's one of the busiest travel days. Banks close so employees can enjoy turkey and family time!"
     },
 }
