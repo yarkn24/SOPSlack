@@ -419,7 +419,7 @@ def save_slack_message(df, output_file=None, high_value_threshold=300000):
     
     Args:
         df: DataFrame with labeled transactions
-        output_file: Output file path (default: ~/Downloads/slack_message_[timestamp].txt)
+        output_file: Output file path (default: ~/Desktop/cursor_data/slack_message_[timestamp].txt)
         high_value_threshold: Threshold for high-value alerts
     
     Returns:
@@ -430,7 +430,9 @@ def save_slack_message(df, output_file=None, high_value_threshold=300000):
     message = generate_slack_message(df, high_value_threshold)
     
     if output_file is None:
-        output_file = f"{os.path.expanduser('~')}/Downloads/slack_message_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+        output_dir = f"{os.path.expanduser('~')}/Desktop/cursor_data"
+        os.makedirs(output_dir, exist_ok=True)
+        output_file = f"{output_dir}/slack_message_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
     
     with open(output_file, 'w') as f:
         f.write(message)

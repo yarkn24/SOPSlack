@@ -212,16 +212,19 @@ output_df = pd.DataFrame({
     'labeling_comment': comments,
 })
 
-# Save CSV to Downloads
+# Save CSV to Desktop/cursor_data
 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-csv_file = f"{os.path.expanduser('~')}/Downloads/redash_agents_{timestamp}.csv"
+output_dir = f"{os.path.expanduser('~')}/Desktop/cursor_data"
+os.makedirs(output_dir, exist_ok=True)  # Create if doesn't exist
+
+csv_file = f"{output_dir}/redash_agents_{timestamp}.csv"
 output_df.to_csv(csv_file, index=False)
 
 print(f"   ✅ CSV saved: {csv_file}")
 
 # Generate Slack message
 print("   📝 Generating Slack message...")
-slack_file = f"{os.path.expanduser('~')}/Downloads/slack_message_{timestamp}.txt"
+slack_file = f"{output_dir}/slack_message_{timestamp}.txt"
 slack_file = save_slack_message(output_df, slack_file)
 
 print(f"   ✅ Slack message saved: {slack_file}\n")

@@ -17,7 +17,7 @@ python3 code7.py
 4. Generates CSV report
 5. Creates intelligent Slack message
 
-**Output:** Two files in Downloads:
+**Output:** Two files in `~/Desktop/cursor_data/`:
 - `redash_agents_[timestamp].csv` - Transaction details
 - `slack_message_[timestamp].txt` - Ready-to-send message
 
