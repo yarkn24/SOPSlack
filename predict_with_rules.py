@@ -88,7 +88,15 @@ def apply_rules(row, icp_funding_amounts=None):
             return 'Interest Payment'
         else:
             return 'Recovery Wire'
-    # 17. Blueridge Operations
+    # 18. IL UI - BEFORE BRB! (ACC=26 but IL specific)
+    elif 'IL DEPT EMPL' in desc or 'UNEMPL TAX' in desc:
+        return 'IL UI'
+    elif 'NAME=IL DEPT' in desc:
+        return 'IL UI'
+    # 19. Canary Payments - CPP pattern (both formats)
+    elif 'ENTRY DESCR=CPP' in desc or 'DESC: CPP' in desc:
+        return 'Canary Payments'
+    # 20. Blueridge Operations (after IL UI check!)
     elif acc == 26:
         if amt < 0.5:
             return 'Bad Debt'
