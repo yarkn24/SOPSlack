@@ -18,6 +18,7 @@ from datetime import datetime
 from predict_with_rules import apply_rules, normalize_label
 from data_mapping import ACCOUNT_MAPPING, PAYMENT_METHOD_MAPPING
 from agent_sop_mapping import get_confluence_links_for_agent
+from slack_message_generator import save_slack_message
 
 # Redash configuration
 REDASH_API_KEY = "wPoSJ9zxm7gAu5GYU44w3bY9hBmagjTMg7LfqDBH"
@@ -183,11 +184,19 @@ output_df = pd.DataFrame({
     'prediction_method': ['Rule-based' if r else 'ML-based' for r in rule_mask],
 })
 
-# Save to Downloads
-output_file = f"{os.path.expanduser('~')}/Downloads/redash_agents_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
-output_df.to_csv(output_file, index=False)
+# Save CSV to Downloads
+timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+csv_file = f"{os.path.expanduser('~')}/Downloads/redash_agents_{timestamp}.csv"
+output_df.to_csv(csv_file, index=False)
 
-print(f"   ✅ Saved: {output_file}\n")
+print(f"   ✅ CSV saved: {csv_file}")
+
+# Generate Slack message
+print("   📝 Generating Slack message...")
+slack_file = f"{os.path.expanduser('~')}/Downloads/slack_message_{timestamp}.txt"
+slack_file = save_slack_message(output_df, slack_file)
+
+print(f"   ✅ Slack message saved: {slack_file}\n")
 
 # 6. Summary
 print("="*80)
@@ -204,9 +213,10 @@ for agent, count in agent_counts.items():
     sop_status = f"✅ {len(sop)} SOPs" if sop else "⚠️  No SOP"
     print(f"   • {agent}: {count} transactions - {sop_status}")
 
-print(f"\n✅ OUTPUT: {output_file}")
+print(f"\n✅ CSV OUTPUT: {csv_file}")
+print(f"✅ SLACK MESSAGE: {slack_file}")
 print("="*80 + "\n")
-print("📋 OUTPUT COLUMNS:")
+print("📋 CSV COLUMNS:")
 print("   • id, date, amount")
 print("   • payment_method (text)")
 print("   • account (text)")
@@ -214,5 +224,11 @@ print("   • description")
 print("   • predicted_agent ⭐")
 print("   • sop_links (Confluence URLs) 🔗")
 print("   • prediction_method (Rule-based/ML-based)")
+print("\n📨 SLACK MESSAGE:")
+print("   • Formatted for Platform Operations channel")
+print("   • Agent counts with warnings")
+print("   • High-value alerts (>$300K)")
+print("   • SOP links included")
+print("   • Fun fact at the end")
 print("="*80 + "\n")
 
