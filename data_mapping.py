@@ -35,11 +35,18 @@ ACCOUNT_MAPPING = {
     'Chase Wire In': 9,
     'SVB Wire In': 10,
     'Sunrise': 11,  # Also 14, 15
+    'Chase Flex Pay Revenue': 13,
     'PNC Operations': 16,
+    'PNC Corporate Cash': 17,
     'PNC Customer Wire Ins': 18,
     'BRB Customer Operations Old': 19,
+    'BRB Corporate Cash': 20,
     'Chase International Contractor Payments': 21,
+    'Brex Operations': 22,
     'BRB Customer Operations': 26,
+    'PNC Recovery': 28,  # Recovery account
+    'Chase Money Market': 29,  # Treasury/Money Market account
+    'Grasshopper Operations': 31,
 }
 
 # Note: Any account with "Corporate" in name is OUT OF SCOPE

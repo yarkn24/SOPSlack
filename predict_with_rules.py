@@ -36,39 +36,59 @@ def apply_rules(row, icp_funding_amounts=None):
     # 5. 1TRV = RISK (ANY ACCOUNT - HIGHEST PRIORITY)
     elif '1TRV' in desc:
         return 'Risk'
-    # 6. STATE rules
-    elif 'STATE OF MONTANA' in desc:
-        return 'MT WH'
-    elif 'NYS DTF WT' in desc:
+    # 6. STATE OF MONTANA → MT UI (NOT MT WH!)
+    elif 'ORIG CO NAME=STATE OF MONTANA' in desc or 'STATE OF MONTANA' in desc:
+        return 'MT UI'
+    # 7. OH SDWH - 1HIOSDWH pattern
+    elif '1HIOSDWH' in desc or 'OHSDWHTX' in desc:
+        return 'OH SDWH'
+    # 8. State-specific rules
+    elif 'NYS DTF WT' in desc or 'NY DTF WT' in desc:
         return 'NY WH'
     elif 'NYS DOL UI' in desc:
         return 'NY UI'
-    # 7. Treasury/Money Market
+    # 9. ACH Rules - MUST BE BEFORE Check rule!
+    elif pm == 4 and ('ACH CREDIT SETTLEMENT' in desc or 'ACH DEBIT SETTLEMENT' in desc):
+        if 'REVERSAL' in desc:
+            return 'ACH Reversal'
+        else:
+            return 'ACH Transaction'
+    # 10. WA LNI - Multiple patterns
+    elif 'LABOR&INDUSTRIES' in desc:
+        return 'WA LNI'
+    elif 'L&I ELF' in desc:
+        return 'WA LNI'
+    elif 'WA' in desc and ('L&I' in desc or 'LNI' in desc or 'LABOR' in desc or 'INDUSTRIES' in desc):
+        return 'WA LNI'
+    # 11. Company Balance Transfers - GUSTO PAYROLL + ITL
+    elif 'ENTRY DESCR=ITL' in desc and 'GUSTO PAYROLL' in desc:
+        return 'Company Balance Transfers'
+    # 12. PNC LOI - Account 16 + CREDIT MEMO
+    elif acc == 16 and 'CREDIT MEMO' in desc:
+        return 'LOI'
+    # 13. Treasury/Money Market
     elif '100% US TREASURY CAPITAL 3163' in desc or 'MONEY MKT MUTUAL FUND' in desc:
         return 'Money Market Transfer'
     elif 'JPMORGAN ACCESS TRANSFER' in desc:
         return 'Treasury Transfer'
     elif 'INTEREST ADJUSTMENT' in desc:
         return 'Interest Adjustment'
-    # 8. Account-specific rules
-    elif acc == 16 and 'CREDIT MEMO' in desc:
-        return 'PNC LOI'
+    # 14. KEYSTONE
     elif 'KEYSTONE' in desc:
         return 'PA UI'
+    # 15. Payment method based (Check)
     elif pm == 2:
         return 'Check'
-    elif pm == 4:
-        return 'ACH'
-    # 9. Recovery accounts (WITHOUT 1TRV)
+    # 16. Risk accounts - PRIORITY! (ACC 6, 9, 18 are mostly Risk)
+    elif acc in [6, 9, 18] and pm == 0:
+        return 'Risk'
+    # 17. Recovery accounts - ACC=7, 28 (primary recovery accounts)
     elif acc in [7, 28]:
         if 'INTEREST' in desc:
             return 'Interest Payment'
         else:
             return 'Recovery Wire'
-    # 10. Risk accounts
-    elif acc in [6, 9, 18] and pm == 0:
-        return 'Risk'
-    # 11. Blueridge Operations
+    # 17. Blueridge Operations
     elif acc == 26:
         if amt < 0.5:
             return 'Bad Debt'
@@ -76,20 +96,36 @@ def apply_rules(row, icp_funding_amounts=None):
             return 'BRB'
     elif amt < 0.5 and amt > 0:
         return 'Bad Debt'
-    # 12. Other patterns
+    # 18. Other patterns
     elif 'LOCKBOX' in desc:
         return 'Lockbox'
     elif 'TS FX ACCOUNTS RECEIVABLE' in desc or 'JPV' in desc:
         return 'ICP Return'
+    # 19. ICP Refund - REMARK=Wise + amount < 50000
+    elif 'REMARK=WISE' in desc and amt < 50000:
+        return 'ICP Refund'
     elif 'WISE' in desc and amt < 50000:
         return 'ICP Refund'
+    # 20. ICP Return - Account 21 + "Refund" in ENTRY DESCR
+    elif acc == 21 and 'REFUND' in desc:
+        return 'ICP Return'
+    # 21. OH WH - OHEMWHTX pattern
+    elif 'OHEMWHTX' in desc or 'OH WH TAX' in desc or '8011OHIO-TAXOEWH' in desc:
+        return 'OH WH'
+    # 22. Check Adjustment - CHECK + (REFERENCE or ITEM or POSTED)
+    elif 'CHECK' in desc and ('REFERENCE' in desc or 'ITEM' in desc or 'POSTED' in desc):
+        return 'Check Adjustment'
+    # 23. York Adams (unified label - both York Adams and York Adams Tax)
     elif 'YORK ADAMS' in desc:
-        return 'York Adams Tax'
+        return 'York Adams'
+    # 24. IRS Payment - LAST RESORT (if IRS in desc and nothing else matches)
+    elif 'IRS' in desc:
+        return 'IRS Wire'
     
-    return None  # No rule matched
+    return None  # No rule matched - ML will predict
 
-def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts=None):
-    """Hybrid prediction: Rules first, then ML model."""
+def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts=None, confidence_threshold=0.85):
+    """Hybrid prediction: Rules first, then ML model with confidence check."""
     
     predictions = []
     rule_used = []
@@ -120,11 +156,18 @@ def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp
             
             X = hstack([X_tfidf, X_ex.values])
             
-            # Predict
-            pred_idx = model.predict(X)[0]
-            pred_agent = le_agent.inverse_transform([pred_idx])[0]
+            # Get prediction with confidence
+            pred_proba = model.predict_proba(X)[0]
+            max_confidence = pred_proba.max()
             
-            predictions.append(pred_agent)
+            if max_confidence >= confidence_threshold:
+                pred_idx = model.predict(X)[0]
+                pred_agent = le_agent.inverse_transform([pred_idx])[0]
+                predictions.append(pred_agent)
+            else:
+                # Low confidence - mark as Unknown
+                predictions.append('Unknown - Low Confidence')
+            
             rule_used.append(False)
     
     return predictions, rule_used
@@ -140,14 +183,19 @@ tfidf = joblib.load('ultra_fast_tfidf.pkl')
 le_agent = joblib.load('ultra_fast_agent_encoder.pkl')
 
 # Load data
-df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05.csv', low_memory=False)
+df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
 df['amount'] = df['amount'] / 100
-df['date'] = pd.to_datetime(df['date'])
+df['date'] = pd.to_datetime(df['date'], format='mixed')
 df = df[df['date'] >= '2024-01-01'].copy()
 df = df[df['agent'].notna()].copy()
 
 svb_accounts = [1, 2, 5, 10, 24]
 df = df[~df['origination_account_id'].isin(svb_accounts)].copy()
+
+# Remove problematic IDs (incorrect labels) - NONE FOR NOW
+# problematic_ids = []
+# df = df[~df['id'].isin(problematic_ids)].copy()
+
 df['agent'] = df['agent'].str.strip()
 
 # Apply rules to training data (same as before)
@@ -193,9 +241,100 @@ start = datetime.now()
 predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
 elapsed = (datetime.now() - start).total_seconds()
 
+# Label unification (normalize similar labels)
+def normalize_label(label):
+    """Normalize similar labels to canonical form - comprehensive unification"""
+    label = str(label).strip()
+    
+    # York Adams variants → York Adams
+    if 'YORK ADAMS' in label.upper():
+        return 'York Adams'
+    
+    # Recovery Wire variants → Recovery Wire (remove trailing spaces, include "Out")
+    if label.startswith('Recovery Wire'):
+        return 'Recovery Wire'
+    
+    # PNC LOI → LOI
+    if label == 'PNC LOI':
+        return 'LOI'
+    
+    # MT variants → MT UI
+    if label in ['MT WH', 'MT', 'MT ']:
+        return 'MT UI'
+    
+    # NY WH variants (typo WTH)
+    if label in ['NY WTH', 'NY WH ', 'NY WH']:
+        return 'NY WH'
+    
+    # Risk variants (typos + trailing spaces)
+    if label in ['RIsk', 'RISK', 'Risk ', 'Risk  ']:
+        return 'Risk'
+    
+    # Bad Debt variants (typo: Dept)
+    if label in ['Bad Dept', 'Bad Debt ', 'Bad Debt']:
+        return 'Bad Debt'
+    
+    # ICP Refund variants (trailing spaces)
+    if label in ['ICP Refund ', ' ICP Refund', 'ICP Refund  ']:
+        return 'ICP Refund'
+    
+    # ICP Return variants (leading/trailing spaces)
+    if label in [' ICP Return', 'ICP Return ', 'ICP Return  ']:
+        return 'ICP Return'
+    
+    # IL UI variants (trailing spaces)
+    if label in ['IL UI ', 'IL UI  ', 'IL UI']:
+        return 'IL UI'
+    
+    # Check variants (trailing spaces)
+    if label in ['Check ', 'Check  ', 'Check']:
+        return 'Check'
+    
+    # OH SDWH variants (trailing spaces)
+    if label in ['OH SDWH ', 'OH SDWH  ', 'OH SDWH']:
+        return 'OH SDWH'
+    
+    # Grasshopper Return (case variants)
+    if label.upper() == 'GRASSHOPPER RETURN':
+        return 'Grasshopper Return'
+    
+    # Company Balance Transfer/Transfers → Company Balance Transfers (plural)
+    if label in ['Company Balance Transfer', 'Company Balance Transfers']:
+        return 'Company Balance Transfers'
+    
+    # Treasury Transfer (typo: Transsfer)
+    if label in ['Treasury Transsfer', 'Treasury Transfer']:
+        return 'Treasury Transfer'
+    
+    # Canary Payment/Payments → Canary Payments (plural)
+    if label in ['Canary Payment', 'Canary Payments']:
+        return 'Canary Payments'
+    
+    # Debit Authorization/Authorisation → Debit Authorization (US spelling)
+    if label in ['Debit Authorisation', 'Debit Authorization']:
+        return 'Debit Authorization'
+    
+    # Berks Tax / Berk Tax → Berks Tax
+    if label in ['Berk Tax', 'Berks Tax']:
+        return 'Berks Tax'
+    
+    # NY MCTMT variants (trailing spaces)
+    if label in ['NY MCTMT ', 'NY MCTMT  ', 'NY MCTMT']:
+        return 'NY MCTMT'
+    
+    # dLocal variants (trailing spaces)
+    if label in ['dLocal ', 'dLocal  ', 'dLocal']:
+        return 'dLocal'
+    
+    return label
+
+# Apply normalization
+val_data_filtered['agent_normalized'] = val_data_filtered['agent'].apply(normalize_label)
+val_data_filtered['predicted_normalized'] = [normalize_label(p) for p in predictions]
+
 val_data_filtered['predicted'] = predictions
 val_data_filtered['rule_used'] = rule_used
-val_data_filtered['correct'] = (val_data_filtered['agent'] == val_data_filtered['predicted']).astype(int)
+val_data_filtered['correct'] = (val_data_filtered['agent_normalized'] == val_data_filtered['predicted_normalized']).astype(int)
 
 # Results
 overall_acc = val_data_filtered['correct'].mean() * 100
