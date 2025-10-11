@@ -180,76 +180,6 @@ def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp
     
     return predictions, rule_used
 
-# Test the hybrid approach
-print("=" * 100)
-print("🎯 TESTING HYBRID PREDICTION (Rules + ML)")
-print("=" * 100)
-
-# Load model
-model = joblib.load('ultra_fast_model.pkl')
-tfidf = joblib.load('ultra_fast_tfidf.pkl')
-le_agent = joblib.load('ultra_fast_agent_encoder.pkl')
-
-# Load data
-df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
-df['amount'] = df['amount'] / 100
-df['date'] = pd.to_datetime(df['date'], format='mixed')
-df = df[df['date'] >= '2024-01-01'].copy()
-df = df[df['agent'].notna()].copy()
-
-svb_accounts = [1, 2, 5, 10, 24]
-df = df[~df['origination_account_id'].isin(svb_accounts)].copy()
-
-# Remove problematic IDs (incorrect labels) - NONE FOR NOW
-# problematic_ids = []
-# df = df[~df['id'].isin(problematic_ids)].copy()
-
-df['agent'] = df['agent'].str.strip()
-
-# Apply rules to training data (same as before)
-print("\n📂 Preparing data...")
-
-# First pass: Find ICP Funding amounts
-icp_funding_amounts = set()
-for idx, row in df.iterrows():
-    if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
-        desc = str(row['description']).upper()
-        if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
-            icp_funding_amounts.add(float(row['amount']))
-
-print(f"   📌 Found {len(icp_funding_amounts)} ICP Funding amounts")
-
-# Second pass: Apply all rules
-for idx, row in df.iterrows():
-    rule_agent = apply_rules(row, icp_funding_amounts)
-    if rule_agent:
-        df.at[idx, 'agent'] = rule_agent
-
-print(f"✅ {len(df):,} transactions | {df['agent'].nunique()} agents")
-
-# Split
-test_end = int(len(df) * 0.85)
-val_data = df.iloc[test_end:].copy()
-
-# Prepare encoders
-le_account = LabelEncoder()
-le_payment = LabelEncoder()
-le_account.fit(df['origination_account_id'].fillna(0).astype(int).astype(str))
-le_payment.fit(df['payment_method'].fillna(-1).astype(int).astype(str))
-
-# Filter validation to agents in training
-train_agents = set(le_agent.classes_)
-val_data_filtered = val_data[val_data['agent'].isin(train_agents)].copy().reset_index(drop=True)
-
-print(f"✅ Validation: {len(val_data_filtered):,} transactions")
-
-# Hybrid prediction
-print("\n🔧 Running hybrid prediction...")
-start = datetime.now()
-predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
-elapsed = (datetime.now() - start).total_seconds()
-
-# Label unification (normalize similar labels)
 def normalize_label(label):
     """Normalize similar labels to canonical form - comprehensive unification"""
     label = str(label).strip()
@@ -336,48 +266,119 @@ def normalize_label(label):
     
     return label
 
-# Apply normalization
-val_data_filtered['agent_normalized'] = val_data_filtered['agent'].apply(normalize_label)
-val_data_filtered['predicted_normalized'] = [normalize_label(p) for p in predictions]
+if __name__ == "__main__":
 
-val_data_filtered['predicted'] = predictions
-val_data_filtered['rule_used'] = rule_used
-val_data_filtered['correct'] = (val_data_filtered['agent_normalized'] == val_data_filtered['predicted_normalized']).astype(int)
+        # Test the hybrid approach
+        print("=" * 100)
+        print("🎯 TESTING HYBRID PREDICTION (Rules + ML)")
+        print("=" * 100)
 
-# Results
-overall_acc = val_data_filtered['correct'].mean() * 100
-rule_count = sum(rule_used)
-ml_count = len(rule_used) - rule_count
+        # Load model
+        model = joblib.load('ultra_fast_model.pkl')
+        tfidf = joblib.load('ultra_fast_tfidf.pkl')
+        le_agent = joblib.load('ultra_fast_agent_encoder.pkl')
 
-rule_data = val_data_filtered[val_data_filtered['rule_used']]
-ml_data = val_data_filtered[~val_data_filtered['rule_used']]
+        # Load data
+        df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
+        df['amount'] = df['amount'] / 100
+        df['date'] = pd.to_datetime(df['date'], format='mixed')
+        df = df[df['date'] >= '2024-01-01'].copy()
+        df = df[df['agent'].notna()].copy()
 
-rule_acc = rule_data['correct'].mean() * 100 if len(rule_data) > 0 else 0
-ml_acc = ml_data['correct'].mean() * 100 if len(ml_data) > 0 else 0
+        svb_accounts = [1, 2, 5, 10, 24]
+        df = df[~df['origination_account_id'].isin(svb_accounts)].copy()
 
-print(f"\n✅ Prediction time: {elapsed:.2f}s ({elapsed/len(val_data_filtered)*1000:.2f}ms per BT)")
+        # Remove problematic IDs (incorrect labels) - NONE FOR NOW
+        # problematic_ids = []
+        # df = df[~df['id'].isin(problematic_ids)].copy()
 
-print("\n" + "=" * 100)
-print("🏆 HYBRID RESULTS")
-print("=" * 100)
-print(f"📊 Overall Accuracy: {overall_acc:.2f}%")
-print(f"\n🔹 Rule-based: {rule_count:,} BTs ({rule_count/len(val_data_filtered)*100:.1f}%) → {rule_acc:.2f}% accurate")
-print(f"🔹 ML-based:   {ml_count:,} BTs ({ml_count/len(val_data_filtered)*100:.1f}%) → {ml_acc:.2f}% accurate")
+        df['agent'] = df['agent'].str.strip()
 
-# Top agents analysis
-print("\n" + "=" * 100)
-print("📊 TOP 10 AGENTS - HYBRID PERFORMANCE")
-print("=" * 100)
+        # Apply rules to training data (same as before)
+        print("\n📂 Preparing data...")
 
-agent_counts = val_data_filtered['agent'].value_counts().head(10)
-for rank, (agent, count) in enumerate(agent_counts.items(), 1):
-    agent_data = val_data_filtered[val_data_filtered['agent'] == agent]
-    correct = agent_data['correct'].sum()
-    accuracy = correct / count * 100
-    rule_pct = agent_data['rule_used'].sum() / count * 100
-    
-    print(f"{rank:2d}. {agent:30s}: {accuracy:6.2f}% ({count:5,} BTs, {rule_pct:5.1f}% via rules)")
+        # First pass: Find ICP Funding amounts
+        icp_funding_amounts = set()
+        for idx, row in df.iterrows():
+            if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
+                desc = str(row['description']).upper()
+                if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+                    icp_funding_amounts.add(float(row['amount']))
 
-print("\n" + "=" * 100)
-print("✅ COMPLETE!")
-print("=" * 100)
+        print(f"   📌 Found {len(icp_funding_amounts)} ICP Funding amounts")
+
+        # Second pass: Apply all rules
+        for idx, row in df.iterrows():
+            rule_agent = apply_rules(row, icp_funding_amounts)
+            if rule_agent:
+                df.at[idx, 'agent'] = rule_agent
+
+        print(f"✅ {len(df):,} transactions | {df['agent'].nunique()} agents")
+
+        # Split
+        test_end = int(len(df) * 0.85)
+        val_data = df.iloc[test_end:].copy()
+
+        # Prepare encoders
+        le_account = LabelEncoder()
+        le_payment = LabelEncoder()
+        le_account.fit(df['origination_account_id'].fillna(0).astype(int).astype(str))
+        le_payment.fit(df['payment_method'].fillna(-1).astype(int).astype(str))
+
+        # Filter validation to agents in training
+        train_agents = set(le_agent.classes_)
+        val_data_filtered = val_data[val_data['agent'].isin(train_agents)].copy().reset_index(drop=True)
+
+        print(f"✅ Validation: {len(val_data_filtered):,} transactions")
+
+        # Hybrid prediction
+        print("\n🔧 Running hybrid prediction...")
+        start = datetime.now()
+        predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
+        elapsed = (datetime.now() - start).total_seconds()
+
+        # Apply normalization
+        val_data_filtered['agent_normalized'] = val_data_filtered['agent'].apply(normalize_label)
+        val_data_filtered['predicted_normalized'] = [normalize_label(p) for p in predictions]
+
+        val_data_filtered['predicted'] = predictions
+        val_data_filtered['rule_used'] = rule_used
+        val_data_filtered['correct'] = (val_data_filtered['agent_normalized'] == val_data_filtered['predicted_normalized']).astype(int)
+
+        # Results
+        overall_acc = val_data_filtered['correct'].mean() * 100
+        rule_count = sum(rule_used)
+        ml_count = len(rule_used) - rule_count
+
+        rule_data = val_data_filtered[val_data_filtered['rule_used']]
+        ml_data = val_data_filtered[~val_data_filtered['rule_used']]
+
+        rule_acc = rule_data['correct'].mean() * 100 if len(rule_data) > 0 else 0
+        ml_acc = ml_data['correct'].mean() * 100 if len(ml_data) > 0 else 0
+
+        print(f"\n✅ Prediction time: {elapsed:.2f}s ({elapsed/len(val_data_filtered)*1000:.2f}ms per BT)")
+
+        print("\n" + "=" * 100)
+        print("🏆 HYBRID RESULTS")
+        print("=" * 100)
+        print(f"📊 Overall Accuracy: {overall_acc:.2f}%")
+        print(f"\n🔹 Rule-based: {rule_count:,} BTs ({rule_count/len(val_data_filtered)*100:.1f}%) → {rule_acc:.2f}% accurate")
+        print(f"🔹 ML-based:   {ml_count:,} BTs ({ml_count/len(val_data_filtered)*100:.1f}%) → {ml_acc:.2f}% accurate")
+
+        # Top agents analysis
+        print("\n" + "=" * 100)
+        print("📊 TOP 10 AGENTS - HYBRID PERFORMANCE")
+        print("=" * 100)
+
+        agent_counts = val_data_filtered['agent'].value_counts().head(10)
+        for rank, (agent, count) in enumerate(agent_counts.items(), 1):
+            agent_data = val_data_filtered[val_data_filtered['agent'] == agent]
+            correct = agent_data['correct'].sum()
+            accuracy = correct / count * 100
+            rule_pct = agent_data['rule_used'].sum() / count * 100
+
+            print(f"{rank:2d}. {agent:30s}: {accuracy:6.2f}% ({count:5,} BTs, {rule_pct:5.1f}% via rules)")
+
+        print("\n" + "=" * 100)
+        print("✅ COMPLETE!")
+        print("=" * 100)
