@@ -230,8 +230,10 @@ LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Fundi
 HINTS:
 - CHECK/Check→Check | NYS DTF→NY WH | OH WH→OH WH | JPMORGAN→ICP Funding | CSC→CSC | LOCKBOX→Lockbox | State tax/UI→State label
 - CUSTOMER= with non-Gusto company→Risk
-- If unclear, give your BEST GUESS based on description keywords
-- Return 1 label (most confident), or if uncertain: "Label1 or Label2"
+- NEVER return "Unknown"! Always provide best guess(es)
+- If very confident: return "Label1"
+- If uncertain: return "Label1 or Label2"
+- If really uncertain: return "Label1, Label2, Label3" (your top 3 guesses)
 
 Label:"""
     else:
@@ -246,7 +248,12 @@ Transaction:
 Account: {account_val[:40]}
 Description: {transaction.get('description', 'N/A')[:60]}
 
-Label (one word):"""
+NEVER return "Unknown"! Always provide:
+- If confident: "Label1"
+- If uncertain: "Label1 or Label2"
+- If really uncertain: "Label1, Label2, Label3"
+
+Label:"""
 
     try:
         # INCREMENT COUNTER (track token usage!)
@@ -255,26 +262,43 @@ Label (one word):"""
         response = gemini_model.generate_content(prompt)
         label_text = response.text.strip()
         
-        # Parse response: might be "Label1" or "Label1 or Label2" (for low confidence cases)
+        # Parse response: might be "Label1" or "Label1 or Label2" or "Label1, Label2, Label3"
         alternatives = []
-        if ' or ' in label_text.lower():
+        
+        # Check for comma-separated format first (3 guesses)
+        if ',' in label_text:
+            # Extract all: "Risk, Check, ACH" → ["Risk", "Check", "ACH"]
+            parts = [p.strip() for p in label_text.split(',')]
+            label = parts[0]
+            alternatives = parts[1:3] if len(parts) > 1 else []  # Max 2 alternatives
+        elif ' or ' in label_text.lower():
             # Extract alternatives: "Check or CSC" → ["Check", "CSC"]
             parts = label_text.replace(' OR ', ' or ').split(' or ')
             label = parts[0].strip()
-            if len(parts) > 1:
-                alternatives = [p.strip() for p in parts[1:]]
+            alternatives = [p.strip() for p in parts[1:2]] if len(parts) > 1 else []  # Max 1 alternative
         else:
             label = label_text
         
         # Validate primary label against known labels
         if label in COMPLETE_SOP_MAPPING:
-            confidence = 0.65 if alternatives else 0.75  # Lower confidence if multiple options
-            reason = f'AI-based pattern analysis'
-            if alternatives and confidence < 0.70:
-                # Show alternatives in reason
-                alt_str = ' or '.join([a for a in alternatives if a in COMPLETE_SOP_MAPPING][:1])  # Max 1 alternative
-                if alt_str:
-                    reason = f'AI suggests: {label} (or possibly {alt_str})'
+            # Confidence based on number of alternatives
+            if len(alternatives) >= 2:
+                confidence = 0.45  # Very uncertain (3 guesses)
+                reason = f"⚠️ I couldn't find a clear match with the given info. Best guesses: {label}"
+            elif len(alternatives) == 1:
+                confidence = 0.65  # Uncertain (2 guesses)
+                reason = f'AI suggests: {label}'
+            else:
+                confidence = 0.75  # Confident (1 guess)
+                reason = f'AI-based pattern analysis'
+            
+            # Add alternatives to reason
+            if alternatives:
+                valid_alts = [a for a in alternatives if a in COMPLETE_SOP_MAPPING]
+                if valid_alts:
+                    alt_str = ', '.join(valid_alts[:2])  # Show up to 2 alternatives
+                    reason += f' (or possibly: {alt_str})'
+            
             result = (label, f'ml-based (Gemini-{_gemini_call_count})', reason, confidence)
             _gemini_cache[cache_key] = result
             return result
@@ -283,20 +307,44 @@ Label (one word):"""
         label_upper = label.upper()
         for known_label in COMPLETE_SOP_MAPPING.keys():
             if known_label.upper() in label_upper or label_upper in known_label.upper():
-                reason = f'Similar to "{label}" (AI suggestion)'
+                confidence = 0.45 if len(alternatives) >= 2 else 0.65
+                if len(alternatives) >= 2:
+                    reason = f"⚠️ I couldn't find a clear match. Best guesses: {known_label}"
+                else:
+                    reason = f'Similar to "{label}" (AI suggestion)'
+                
                 if alternatives:
-                    alt_str = ' or '.join([a for a in alternatives if a in COMPLETE_SOP_MAPPING][:1])
-                    if alt_str:
-                        reason = f'AI suggests: {known_label} (or possibly {alt_str})'
-                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', reason, 0.65)
+                    valid_alts = [a for a in alternatives if a in COMPLETE_SOP_MAPPING]
+                    if valid_alts:
+                        alt_str = ', '.join(valid_alts[:2])
+                        reason += f' (or possibly: {alt_str})'
+                
+                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', reason, confidence)
                 _gemini_cache[cache_key] = result
                 return result
         
-        # No match - return Unknown (don't cache unknowns)
-        return 'Unknown', f'ml-based (Gemini-{_gemini_call_count})', f'No clear pattern found (AI)', 0.50
+        # Still no match - return first guess with very low confidence
+        # NEVER return "Unknown" - always give at least 1 guess!
+        best_guess = label if label else 'Risk'  # Default to Risk if nothing
+        reason = f"⚠️ I couldn't find it with the given info. My best guess: {best_guess}"
+        if alternatives:
+            valid_alts = [a for a in alternatives if a in COMPLETE_SOP_MAPPING]
+            if valid_alts:
+                alt_str = ', '.join(valid_alts[:2])
+                reason += f' (or possibly: {alt_str})'
+        return best_guess, f'ml-based (Gemini-{_gemini_call_count})', reason, 0.30
             
     except Exception as e:
-        return 'Unknown', 'unknown', f'AI call failed', 0
+        # Even if AI fails, provide best guess based on available info
+        desc_upper = desc[:100].upper()
+        if 'CHECK' in desc_upper:
+            return 'Check', 'rule-based-fallback', '⚠️ AI unavailable, best guess from description keywords', 0.40
+        elif 'NYS DTF' in desc_upper:
+            return 'NY WH', 'rule-based-fallback', '⚠️ AI unavailable, best guess from description keywords', 0.40
+        elif 'WIRE' in desc_upper or 'CUSTOMER' in desc_upper:
+            return 'Risk', 'rule-based-fallback', '⚠️ AI unavailable, best guess: likely wire transaction', 0.35
+        else:
+            return 'ACH', 'rule-based-fallback', '⚠️ AI unavailable, defaulting to most common label (ACH, Risk, or LOI)', 0.25
 
 def gemini_quick_triage(transaction):
     """Quick Gemini check: Is this a rule-based transaction? (~50 tokens)"""
