@@ -609,13 +609,19 @@
                     // CSV: Direct parse without Gemini (faster, saves tokens)
                     console.log('CSV mode: Direct parsing (no Gemini)');
                     transactions = parseTransactions(inputData);
+                    
+                    // CSV mode: No Gemini fallback
+                    if (!transactions || transactions.length === 0) {
+                        showError('No unlabeled transactions found in CSV. All transactions either have an agent assigned or are missing required columns (description, amount).');
+                        return;
+                    }
                 } else {
                     // Text mode: Use Gemini for smart parsing
                     transactions = await parseTransactionsWithAI(inputData);
                 }
                 
-                if (!transactions || transactions.length === 0) {
-                    // Fallback: Force Gemini to parse messy/incomplete data
+                if (currentTab !== 'csv' && (!transactions || transactions.length === 0)) {
+                    // Fallback for text mode only: Force Gemini to parse messy/incomplete data
                     console.log('Parse failed, forcing Gemini to format data...');
                     document.getElementById('loading').querySelector('p').textContent = '🤖 Gemini formatting data...';
                     

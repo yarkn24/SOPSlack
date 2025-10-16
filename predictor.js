@@ -40,8 +40,11 @@ function parseTransactions(inputData) {
             else if (header === 'date' || cleanHeader === 'date' || header === 'created' || header.includes('date')) {
                 if (!headerMap['date']) headerMap['date'] = index;
             }
-            // Description column
-            else if (header === 'description' || header === 'desc' || cleanHeader.includes('desc')) {
+            // Description column - exact match first
+            else if (header === 'description') {
+                headerMap['description'] = index;
+            }
+            else if (!headerMap['description'] && (header === 'desc' || cleanHeader.includes('desc'))) {
                 headerMap['description'] = index;
             }
             // Payment method column - exact match preferred
@@ -114,6 +117,12 @@ function parseTransactions(inputData) {
                 continue;
             }
             
+            // Skip row if agent already exists (already labeled data)
+            if (agentIdx !== undefined && parts[agentIdx] && parts[agentIdx].trim() !== '') {
+                console.log(`Skipping row ${parts[idIdx] || 'N/A'} - agent already exists: ${parts[agentIdx]}`);
+                continue;
+            }
+            
             const paymentMethodCode = pmIdx !== undefined ? (parts[pmIdx] || '') : '';
             const paymentMethod = paymentMethodMap[paymentMethodCode] || 'wire in';
             
@@ -123,8 +132,7 @@ function parseTransactions(inputData) {
                 date: '',  // Not needed for prediction
                 payment_method: paymentMethod,
                 origination_account_id: accountIdx !== undefined ? (parts[accountIdx] || 'Unknown') : 'Unknown',
-                description: parts[descIdx] || '',
-                actual_agent: agentIdx !== undefined ? (parts[agentIdx] || null) : null  // For comparison/validation
+                description: parts[descIdx] || ''
             };
         } else {
             // Traditional format (transaction_id, amount, date, payment_method, account, description)
@@ -272,32 +280,7 @@ function displayResults(results) {
         return;
     }
     
-    // Calculate accuracy if actual_agent exists (CSV validation mode)
-    const hasValidation = results.some(r => r.actual_agent);
-    if (hasValidation) {
-        let correct = 0;
-        let total = 0;
-        results.forEach(r => {
-            if (r.actual_agent) {
-                total++;
-                if (r.actual_agent === r.label) {
-                    correct++;
-                }
-            }
-        });
-        
-        const accuracy = ((correct / total) * 100).toFixed(1);
-        const accuracyColor = accuracy >= 90 ? '#28a745' : accuracy >= 80 ? '#ffc107' : '#dc3545';
-        
-        resultsDiv.innerHTML += `
-            <div class="transaction-group" style="background: ${accuracyColor}15; border-left: 4px solid ${accuracyColor};">
-                <h3 style="color: ${accuracyColor};">📊 Validation Results</h3>
-                <div class="transaction-detail">
-                    <strong>Accuracy:</strong> ${accuracy}% (${correct}/${total} correct predictions)
-                </div>
-            </div>
-        `;
-    }
+    // No validation mode - agent column is skipped if exists
     
     // Group by label
     const grouped = {};
@@ -338,20 +321,9 @@ function displayResults(results) {
         `;
         
         group.slice(0, 3).forEach(txn => {
-            // Check if actual_agent exists (from CSV) for validation
-            let validationBadge = '';
-            if (txn.actual_agent) {
-                const isCorrect = txn.actual_agent === label;
-                if (isCorrect) {
-                    validationBadge = `<span style="color: #28a745; font-weight: 600;">✓ Correct</span>`;
-                } else {
-                    validationBadge = `<span style="color: #dc3545; font-weight: 600;">✗ Expected: ${txn.actual_agent}</span>`;
-                }
-            }
-            
             html += `
                 <li style="margin-bottom: 10px;">
-                    ID: ${txn.transaction_id} | ${txn.amount} | ${txn.account}${validationBadge ? ' | ' + validationBadge : ''}<br>
+                    ID: ${txn.transaction_id} | ${txn.amount} | ${txn.account}<br>
                     <span style="color: #666; font-size: 0.9em;">${txn.description}</span>
                 </li>
             `;
