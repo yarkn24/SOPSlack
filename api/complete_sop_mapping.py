@@ -2,6 +2,7 @@
 """
 Complete SOP Mapping - ALL labels from SOP
 Extracted from: Daily Operations : How to Label & Reconcile
+Updated: 10 am → 12 am PST
 """
 
 COMPLETE_SOP_MAPPING = {

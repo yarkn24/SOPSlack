@@ -45,6 +45,11 @@ def predict_rule_based(transaction):
     amount = float((transaction.get('amount', '0')).replace('$', '').replace(',', '')) if transaction.get('amount') else 0
     method = (transaction.get('payment_method', '')).lower()
     
+    # ⚠️ CRITICAL: ZBT CHECK FIRST - ABSOLUTE HIGHEST PRIORITY ⚠️
+    # Zero Balance Transfer MUST be checked before ANY other rule!
+    if 'zero balance transfer' in method or method == 'zero balance transfer':
+        return 'ZBT', 'rule-based', "⚠️ Payment method is 'Zero Balance Transfer' - FOR INFO ONLY. We don't reconcile ZBT transactions.", 1.00
+    
     # Get transaction date for same-day check
     from datetime import datetime, timezone
     import pytz
@@ -66,7 +71,7 @@ def predict_rule_based(transaction):
         except:
             pass
     
-    # Account-based rules (highest priority)
+    # Account-based rules
     if 'PNC WIRE IN' in account or 'CHASE WIRE IN' in account:
         return 'Risk', 'rule-based', 'Account is PNC Wire In or Chase Wire In', 0.99
     
@@ -82,12 +87,9 @@ def predict_rule_based(transaction):
         if 'JPMORGAN ACCESS TRANSFER' in desc:
             return 'ICP Funding', 'rule-based', "Description contains 'JPMORGAN ACCESS TRANSFER'", 0.99
     
-    # Payment method rules (CRITICAL - HIGHEST PRIORITY)
-    if 'zero balance transfer' in method or method == 'zero balance transfer':
-        return 'ZBT', 'rule-based', "⚠️ Payment method is 'Zero Balance Transfer' - FOR INFO ONLY. We don't reconcile ZBT transactions.", 1.00
-    
-    if 'check' in method:
-        return 'Check', 'rule-based', "Payment method is 'Check'", 0.99
+    # Check rule: Payment method "check" or "check paid" OR "CHECK" in description
+    if 'check' in method or 'check paid' in method or 'CHECK' in desc:
+        return 'Check', 'rule-based', "Payment method is Check or CHECK in description", 0.99
     
     # Description-based rules
     if 'NYS DTF WT' in desc:

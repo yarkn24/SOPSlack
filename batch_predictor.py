@@ -108,7 +108,7 @@ def format_grouped_output(grouped_results):
         sop_content = group['sop_content']
         if sop_content:
             output.append(f"\n{'─'*80}")
-            output.append(f"📚 SOP BİLGİLERİ (ONLY FROM SOP):")
+            output.append(f"📚 SOP INFORMATION (ONLY FROM SOP):")
             output.append(f"{'─'*80}")
             
             # Labeling from SOP
