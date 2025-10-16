@@ -539,10 +539,20 @@
                                 </div>
                             </div>
                         ` : ''}
-                        ${data.warning ? `
+                        ${data.session_warning ? `
                             <div style="margin-top: 20px; padding: 15px; background: #FFF2DF; border-radius: 8px; border-left: 4px solid #F45D48;">
-                                <strong>${data.warning}</strong><br>
-                                <small>Estimated tokens: ~${(data.estimated_tokens || 0).toLocaleString()}</small>
+                                <strong>${data.session_warning}</strong>
+                            </div>
+                        ` : ''}
+                        ${data.token_warning ? `
+                            <div style="margin-top: 20px; padding: 15px; background: ${data.daily_percent >= 90 ? '#fee' : data.daily_percent >= 75 ? '#ffe8e8' : '#FFF2DF'}; border-radius: 8px; border-left: 4px solid ${data.daily_percent >= 75 ? '#e74c3c' : '#F45D48'};">
+                                <strong>${data.token_warning}</strong><br>
+                                <small>Daily limit resets every 24 hours</small>
+                            </div>
+                        ` : ''}
+                        ${data.daily_percent >= 50 && !data.token_warning ? `
+                            <div style="position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; background: rgba(244, 93, 72, 0.95); color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 0.9em; z-index: 1000;">
+                                <strong>📊 Daily tokens:</strong> ${data.daily_tokens_remaining?.toLocaleString() || 0} remaining (${data.daily_percent}% used)
                             </div>
                         ` : ''}
                     </div>
