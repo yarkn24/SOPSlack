@@ -81,31 +81,61 @@ async function parseTransactionsWithAI(rawText) {
 
 async function analyzeAllTransactions(transactions, sopData) {
     /**
-     * Step 2: Send parsed transactions to prediction API
+     * Step 2: Send parsed transactions to prediction API in batches
+     * Process 5 transactions at a time to avoid Vercel timeout (10s limit)
      */
-    try {
-        const response = await fetch(`${API_URL}/predict`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                transactions: transactions,
-                ai_provider: document.getElementById('ai-provider')?.value || 'gemini'
-            })
-        });
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        return data.results;
-        
-    } catch (error) {
-        console.error('Error calling API:', error);
-        throw new Error('Failed to analyze transactions. Make sure the backend server is running.');
+    const BATCH_SIZE = 5;
+    const allResults = [];
+    
+    // Split into batches
+    const batches = [];
+    for (let i = 0; i < transactions.length; i += BATCH_SIZE) {
+        batches.push(transactions.slice(i, i + BATCH_SIZE));
     }
+    
+    console.log(`Processing ${transactions.length} transactions in ${batches.length} batches...`);
+    
+    // Process each batch
+    for (let i = 0; i < batches.length; i++) {
+        const batch = batches[i];
+        console.log(`Processing batch ${i + 1}/${batches.length} (${batch.length} transactions)...`);
+        
+        try {
+            const response = await fetch(`${API_URL}/predict`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    transactions: batch,
+                    ai_provider: document.getElementById('ai-provider')?.value || 'gemini'
+                })
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            allResults.push(...data.results);
+            
+            // Show progress
+            const loadingDiv = document.getElementById('loading');
+            if (loadingDiv) {
+                const progressText = loadingDiv.querySelector('p');
+                if (progressText) {
+                    progressText.textContent = `Analyzing transactions... (${allResults.length}/${transactions.length} completed)`;
+                }
+            }
+            
+        } catch (error) {
+            console.error(`Error processing batch ${i + 1}:`, error);
+            throw new Error(`Failed to analyze batch ${i + 1}. ${error.message}`);
+        }
+    }
+    
+    console.log(`✅ Successfully analyzed ${allResults.length} transactions`);
+    return allResults;
 }
 
 function displayResults(results) {
