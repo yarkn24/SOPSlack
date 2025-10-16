@@ -207,6 +207,8 @@ def predict_transaction(transaction):
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
+        global _gemini_call_count  # Need to modify global counter
+        
         try:
             content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
