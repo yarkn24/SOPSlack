@@ -42,7 +42,17 @@ def predict_rule_based(transaction):
     """Tier 1: Rule-based prediction (98% accuracy)"""
     desc = clean_text(transaction.get('description', ''))
     account = clean_text(transaction.get('origination_account_id', ''))
-    amount = float((transaction.get('amount', '0')).replace('$', '').replace(',', '')) if transaction.get('amount') else 0
+    
+    # Handle amount - safely convert to float, default to 0 if invalid
+    amount_str = str(transaction.get('amount', '0')).replace('$', '').replace(',', '').strip()
+    if amount_str and amount_str.lower() not in ['unknown', 'n/a', 'na', '']:
+        try:
+            amount = float(amount_str)
+        except (ValueError, TypeError):
+            amount = 0.0
+    else:
+        amount = 0.0
+    
     method = (transaction.get('payment_method', '')).lower()
     
     # ⚠️ CRITICAL: ZBT CHECK FIRST - ABSOLUTE HIGHEST PRIORITY ⚠️
