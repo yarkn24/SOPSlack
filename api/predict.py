@@ -338,14 +338,10 @@ Label:"""
         
         # Still no match - return first guess with very low confidence
         # NEVER return "Unknown" - always give at least 1 guess!
+        # But confidence is too low (<20%) - don't provide suggestions
         best_guess = label if label else 'Risk'  # Default to Risk if nothing
-        reason = f"⚠️ I couldn't find it with the given info. My best guess: {best_guess}"
-        if alternatives:
-            valid_alts = [a for a in alternatives if a in COMPLETE_SOP_MAPPING]
-            if valid_alts:
-                alt_str = ', '.join(valid_alts[:2])
-                reason += f' (or possibly: {alt_str})'
-        return best_guess, f'ml-based (Gemini-{_gemini_call_count})', reason, 0.30
+        reason = f"⚠️ I couldn't find it with the given info."
+        return best_guess, f'ml-based (Gemini-{_gemini_call_count})', reason, 0.15
             
     except Exception as e:
         # Gemini API error - inform user but still provide best guess
@@ -359,7 +355,8 @@ Label:"""
         elif 'WIRE' in desc_upper or 'CUSTOMER' in desc_upper:
             return 'Risk', 'rule-based-fallback', base_msg + "Risk (found wire indicators)", 0.35
         else:
-            return 'ACH', 'rule-based-fallback', base_msg + "ACH (or possibly: Risk, LOI)", 0.25
+            # Very low confidence - don't suggest anything
+            return 'ACH', 'rule-based-fallback', "⚠️ I couldn't find it with the given info. Cannot reach Gemini API servers right now, try again later.", 0.15
 
 def gemini_quick_triage(transaction):
     """Quick Gemini check: Is this a rule-based transaction? (~50 tokens)"""
