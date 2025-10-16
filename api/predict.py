@@ -25,7 +25,7 @@ except ImportError:
 GEMINI_API_KEY = os.environ.get('GEMINI_KEY') or os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
-    gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+    gemini_model = genai.GenerativeModel('gemini-flash-latest')
 
 # ML removed for faster Vercel deployment (Hobby plan 15min limit)
 
