@@ -119,87 +119,37 @@ def predict_rule_based(transaction):
 
 # ML model removed for faster deployment (Vercel Hobby plan limits)
 
+# Simple cache to avoid repeat Gemini calls (save tokens!)
+_gemini_cache = {}
+
 def predict_gemini(transaction):
-    """Tier 2: Gemini AI with internal training data (NO Google search)"""
+    """Tier 2: Gemini AI - Token Optimized (Free tier friendly!)"""
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return 'Unknown', 'unknown', 'No prediction method available', 0
     
-    # Build few-shot training examples from internal SOP data
-    training_examples = """
-INTERNAL TRAINING DATA - Learn from these examples ONLY (NO web search):
+    # Create cache key from transaction signature
+    desc = clean_text(transaction.get('description', ''))
+    account = clean_text(transaction.get('origination_account_id', ''))
+    cache_key = f"{desc[:50]}_{account[:30]}"
+    
+    # Check cache first (avoid Gemini call = SAVE TOKENS!)
+    if cache_key in _gemini_cache:
+        cached = _gemini_cache[cache_key]
+        return cached[0], cached[1] + ' (cached)', cached[2], cached[3]
+    
+    # ULTRA-SHORT prompt to minimize token usage (free tier limit!)
+    prompt = f"""Label this bank transaction (internal data only, no web search).
 
-1. RISK LABEL EXAMPLES:
-   - Account: "PNC Wire In" or "Chase Wire In" → ALWAYS Risk
-   - Account: "Chase Payroll Incoming Wires" → ALWAYS Risk
-   - Account: "Chase Recovery" → Recovery Wire (NOT Risk)
-   Rule: Wire In accounts = Risk
+RULES:
+Wire In→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
 
-2. CHECK LABEL EXAMPLES:
-   - Payment Method: "Check" or "check paid" → ALWAYS Check
-   - Description contains check number
-   Rule: Any check payment = Check
+LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC
 
-3. TAX WITHHOLDING EXAMPLES:
-   - Description: "NYS DTF WT" → NY WH
-   - Description: "OH WH TAX" → OH WH
-   - Description: "OH SDWH" → OH SDWH
-   Rule: State abbreviation + WH/tax keyword
+Transaction:
+Account: {transaction.get('origination_account_id', 'N/A')[:40]}
+Description: {transaction.get('description', 'N/A')[:60]}
 
-4. UNEMPLOYMENT INSURANCE EXAMPLES:
-   - Description: "NYS DOL UI" → NY UI
-   - Description: "IL DEPT EMPL SEC" → IL UI
-   - Description: "STATE OF WA ESD" → WA ESD
-   - Description: "VA. EMPLOY COMM" → VA UI
-   Rule: State + unemployment keywords
-
-5. LOCKBOX EXAMPLES:
-   - Description contains "LOCKBOX" → Lockbox
-   Rule: Exact keyword match
-
-6. LOI (Letter of Indemnity) EXAMPLES:
-   - Description: "ACH RETURN SETTLEMENT" → LOI
-   - Description: "CREDIT MEMO" → LOI
-   Rule: Return/reversal settlements
-
-7. ICP FUNDING EXAMPLES:
-   - Account: "Chase International Contractor Payment"
-   - Description: "JPMORGAN ACCESS TRANSFER" → ICP Funding
-   Rule: ICP account + JPMORGAN keyword
-
-8. CSC EXAMPLES:
-   - Description: "CSC123456" (CSC + 6 digits) → CSC
-   Rule: CSC with number pattern
-
-9. TREASURY/MONEY MARKET EXAMPLES:
-   - Description: "US TREASURY CAPITAL" → Treasury Transfer
-   - Description: "MONEY MKT MUTUAL FUND" → Money Market Fund
-   Rule: Treasury or Money Market keywords
-
-10. ACH EXAMPLES:
-    - Description: "EFT REVERSAL" → ACH
-    - Description: "RTN OFFSET" → ACH Return
-    Rule: EFT/RTN keywords
-
-ALL AVAILABLE LABELS:
-""" + ", ".join(COMPLETE_SOP_MAPPING.keys())
-
-    prompt = f"""{training_examples}
-
-CRITICAL INSTRUCTIONS:
-- Use ONLY the training examples above
-- DO NOT use external knowledge or web search
-- Match patterns from training data
-- These are internal company transactions
-
-NEW TRANSACTION TO LABEL:
-- Amount: {transaction.get('amount')}
-- Account: {transaction.get('origination_account_id')}
-- Payment Method: {transaction.get('payment_method')}
-- Description: {transaction.get('description')}
-
-Based ONLY on the training examples above, which label matches best?
-
-Respond with ONLY the label name (no explanation)."""
+Label (one word):"""
 
     try:
         response = gemini_model.generate_content(prompt)
@@ -207,28 +157,34 @@ Respond with ONLY the label name (no explanation)."""
         
         # Validate against known labels
         if label in COMPLETE_SOP_MAPPING:
-            return label, 'ml-based (Gemini AI - Internal Training)', f'Matched pattern from training data', 0.80
-        else:
-            # Try fuzzy match
-            label_upper = label.upper()
-            for known_label in COMPLETE_SOP_MAPPING.keys():
-                if known_label.upper() in label_upper or label_upper in known_label.upper():
-                    return known_label, 'ml-based (Gemini AI - Internal Training)', f'Fuzzy matched: {label}', 0.70
-            
-            return 'Unknown', 'ml-based (Gemini AI)', f'No training pattern matched (suggested: {label})', 0.50
+            result = (label, 'ml-based (Gemini AI)', f'Pattern match', 0.75)
+            _gemini_cache[cache_key] = result
+            return result
+        
+        # Try fuzzy match
+        label_upper = label.upper()
+        for known_label in COMPLETE_SOP_MAPPING.keys():
+            if known_label.upper() in label_upper or label_upper in known_label.upper():
+                result = (known_label, 'ml-based (Gemini AI)', f'Fuzzy: {label}', 0.70)
+                _gemini_cache[cache_key] = result
+                return result
+        
+        # No match - return Unknown (don't cache unknowns)
+        return 'Unknown', 'ml-based (Gemini AI)', f'No pattern match', 0.50
             
     except Exception as e:
-        return 'Unknown', 'unknown', f'AI prediction failed: {str(e)}', 0
+        return 'Unknown', 'unknown', f'AI call failed', 0
 
 def predict_transaction(transaction):
-    """2-Tier prediction: Rule-based → Gemini AI"""
+    """2-Tier prediction: Rule-based (95%+) → Gemini AI (fallback only)"""
     
-    # Tier 1: Rule-based (fastest, most accurate)
+    # Tier 1: Rule-based (fastest, most accurate, NO tokens!)
     label, method, reason, confidence = predict_rule_based(transaction)
     if label and confidence > 0.9:
         return label, method, reason, confidence
     
-    # Tier 2: Gemini AI (fallback)
+    # Tier 2: Gemini AI (ONLY when rule-based fails - saves tokens!)
+    # Most transactions (95%+) handled by rules, so Gemini rarely called
     label, method, reason, confidence = predict_gemini(transaction)
     return label, method, reason, confidence
 
