@@ -124,6 +124,7 @@ _gemini_cache = {}
 _gemini_call_count = 0  # Track Gemini usage for demo day
 MAX_GEMINI_CALLS = int(os.environ.get('MAX_GEMINI_CALLS', '50'))  # Default: max 50 calls/session
 GEMINI_ENABLED = os.environ.get('GEMINI_ENABLED', 'true').lower() == 'true'  # Can disable for demo!
+GEMINI_SUMMARY_ENABLED = os.environ.get('GEMINI_SUMMARY_ENABLED', 'false').lower() == 'true'  # Default: OFF for token saving!
 
 def predict_gemini(transaction):
     """Tier 2: Gemini AI - ULTRA CONSERVATIVE (Demo-safe!)"""
@@ -235,9 +236,10 @@ class handler(BaseHTTPRequestHandler):
                 # Get SOP content
                 sop_content = COMPLETE_SOP_MAPPING.get(label, {})
                 
-                # Add Gemini summary ONLY if enabled and under limit (DEMO MODE!)
+                # Gemini summary DISABLED by default (token conservation!)
+                # Enable only if GEMINI_SUMMARY_ENABLED=true in env vars
                 gemini_summary = None
-                if GEMINI_ENABLED and _gemini_call_count < MAX_GEMINI_CALLS:
+                if GEMINI_SUMMARY_ENABLED and GEMINI_ENABLED and _gemini_call_count < MAX_GEMINI_CALLS:
                     recon_text = sop_content.get('reconciliation', '')
                     if recon_text and len(recon_text) > 200 and GEMINI_API_KEY:
                         try:
@@ -316,11 +318,13 @@ Emoji + short sentence per step."""
             'tier_1': 'Rule-Based (95%+ - 0 tokens)',
             'tier_2': f'Gemini AI ({_gemini_call_count}/{MAX_GEMINI_CALLS} calls - {"ENABLED" if GEMINI_ENABLED else "DISABLED"})',
             'token_protection': {
-                'gemini_enabled': GEMINI_ENABLED,
+                'gemini_prediction_enabled': GEMINI_ENABLED,
+                'gemini_summary_enabled': GEMINI_SUMMARY_ENABLED,
                 'max_calls': MAX_GEMINI_CALLS,
                 'calls_used': _gemini_call_count,
                 'estimated_tokens': _gemini_call_count * 100,
-                'cache_hits': len(_gemini_cache)
+                'cache_hits': len(_gemini_cache),
+                'note': 'Summary DISABLED by default to conserve tokens'
             }
         }
         
