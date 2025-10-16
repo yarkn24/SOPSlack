@@ -568,58 +568,47 @@
                 const transactions = await parseTransactionsWithAI(inputData);
                 
                 if (!transactions || transactions.length === 0) {
-                    // Fallback: If parse fails, treat as a question/description and ask Gemini
-                    console.log('Parse failed, asking Gemini directly...');
-                    document.getElementById('loading').querySelector('p').textContent = '🤖 Asking Gemini for help...';
+                    // Fallback: Force Gemini to parse messy/incomplete data
+                    console.log('Parse failed, forcing Gemini to format data...');
+                    document.getElementById('loading').querySelector('p').textContent = '🤖 Gemini formatting data...';
                     
-                    const geminiResponse = await fetch(`${API_URL}/analyze`, {
+                    // Try to parse with Gemini (force mode)
+                    const geminiParseResponse = await fetch(`${API_URL}/parse`, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
                         body: JSON.stringify({
-                            question: inputData,
-                            mode: 'chat'
+                            raw_text: inputData,
+                            use_gemini: true,
+                            force_gemini: true
                         })
                     });
                     
-                    if (!geminiResponse.ok) {
-                        throw new Error('Failed to get Gemini response');
+                    if (geminiParseResponse.ok) {
+                        const geminiParsedData = await geminiParseResponse.json();
+                        
+                        if (geminiParsedData.transactions && geminiParsedData.transactions.length > 0) {
+                            // Success! Gemini formatted the data, now analyze it
+                            console.log('✅ Gemini successfully formatted data:', geminiParsedData.transactions);
+                            document.getElementById('loading').querySelector('p').textContent = 'Analyzing formatted data...';
+                            
+                            const results = await analyzeAllTransactions(geminiParsedData.transactions, sopData);
+                            displayResults(results);
+                            
+                            // Show a note that Gemini helped format
+                            const resultsDiv = document.getElementById('results');
+                            const noteDiv = document.createElement('div');
+                            noteDiv.style.cssText = 'margin-top: 20px; padding: 15px; background: #FEEFE8; border-radius: 8px; border-left: 4px solid #F45D48;';
+                            noteDiv.innerHTML = '<strong>✨ Gemini Note:</strong> Your input was automatically formatted by Gemini AI for better analysis.';
+                            resultsDiv.insertBefore(noteDiv, resultsDiv.firstChild);
+                            
+                            return;
+                        }
                     }
                     
-                    const geminiData = await geminiResponse.json();
-                    
-                    // Display Gemini's response
-                    const resultsDiv = document.getElementById('results');
-                    resultsDiv.innerHTML = `
-                        <div class="transaction-group">
-                            <h3>💬 Gemini's Analysis</h3>
-                            <div class="transaction-detail" style="line-height: 1.8; white-space: pre-wrap;">
-                                ${geminiData.response || 'No response received'}
-                            </div>
-                            ${geminiData.suggested_label ? `
-                                <div class="sop-section" style="margin-top: 20px;">
-                                    <h4>🏷️ Suggested Label</h4>
-                                    <div class="sop-content">
-                                        <strong style="font-size: 1.3em; color: #F45D48;">${geminiData.suggested_label}</strong>
-                                        <div class="transaction-detail" style="margin-top: 10px;">
-                                            <strong>Confidence:</strong> ${geminiData.confidence || 'High'}
-                                        </div>
-                                        ${geminiData.sop_link ? `
-                                            <div class="transaction-detail">
-                                                <strong>📚 Related SOP:</strong> 
-                                                <a href="${geminiData.sop_link}" target="_blank" class="sop-link">${geminiData.sop_title || 'View SOP'}</a>
-                                            </div>
-                                        ` : ''}
-                                    </div>
-                                </div>
-                            ` : ''}
-                            <div style="margin-top: 20px; padding: 15px; background: #FEEFE8; border-radius: 8px; border-left: 4px solid #F45D48;">
-                                <strong>💡 Tip:</strong> For better results, provide complete transaction data including ID, amount, date, method, and account.
-                            </div>
-                        </div>
-                    `;
-                    
+                    // If Gemini parse also fails, show error with helpful message
+                    showError('Could not parse transaction data. Please provide more details (amount, account, description) or try the "Ask Gemini" tab for questions.');
                     return;
                 }
                 

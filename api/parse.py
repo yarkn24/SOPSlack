@@ -22,9 +22,10 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-pro')
 
-def parse_with_gemini(raw_text):
+def parse_with_gemini(raw_text, force_single=False):
     """
     Use Gemini to intelligently parse any transaction format (single or multiple)
+    Can handle messy/incomplete data and convert to structured format
     """
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return None, "Gemini not configured"
@@ -32,6 +33,10 @@ def parse_with_gemini(raw_text):
     # Check if multiple transactions (multiple lines with "claim" prefix)
     lines = raw_text.strip().split('\n')
     is_multiple = len(lines) > 1 and sum(1 for line in lines if 'claim' in line.lower()) > 1
+    
+    # Force single transaction mode if requested (for fallback scenarios)
+    if force_single:
+        is_multiple = False
     
     if is_multiple:
         prompt = f"""You are an expert bank transaction parser. Extract structured data from MULTIPLE transactions.
@@ -83,18 +88,23 @@ Example output:
 
 Now parse ALL transactions above:"""
     else:
-        prompt = f"""You are an expert bank transaction parser. Extract structured data from this transaction text.
+        prompt = f"""You are an expert bank transaction parser. Extract structured data from this transaction text. The input may be incomplete, messy, or just a description - do your best to infer the correct fields.
 
 Transaction text:
 {raw_text}
 
-Extract these fields (if present):
-- transaction_id: The transaction/claim/BT ID number (remove "claim_" or "claim" prefix)
-- amount: Dollar amount (keep $ sign, e.g., "$80.76")
-- date: Transaction date (any format)
-- payment_method: MUST be one of: "wire in", "ach", "check", "wire out", "ach external", "card"
-- origination_account_id: Bank account name - look for bank names like "Chase", "PNC", "Grasshopper", "Blueridge" followed by account type
-- description: Full transaction details (everything else)
+Extract these fields (infer if not explicitly stated):
+- transaction_id: The transaction/claim/BT ID number (use "unknown" if not provided)
+- amount: Dollar amount with $ sign (e.g., "$80.76", use "unknown" if not stated)
+- date: Transaction date (use "unknown" if not stated)
+- payment_method: MUST be one of: "wire in", "ach", "check", "wire out", "ach external", "card", "ach return", "zero balance transfer", "check paid"
+  * Look for keywords: "wire" → "wire in", "check" → "check", "ach" → "ach", "interest" → "ach external"
+- origination_account_id: Bank account name
+  * Look for: "Chase Wire In", "PNC Wire In", "Chase Recovery", "PNC Operations", "Grasshopper Operations"
+  * If you see "chase" + "wire" → "Chase Wire In"
+  * If you see "pnc" + "wire" → "PNC Wire In"
+  * Use "unknown" if unclear
+- description: Full transaction details (everything that doesn't fit other fields)
 
 **CRITICAL PAYMENT METHOD RULES:**
 - If you see "wire", "wire transfer", "wire in" → use "wire in"
@@ -384,6 +394,7 @@ class handler(BaseHTTPRequestHandler):
             # Accept both 'text' and 'raw_text' for flexibility
             raw_text = data.get('text', data.get('raw_text', '')).strip()
             use_gemini = data.get('use_gemini', True)
+            force_gemini = data.get('force_gemini', False)  # New: force Gemini even for simple inputs
             
             if not raw_text:
                 self.send_error(400, 'No transaction text provided')
@@ -392,24 +403,34 @@ class handler(BaseHTTPRequestHandler):
             parsed_transactions = []
             parsing_method = 'unknown'
             
-            # Try traditional parsing first (fast)
-            transactions, error = parse_traditional(raw_text)
-            
-            if transactions:
-                parsed_transactions = transactions
-                parsing_method = 'traditional'
-            elif use_gemini:
-                # Use Gemini for intelligent parsing (supports multiple transactions)
-                parsed_data, error = parse_with_gemini(raw_text)
+            # Force Gemini mode (for fallback from frontend)
+            if force_gemini and use_gemini:
+                parsed_data, error = parse_with_gemini(raw_text, force_single=True)
                 if parsed_data:
                     parsed_transactions = parsed_data if isinstance(parsed_data, list) else [parsed_data]
-                    parsing_method = 'gemini'
+                    parsing_method = 'gemini-forced'
+                else:
+                    self.send_error(400, f'Gemini parsing failed: {error}')
+                    return
+            else:
+                # Try traditional parsing first (fast)
+                transactions, error = parse_traditional(raw_text)
+                
+                if transactions:
+                    parsed_transactions = transactions
+                    parsing_method = 'traditional'
+                elif use_gemini:
+                    # Use Gemini for intelligent parsing (supports multiple transactions)
+                    parsed_data, error = parse_with_gemini(raw_text)
+                    if parsed_data:
+                        parsed_transactions = parsed_data if isinstance(parsed_data, list) else [parsed_data]
+                        parsing_method = 'gemini'
+                    else:
+                        self.send_error(400, f'Parsing failed: {error}')
+                        return
                 else:
                     self.send_error(400, f'Parsing failed: {error}')
                     return
-            else:
-                self.send_error(400, f'Parsing failed: {error}')
-                return
             
             # Send response
             self.send_response(200)
