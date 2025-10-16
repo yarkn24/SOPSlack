@@ -24,6 +24,10 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-flash-latest')
 
+# Session tracking for chat mode
+_chat_call_count = 0
+MAX_CHAT_CALLS = 10
+
 def ask_gemini_about_transaction(question):
     """
     Chat mode: Answer questions about transactions using Gemini
@@ -61,11 +65,23 @@ Available Agent Labels: {agent_list}
 Key Agent Definitions (from internal SOPs):{sop_context}
 
 Instructions:
-1. If question is about a transaction, suggest the correct agent label from the list above
-2. Explain using ONLY information from the SOP documentation
-3. If asking about differences between agents, compare using SOP definitions
-4. Keep response under 200 words
-5. Reference specific SOP when possible
+1. Start with: "This looks like a [AGENT_NAME] transaction because..."
+2. Suggest the correct agent label from the list above
+3. Explain WHY using ONLY SOP documentation
+4. Provide a 2-3 bullet summary of relevant SOP guidance:
+   - How to label
+   - How to reconcile
+   - Key points to remember
+5. Keep response clear and actionable
+6. Reference specific SOP when possible
+
+Response format:
+"This looks like a [AGENT] transaction because [reason from SOP].
+
+📚 SOP Summary:
+• [How to label]
+• [How to reconcile]
+• [Additional notes]"
 
 Response (using ONLY internal SOP data):"""
 
@@ -180,6 +196,8 @@ Respond with ONLY the label name, nothing else."""
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
+        global _chat_call_count  # Track chat session usage
+        
         try:
             # Read request body
             content_length = int(self.headers['Content-Length'])
@@ -193,8 +211,29 @@ class handler(BaseHTTPRequestHandler):
                     self.send_error(400, 'No question provided')
                     return
                 
-                # Ask Gemini
-                result = ask_gemini_about_transaction(question)
+                # Check session limit
+                if _chat_call_count >= MAX_CHAT_CALLS:
+                    result = {
+                        'response': f'⚠️ Chat session limit reached ({MAX_CHAT_CALLS} questions). Please refresh the page to continue.',
+                        'suggested_label': None,
+                        'limit_reached': True,
+                        'calls_used': _chat_call_count,
+                        'estimated_tokens': _chat_call_count * 500
+                    }
+                else:
+                    # Increment counter
+                    _chat_call_count += 1
+                    
+                    # Ask Gemini
+                    result = ask_gemini_about_transaction(question)
+                    
+                    # Add usage stats
+                    result['calls_used'] = _chat_call_count
+                    result['calls_remaining'] = MAX_CHAT_CALLS - _chat_call_count
+                    result['estimated_tokens'] = _chat_call_count * 500  # ~500 tokens per chat
+                    
+                    if _chat_call_count >= MAX_CHAT_CALLS - 2:
+                        result['warning'] = f'⚠️ Only {MAX_CHAT_CALLS - _chat_call_count} questions remaining in this session'
                 
                 # Send response
                 self.send_response(200)
