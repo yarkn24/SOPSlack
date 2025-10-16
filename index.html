@@ -13,7 +13,7 @@
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #FFF8F3 0%, #FFEEE6 100%);
+            background: #F8F5F2;
             min-height: 100vh;
             padding: 20px;
         }
@@ -22,13 +22,13 @@
             max-width: 1200px;
             margin: 0 auto;
             background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(244, 93, 72, 0.15);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             overflow: hidden;
         }
 
         .header {
-            background: linear-gradient(135deg, #F45D48 0%, #FF6B35 100%);
+            background: #F45D48;
             color: white;
             padding: 40px;
             text-align: center;
@@ -38,6 +38,10 @@
             font-size: 2.5em;
             margin-bottom: 10px;
             font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
         }
 
         .header p {
@@ -45,21 +49,40 @@
             opacity: 0.9;
         }
 
+        .gusto-animation {
+            width: 60px;
+            height: 60px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.1);
+                opacity: 0.8;
+            }
+        }
+
         .content {
             padding: 40px;
         }
 
         .input-section {
-            background: #f8f9fa;
+            background: #FBFAFA;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 12px;
             margin-bottom: 30px;
+            border: 1px solid #F4F4F3;
         }
 
         .input-section h2 {
-            color: #333;
+            color: #222525;
             margin-bottom: 20px;
             font-size: 1.5em;
+            font-weight: 600;
         }
 
         .input-tabs {
@@ -121,11 +144,12 @@
             text-align: center;
             cursor: pointer;
             transition: all 0.3s;
+            background: #FBFAFA;
         }
 
         .file-upload:hover {
-            background: #FFF5F3;
-            border-color: #FF6B35;
+            background: #FEEFE8;
+            border-color: #EF523C;
         }
 
         .file-upload input {
@@ -140,7 +164,7 @@
         .analyze-button {
             width: 100%;
             padding: 15px;
-            background: linear-gradient(135deg, #F45D48 0%, #FF6B35 100%);
+            background: #F45D48;
             color: white;
             border: none;
             border-radius: 10px;
@@ -152,8 +176,9 @@
         }
 
         .analyze-button:hover {
+            background: #EF523C;
             transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(244, 93, 72, 0.4);
+            box-shadow: 0 6px 16px rgba(244, 93, 72, 0.3);
         }
 
         .analyze-button:disabled {
@@ -184,9 +209,10 @@
 
         .transaction-detail {
             margin-bottom: 15px;
-            padding: 10px;
-            background: #f8f9fa;
+            padding: 12px;
+            background: #FBFAFA;
             border-radius: 8px;
+            border-left: 3px solid #F4F4F3;
         }
 
         .transaction-detail strong {
@@ -196,12 +222,12 @@
         }
 
         .sop-section {
-            background: linear-gradient(135deg, #FFF5F3 0%, #FFE8E3 100%);
+            background: #FEEFE8;
             padding: 30px;
-            border-radius: 15px;
+            border-radius: 12px;
             margin-top: 25px;
-            border: 3px solid #F45D48;
-            box-shadow: 0 4px 15px rgba(244, 93, 72, 0.2);
+            border: 2px solid #F45D48;
+            box-shadow: 0 2px 12px rgba(244, 93, 72, 0.15);
         }
 
         .sop-section h4 {
@@ -254,21 +280,21 @@
         .additional-sop-item {
             background: white;
             padding: 18px;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 12px;
-            border-left: 5px solid #FF6B35;
-            box-shadow: 0 2px 6px rgba(255, 107, 53, 0.15);
-            transition: transform 0.2s;
+            border-left: 4px solid #F45D48;
+            box-shadow: 0 2px 6px rgba(244, 93, 72, 0.1);
+            transition: all 0.2s;
         }
 
         .additional-sop-item:hover {
             transform: translateX(5px);
-            box-shadow: 0 4px 12px rgba(255, 107, 53, 0.25);
+            box-shadow: 0 3px 10px rgba(244, 93, 72, 0.2);
         }
 
         .additional-sop-item strong {
             font-size: 1.05em;
-            color: #FF6B35;
+            color: #F45D48;
         }
 
         .loading {
@@ -282,13 +308,10 @@
         }
 
         .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #F45D48;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
+            width: 100px;
+            height: 100px;
             margin: 0 auto 20px;
+            background: url('penny-loader.gif') center/contain no-repeat;
         }
 
         @keyframes spin {
@@ -306,12 +329,12 @@
         }
 
         .success-message {
-            background: #efe;
-            color: #3c3;
+            background: #FEEFE8;
+            color: #F45D48;
             padding: 15px;
             border-radius: 10px;
             margin-top: 20px;
-            border-left: 4px solid #3c3;
+            border-left: 4px solid #F45D48;
         }
 
         .sample-format {
@@ -356,7 +379,7 @@
                         <h3>Drop CSV file here or click to browse</h3>
                         <p>Supports CSV files with transaction data</p>
                     </div>
-                    <div id="file-name" style="margin-top: 15px; text-align: center; color: #667eea; font-weight: 600;"></div>
+                    <div id="file-name" style="margin-top: 15px; text-align: center; color: #F45D48; font-weight: 600;"></div>
                 </div>
 
                 <button class="analyze-button" onclick="analyzeTransactions()">
