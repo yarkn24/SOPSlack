@@ -168,6 +168,17 @@ def predict_rule_based(transaction):
     if amount < 1.0 and amount > 0:
         return 'Bad Debt', 'rule-based', 'Amount less than $1.00', 0.99
     
+    # FALLBACK for description-only mode: Company name detection
+    # If description contains company indicators (LLC, INC, CORP, VENTURES, etc.) → likely Risk
+    if description_only_mode:
+        company_indicators = ['LLC', 'INC', 'CORP', 'CORPORATION', 'VENTURES', 'COMPANY', 
+                             'PARTNERS', 'LIMITED', 'LTD', 'ASSOCIATION', 'CO ', ' CO,']
+        has_company = any(indicator in desc for indicator in company_indicators)
+        
+        # Also check for CUSTOMER= field (already checked above, but as final fallback)
+        if has_company or 'CUSTOMER=' in desc or 'B/O CUSTOMER=' in desc:
+            return 'Risk', 'rule-based', 'Company name detected in description (likely wire transaction)', 0.85
+    
     return None, None, None, 0
 
 # ML model removed for faster deployment (Vercel Hobby plan limits)
