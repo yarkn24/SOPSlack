@@ -202,7 +202,7 @@ Label (one word):"""
         
         # Validate against known labels
         if label in COMPLETE_SOP_MAPPING:
-            result = (label, f'ml-based (Gemini-{_gemini_call_count})', f'Pattern match (~100tk)', 0.75)
+            result = (label, f'ml-based (Gemini-{_gemini_call_count})', f'AI-based pattern analysis', 0.75)
             _gemini_cache[cache_key] = result
             return result
         
@@ -210,12 +210,12 @@ Label (one word):"""
         label_upper = label.upper()
         for known_label in COMPLETE_SOP_MAPPING.keys():
             if known_label.upper() in label_upper or label_upper in known_label.upper():
-                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', f'Fuzzy: {label} (~100tk)', 0.70)
+                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', f'Similar to "{label}" (AI suggestion)', 0.70)
                 _gemini_cache[cache_key] = result
                 return result
         
         # No match - return Unknown (don't cache unknowns)
-        return 'Unknown', f'ml-based (Gemini-{_gemini_call_count})', f'No pattern match (~100tk)', 0.50
+        return 'Unknown', f'ml-based (Gemini-{_gemini_call_count})', f'No clear pattern found (AI)', 0.50
             
     except Exception as e:
         return 'Unknown', 'unknown', f'AI call failed', 0
