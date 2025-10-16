@@ -54,7 +54,7 @@ async function analyzeAllTransactions(transactions, sopData) {
      * Send transactions to backend for analysis
      */
     try {
-        const response = await fetch(`${API_URL}/analyze`, {
+        const response = await fetch(`${API_URL}/predict`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
