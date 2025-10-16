@@ -4,7 +4,7 @@
 
 const API_URL = window.location.hostname === 'localhost' 
     ? 'http://localhost:5000/api'
-    : '/api';  // For production
+    : '/api';  // For Vercel serverless functions
 
 function parseTransactions(inputData) {
     /**
