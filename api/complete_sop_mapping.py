@@ -2,14 +2,14 @@
 """
 Complete SOP Mapping - ALL labels from SOP
 Extracted from: Daily Operations : How to Label & Reconcile
-Updated: 10 am → 12 am PST (CONFIRMED LIVE)
+Updated: 10 am → 12 pm PST (noon, not midnight!)
 """
 
 COMPLETE_SOP_MAPPING = {
     # EXISTING LABELS
     "Risk": {
         "labeling": "If the account is 'PNC Wire In, or Chase Wire In' you should label that BT as Risk. ⚠️ IMPORTANT: If the account is 'Chase Payroll Incoming Wires' and the transaction date is TODAY, DO NOT label it yet. Wait until tomorrow to label it as Risk.",
-        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 12 am PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. If the account of the BT is Payroll/wireins you should reach out to the credit ops team through the risk-payments channel. (Recovery) —> Risk Channel —> collections (Payroll/wireins) —> Risk Channel —> credit ops You should link BT, company, and payroll to your message.",
+        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 12 pm PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. If the account of the BT is Payroll/wireins you should reach out to the credit ops team through the risk-payments channel. (Recovery) —> Risk Channel —> collections (Payroll/wireins) —> Risk Channel —> credit ops You should link BT, company, and payroll to your message.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
         "additional_sops": [
@@ -23,7 +23,7 @@ COMPLETE_SOP_MAPPING = {
     
     "Recovery Wire": {
         "labeling": "If the account is 'Chase Recovery' you should label that BT as Recovery Wire",
-        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 12 am PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. (Recovery) —> Risk Channel —> collections",
+        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 12 pm PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. (Recovery) —> Risk Channel —> collections",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
         "additional_sops": [
