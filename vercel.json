@@ -4,9 +4,17 @@
     {
       "src": "api/*.py",
       "use": "@vercel/python"
+    },
+    {
+      "src": "ml-service/*.py",
+      "use": "@vercel/python"
     }
   ],
   "routes": [
+    {
+      "src": "/api/ml",
+      "dest": "/ml-service/predict_ml.py"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/api/$1"
@@ -17,4 +25,3 @@
     }
   ]
 }
-

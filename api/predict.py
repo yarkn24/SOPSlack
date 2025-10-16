@@ -27,23 +27,8 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     gemini_model = genai.GenerativeModel('gemini-pro')
 
-# Load ML Model (XGBoost + scipy, NO scikit-learn!)
-MODEL_DIR = os.path.dirname(__file__)
-ML_MODEL = None
-TFIDF = None
-LABEL_ENCODER = None
-
-try:
-    # Load with encoding compatibility for different Python versions
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_model.pkl'), 'rb') as f:
-        ML_MODEL = pickle.load(f, encoding='latin1')
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_tfidf.pkl'), 'rb') as f:
-        TFIDF = pickle.load(f, encoding='latin1')
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_agent_encoder.pkl'), 'rb') as f:
-        LABEL_ENCODER = pickle.load(f, encoding='latin1')
-    print("✅ ML Models loaded successfully (XGBoost direct)")
-except Exception as e:
-    print(f"⚠️ ML Models not available: {e}")
+# ML Microservice URL (separate Vercel function)
+ML_SERVICE_URL = os.environ.get('ML_SERVICE_URL', 'https://sop-slack.vercel.app/api/ml')
 
 def clean_text(text):
     """Clean transaction description"""
@@ -134,30 +119,32 @@ def predict_rule_based(transaction):
     return None, None, None, 0
 
 def predict_ml(transaction):
-    """Tier 2: Trained ML model (98% accuracy)"""
-    if not ML_MODEL or not TFIDF or not LABEL_ENCODER:
-        return None, None, None, 0
-    
+    """Tier 2: Trained ML model (via microservice)"""
     try:
-        # Prepare features (same as training)
-        desc = clean_text(transaction.get('description', ''))
-        account = clean_text(transaction.get('origination_account_id', ''))
-        combined = f"{desc} {account}"
+        import urllib.request
+        import urllib.error
         
-        # Transform with TF-IDF
-        features = TFIDF.transform([combined])
+        # Call ML microservice
+        data = json.dumps({'transaction': transaction}).encode('utf-8')
+        req = urllib.request.Request(
+            ML_SERVICE_URL,
+            data=data,
+            headers={'Content-Type': 'application/json'}
+        )
         
-        # Predict
-        prediction = ML_MODEL.predict(features)[0]
-        probability = ML_MODEL.predict_proba(features)[0].max()
+        with urllib.request.urlopen(req, timeout=5) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            
+        label = result.get('label')
+        confidence = result.get('confidence', 0)
         
-        # Decode label
-        label = LABEL_ENCODER.inverse_transform([prediction])[0]
-        
-        return label, 'ml-based (Trained Model)', f'ML model prediction with {probability:.1%} confidence', probability
-        
+        if label and confidence > 0.7:
+            return label, 'ml-based (Trained Model)', f'ML model prediction with {confidence:.1%} confidence', confidence
+        else:
+            return None, None, None, 0
+            
     except Exception as e:
-        print(f"ML prediction error: {e}")
+        print(f"ML microservice error: {e}")
         return None, None, None, 0
 
 def predict_gemini(transaction):

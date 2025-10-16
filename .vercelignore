@@ -1,4 +1,6 @@
-# ML models are included (11MB total)
+# ML models only in ml-service (not in main api)
+api/*.pkl
+
 # Training & test files
 *train*.py
 *test*.py

@@ -1,3 +1,1 @@
 google-generativeai
-xgboost==2.0.3
-scipy
