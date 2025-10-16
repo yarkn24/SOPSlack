@@ -252,8 +252,8 @@ Label:"""
     else:
         prompt = f"""Label this bank transaction (internal data only, no web search).
 
-RULES:
-Wire In→Risk | CUSTOMER= (non-Gusto)→Risk | Wire indicators (YOUR REF=, FED ID=, etc.) + non-Gusto→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
+RULES (use Account field primarily):
+Wire In account→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
 
 LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire
 
