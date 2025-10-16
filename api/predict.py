@@ -319,6 +319,8 @@ Emoji + short sentence per step."""
     
     def do_GET(self):
         """Handle GET for health check"""
+        global _gemini_call_count
+        
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
