@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 try:
     import google.generativeai as genai
-    from complete_sop_mapping import COMPLETE_SOP_MAPPING
+    from api.complete_sop_mapping import COMPLETE_SOP_MAPPING
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
