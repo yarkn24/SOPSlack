@@ -1,6 +1,6 @@
 """
-3-Tier Prediction System: Rule-Based → Trained ML → Gemini AI
-Achieves 98%+ accuracy with fallback support
+2-Tier Prediction System: Rule-Based → Gemini AI
+Fast deployment, 92-95% accuracy
 """
 
 from http.server import BaseHTTPRequestHandler
@@ -27,8 +27,7 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     gemini_model = genai.GenerativeModel('gemini-pro')
 
-# ML Microservice URL (separate Vercel function)
-ML_SERVICE_URL = os.environ.get('ML_SERVICE_URL', 'https://sop-slack.vercel.app/api/ml')
+# ML removed for faster Vercel deployment (Hobby plan 15min limit)
 
 def clean_text(text):
     """Clean transaction description"""
@@ -118,34 +117,7 @@ def predict_rule_based(transaction):
     
     return None, None, None, 0
 
-def predict_ml(transaction):
-    """Tier 2: Trained ML model (via microservice)"""
-    try:
-        import urllib.request
-        import urllib.error
-        
-        # Call ML microservice
-        data = json.dumps({'transaction': transaction}).encode('utf-8')
-        req = urllib.request.Request(
-            ML_SERVICE_URL,
-            data=data,
-            headers={'Content-Type': 'application/json'}
-        )
-        
-        with urllib.request.urlopen(req, timeout=5) as response:
-            result = json.loads(response.read().decode('utf-8'))
-            
-        label = result.get('label')
-        confidence = result.get('confidence', 0)
-        
-        if label and confidence > 0.7:
-            return label, 'ml-based (Trained Model)', f'ML model prediction with {confidence:.1%} confidence', confidence
-        else:
-            return None, None, None, 0
-            
-    except Exception as e:
-        print(f"ML microservice error: {e}")
-        return None, None, None, 0
+# ML model removed for faster deployment (Vercel Hobby plan limits)
 
 def predict_gemini(transaction):
     """Tier 3: Gemini AI fallback"""
@@ -177,19 +149,14 @@ Respond with ONLY the label name."""
         return 'Unknown', 'unknown', f'All prediction methods failed', 0
 
 def predict_transaction(transaction):
-    """3-Tier prediction with confidence scores"""
+    """2-Tier prediction: Rule-based → Gemini AI"""
     
     # Tier 1: Rule-based (fastest, most accurate)
     label, method, reason, confidence = predict_rule_based(transaction)
     if label and confidence > 0.9:
         return label, method, reason, confidence
     
-    # Tier 2: Trained ML Model (98% accuracy)
-    label, method, reason, confidence = predict_ml(transaction)
-    if label and confidence > 0.7:
-        return label, method, reason, confidence
-    
-    # Tier 3: Gemini AI (fallback)
+    # Tier 2: Gemini AI (fallback)
     label, method, reason, confidence = predict_gemini(transaction)
     return label, method, reason, confidence
 
@@ -208,7 +175,7 @@ class handler(BaseHTTPRequestHandler):
                 return
             
             results = []
-            stats = {'rule_based': 0, 'ml_model': 0, 'gemini': 0}
+            stats = {'rule_based': 0, 'gemini': 0}
             
             for txn in transactions:
                 label, method, reason, confidence = predict_transaction(txn)
@@ -216,8 +183,6 @@ class handler(BaseHTTPRequestHandler):
                 # Track stats
                 if 'rule-based' in method:
                     stats['rule_based'] += 1
-                elif 'Trained Model' in method:
-                    stats['ml_model'] += 1
                 elif 'Gemini' in method:
                     stats['gemini'] += 1
                 
@@ -265,7 +230,6 @@ Format: Emoji + short sentence per step."""
                 'count': len(results),
                 'results': results,
                 'stats': stats,
-                'ml_available': bool(ML_MODEL),
                 'gemini_available': bool(GEMINI_API_KEY)
             }
             
@@ -291,11 +255,9 @@ Format: Emoji + short sentence per step."""
         
         response = {
             'status': 'healthy',
-            'ml_model_loaded': bool(ML_MODEL),
             'gemini_configured': bool(GEMINI_API_KEY),
-            'tier_1': 'Rule-Based (98%+)',
-            'tier_2': 'Trained ML Model (98%+)' if ML_MODEL else 'Not loaded',
-            'tier_3': 'Gemini AI (backup)' if GEMINI_API_KEY else 'Not configured'
+            'tier_1': 'Rule-Based (90%+)',
+            'tier_2': 'Gemini AI (backup)' if GEMINI_API_KEY else 'Not configured'
         }
         
         self.wfile.write(json.dumps(response).encode())
