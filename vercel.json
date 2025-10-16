@@ -28,6 +28,10 @@
       "dest": "/api/parse.py"
     },
     {
+      "src": "/api/sop",
+      "dest": "/api/sop.py"
+    },
+    {
       "src": "/(.*)",
       "dest": "/$1"
     }

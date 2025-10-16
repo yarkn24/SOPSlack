@@ -359,12 +359,17 @@
         let currentTab = 'text';
         let uploadedData = null;
 
-        // Load SOP data
-        fetch('sop_data.json')
-            .then(response => response.json())
+        // Load SOP data from API
+        fetch('/api/sop')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 sopData = data;
-                console.log('✅ SOP data loaded');
+                console.log('✅ SOP data loaded from API');
             })
             .catch(error => {
                 console.error('Error loading SOP data:', error);
