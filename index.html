@@ -361,7 +361,7 @@
                 
                 <div class="input-tabs">
                     <button class="tab-button active" onclick="switchTab('text')">Analyze Transactions</button>
-                    <button class="tab-button" onclick="switchTab('ask')">Ask Gemini</button>
+                    <button class="tab-button" onclick="switchTab('ask')">Ask Gemini <span style="font-size: 0.8em; opacity: 0.7;">(Beta)</span></button>
                     <button class="tab-button" onclick="switchTab('csv')">CSV Upload</button>
                 </div>
 
@@ -377,7 +377,7 @@
                     <textarea id="ask-input" placeholder="💬 Ask Gemini about transactions or BT descriptions!&#10;&#10;Examples:&#10;&#10;❓ What does this transaction mean?&#10;claim 59370551 $1,020.00 10/15/2025 wire in Chase Recovery&#10;YOUR REF=NOTPROVIDED,REC FROM=PIMA FEDERAL...&#10;&#10;❓ Which agent should I use for INTEREST PAYMENT transactions?&#10;&#10;❓ How do I label ACH RETURN transactions?&#10;&#10;❓ What is the difference between ZBT and Wire In?&#10;&#10;✨ Gemini will analyze and suggest the correct label + SOP guidance!"></textarea>
                     
                     <div class="sample-format">
-                        <strong>🤖 Chat Mode:</strong> Ask questions about transactions, labels, or descriptions. Gemini will check rules first, then provide AI insights!
+                        <strong>🤖 Chat Mode (Beta):</strong> Ask questions about transactions, labels, or descriptions. Gemini will check rules first, then provide AI insights! This feature is in beta - results may vary.
                     </div>
                 </div>
 
@@ -446,7 +446,7 @@
             // Update action button text
             const actionButton = document.getElementById('action-button');
             if (tab === 'ask') {
-                actionButton.innerHTML = '💬 Ask Gemini';
+                actionButton.innerHTML = '💬 Ask Gemini <span style="font-size: 0.85em; opacity: 0.8;">(Beta)</span>';
             } else {
                 actionButton.innerHTML = '🔍 Analyze Transactions';
             }
