@@ -407,7 +407,7 @@ def predict_transaction(transaction):
     if is_rule_based:
         # Tier 1: Rule-based (fastest, most accurate, NO tokens!)
         label, method, reason, confidence = predict_rule_based(transaction)
-        if label != 'Unknown' and confidence > 0.9:
+        if label is not None and label != 'Unknown' and confidence > 0.9:
             return label, method, reason, confidence
     
     # Tier 2: Gemini AI (for complex/edge cases only)
