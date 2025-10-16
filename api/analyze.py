@@ -49,13 +49,12 @@ def ask_gemini_about_transaction(question):
         if labeling and len(labeling) < 500:  # Keep context short
             sop_context += f"\n{agent}: {labeling[:200]}"
     
-    prompt = f"""You are a Gusto internal bank reconciliation assistant. Answer using ONLY the internal SOP documentation provided below.
+    prompt = f"""You are a Gusto internal bank reconciliation assistant. Answer questions using our internal SOP documentation first.
 
-⚠️ CRITICAL RULES:
-- DO NOT use external knowledge or web search
-- ONLY use the SOP documentation provided below
-- If the answer is not in the SOP, say "This information is not in our SOPs"
-- All information MUST come from Gusto's internal documentation
+⚠️ RESPONSE PRIORITY:
+1. FIRST: Check internal SOP documentation below
+2. If answer is in SOP: Use ONLY SOP information
+3. If answer is NOT in SOP: Say "📋 This information is not in our SOPs" then provide general banking knowledge as a helpful reference
 
 Question: {question}
 
@@ -65,17 +64,17 @@ Available Agent Labels: {agent_list}
 Key Agent Definitions (from internal SOPs):{sop_context}
 
 Instructions:
-1. Start with: "This looks like a [AGENT_NAME] transaction because..."
-2. Suggest the correct agent label from the list above
-3. Explain WHY using ONLY SOP documentation
-4. Provide a 2-3 bullet summary of relevant SOP guidance:
-   - How to label
-   - How to reconcile
-   - Key points to remember
-5. Keep response clear and actionable
-6. Reference specific SOP when possible
+1. Check if this topic is covered in our SOPs above
+2. If YES (in SOP):
+   - Start with: "This looks like a [AGENT_NAME] transaction because..."
+   - Explain using SOP documentation
+   - Provide 2-3 bullet SOP summary
+3. If NO (not in SOP):
+   - Start with: "📋 This information is not in our SOPs."
+   - Then provide general banking knowledge as reference
+   - Suggest consulting with team lead
 
-Response format:
+Response format (if in SOP):
 "This looks like a [AGENT] transaction because [reason from SOP].
 
 📚 SOP Summary:
@@ -83,7 +82,14 @@ Response format:
 • [How to reconcile]
 • [Additional notes]"
 
-Response (using ONLY internal SOP data):"""
+Response format (if not in SOP):
+"📋 This information is not in our SOPs.
+
+As general banking reference: [general information]
+
+⚠️ Please consult with your team lead for Gusto-specific guidance."
+
+Response:"""
 
     try:
         response = model.generate_content(prompt)

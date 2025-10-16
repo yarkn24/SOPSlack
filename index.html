@@ -492,7 +492,29 @@
 
                 const data = await response.json();
                 
-                // Display Gemini's response
+                // Check if limit reached
+                if (data.limit_reached) {
+                    const resultsDiv = document.getElementById('results');
+                    resultsDiv.innerHTML = `
+                        <div class="transaction-group" style="border: 3px solid #F45D48;">
+                            <h3>🛑 Session Limit Reached</h3>
+                            <div style="padding: 20px; background: #FEEFE8; border-radius: 8px; text-align: center;">
+                                <p style="font-size: 1.2em; margin-bottom: 15px;">
+                                    You've used <strong>${data.calls_used}</strong> Gemini questions in this session.
+                                </p>
+                                <p style="margin-bottom: 15px;">
+                                    <strong>Estimated tokens used:</strong> ~${data.estimated_tokens.toLocaleString()}
+                                </p>
+                                <button onclick="location.reload()" class="analyze-button" style="width: auto; padding: 12px 30px;">
+                                    🔄 Refresh Page to Continue
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // Display Gemini's response (no usage tracking unless warning)
                 const resultsDiv = document.getElementById('results');
                 resultsDiv.innerHTML = `
                     <div class="transaction-group">
@@ -515,6 +537,12 @@
                                         </div>
                                     ` : ''}
                                 </div>
+                            </div>
+                        ` : ''}
+                        ${data.warning ? `
+                            <div style="margin-top: 20px; padding: 15px; background: #FFF2DF; border-radius: 8px; border-left: 4px solid #F45D48;">
+                                <strong>${data.warning}</strong><br>
+                                <small>Estimated tokens: ~${(data.estimated_tokens || 0).toLocaleString()}</small>
                             </div>
                         ` : ''}
                     </div>
