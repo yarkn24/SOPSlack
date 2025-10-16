@@ -27,22 +27,10 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     gemini_model = genai.GenerativeModel('gemini-pro')
 
-# Load trained ML model (Tier 2)
-MODEL_DIR = os.path.dirname(__file__)
+# ML Model disabled for Vercel (size limit)
 ML_MODEL = None
 TFIDF = None
 LABEL_ENCODER = None
-
-try:
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_model.pkl'), 'rb') as f:
-        ML_MODEL = pickle.load(f)
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_tfidf.pkl'), 'rb') as f:
-        TFIDF = pickle.load(f)
-    with open(os.path.join(MODEL_DIR, 'ultra_fast_agent_encoder.pkl'), 'rb') as f:
-        LABEL_ENCODER = pickle.load(f)
-    print("✅ ML Model loaded successfully")
-except Exception as e:
-    print(f"⚠️ ML Model not available: {e}")
 
 def clean_text(text):
     """Clean transaction description"""
