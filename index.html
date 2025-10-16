@@ -322,11 +322,10 @@
                 </div>
 
                 <div id="text-tab" class="tab-content active">
-                    <textarea id="text-input" placeholder="Paste transaction data here...&#10;&#10;Format:&#10;ID | Amount | Date | Method | Account | Description&#10;&#10;Example:&#10;59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF 25/10/14..."></textarea>
+                    <textarea id="text-input" placeholder="🤖 Paste transaction in ANY format - Gemini will understand!&#10;&#10;Examples:&#10;&#10;Structured:&#10;59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF...&#10;&#10;Natural:&#10;Transaction 59316175 for $80.76 on 10/15/2025, ach transaction from Grasshopper Operations, vendor: GUSTO&#10;&#10;Even messy:&#10;59316175    $80.76  10/15/2025 12:00:00am    ach transaction   Grasshopper Operations...&#10;&#10;✨ Gemini AI will parse it automatically!"></textarea>
                     
                     <div class="sample-format">
-                        <strong>Sample Format:</strong><br>
-                        59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF 25/10/14,REC FROM=...
+                        <strong>✨ Powered by Gemini AI:</strong> Just paste your transaction data in any format - no need to format it perfectly!
                     </div>
                 </div>
 
@@ -400,7 +399,7 @@
             }
         }
 
-        function analyzeTransactions() {
+        async function analyzeTransactions() {
             if (!sopData) {
                 showError('SOP data not loaded yet. Please wait and try again.');
                 return;
@@ -422,18 +421,26 @@
             document.getElementById('loading').classList.add('active');
             document.getElementById('results').innerHTML = '';
 
-            // Parse and analyze (with small delay for UI update)
-            setTimeout(() => {
-                try {
-                    const transactions = parseTransactions(inputData);
-                    const results = analyzeAllTransactions(transactions, sopData);
-                    displayResults(results);
-                } catch (error) {
-                    showError(`Error analyzing transactions: ${error.message}`);
-                } finally {
-                    document.getElementById('loading').classList.remove('active');
+            try {
+                // Step 1: Parse with Gemini AI (smart parsing)
+                const transactions = await parseTransactionsWithAI(inputData);
+                
+                if (!transactions || transactions.length === 0) {
+                    showError('No transactions could be parsed. Please check the format.');
+                    return;
                 }
-            }, 100);
+                
+                // Step 2: Analyze parsed transactions
+                const results = await analyzeAllTransactions(transactions, sopData);
+                
+                // Step 3: Display results
+                displayResults(results);
+                
+            } catch (error) {
+                showError(`Error analyzing transactions: ${error.message}`);
+            } finally {
+                document.getElementById('loading').classList.remove('active');
+            }
         }
 
         function showError(message) {

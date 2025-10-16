@@ -49,9 +49,39 @@ function parseTransactions(inputData) {
     return transactions;
 }
 
+async function parseTransactionsWithAI(rawText) {
+    /**
+     * Step 1: Parse raw text with Gemini AI
+     */
+    try {
+        const response = await fetch(`${API_URL}/parse`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                raw_text: rawText,
+                use_gemini: true
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`Parse error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        return data.transactions;
+        
+    } catch (error) {
+        console.error('Error parsing transactions:', error);
+        // Fallback to traditional parsing
+        return parseTransactions(rawText);
+    }
+}
+
 async function analyzeAllTransactions(transactions, sopData) {
     /**
-     * Send transactions to backend for analysis
+     * Step 2: Send parsed transactions to prediction API
      */
     try {
         const response = await fetch(`${API_URL}/predict`, {
