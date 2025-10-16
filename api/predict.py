@@ -124,7 +124,7 @@ _gemini_cache = {}
 _gemini_call_count = 0  # Track Gemini usage for demo day
 MAX_GEMINI_CALLS = int(os.environ.get('MAX_GEMINI_CALLS', '50'))  # Default: max 50 calls/session
 GEMINI_ENABLED = os.environ.get('GEMINI_ENABLED', 'true').lower() == 'true'  # Can disable for demo!
-GEMINI_SUMMARY_ENABLED = os.environ.get('GEMINI_SUMMARY_ENABLED', 'false').lower() == 'true'  # Default: OFF for token saving!
+GEMINI_SUMMARY_ENABLED = os.environ.get('GEMINI_SUMMARY_ENABLED', 'true').lower() == 'true'  # Default: ON (with warnings!)
 
 def predict_gemini(transaction):
     """Tier 2: Gemini AI - ULTRA CONSERVATIVE (Demo-safe!)"""
@@ -277,6 +277,14 @@ Emoji + short sentence per step."""
             
             # Calculate estimated token usage
             estimated_tokens = _gemini_call_count * 100  # ~100 tokens per call
+            usage_percentage = (_gemini_call_count / MAX_GEMINI_CALLS * 100) if MAX_GEMINI_CALLS > 0 else 0
+            
+            # Generate warning if over 50% usage
+            warning = None
+            if usage_percentage >= 75:
+                warning = f"⚠️ CRITICAL: {usage_percentage:.0f}% token limit reached! Consider disabling Gemini summary."
+            elif usage_percentage >= 50:
+                warning = f"⚠️ WARNING: {usage_percentage:.0f}% token limit reached! {MAX_GEMINI_CALLS - _gemini_call_count} calls remaining."
             
             response = {
                 'success': True,
@@ -285,11 +293,14 @@ Emoji + short sentence per step."""
                 'stats': stats,
                 'gemini_usage': {
                     'enabled': GEMINI_ENABLED,
+                    'summary_enabled': GEMINI_SUMMARY_ENABLED,
                     'calls_this_session': _gemini_call_count,
                     'max_calls_allowed': MAX_GEMINI_CALLS,
                     'remaining_calls': max(0, MAX_GEMINI_CALLS - _gemini_call_count),
                     'estimated_tokens_used': estimated_tokens,
-                    'cache_size': len(_gemini_cache)
+                    'usage_percentage': f"{usage_percentage:.0f}%",
+                    'cache_size': len(_gemini_cache),
+                    'warning': warning
                 }
             }
             
@@ -313,6 +324,13 @@ Emoji + short sentence per step."""
         self.send_header('Access-Control-Allow-Origin', '*')
         self.end_headers()
         
+        usage_percentage = (_gemini_call_count / MAX_GEMINI_CALLS * 100) if MAX_GEMINI_CALLS > 0 else 0
+        warning = None
+        if usage_percentage >= 75:
+            warning = f"⚠️ CRITICAL: {usage_percentage:.0f}% limit reached!"
+        elif usage_percentage >= 50:
+            warning = f"⚠️ WARNING: {usage_percentage:.0f}% limit reached!"
+        
         response = {
             'status': 'healthy',
             'tier_1': 'Rule-Based (95%+ - 0 tokens)',
@@ -322,9 +340,11 @@ Emoji + short sentence per step."""
                 'gemini_summary_enabled': GEMINI_SUMMARY_ENABLED,
                 'max_calls': MAX_GEMINI_CALLS,
                 'calls_used': _gemini_call_count,
+                'usage_percentage': f"{usage_percentage:.0f}%",
                 'estimated_tokens': _gemini_call_count * 100,
                 'cache_hits': len(_gemini_cache),
-                'note': 'Summary DISABLED by default to conserve tokens'
+                'warning': warning,
+                'note': 'Gemini Summary ENABLED - warnings at 50%+ usage'
             }
         }
         
