@@ -171,15 +171,24 @@ def predict_rule_based(transaction):
     if amount < 1.0 and amount > 0:
         return 'Bad Debt', 'rule-based', 'Amount less than $1.00', 0.99
     
-    # FALLBACK for description-only mode: Company name detection
-    # If description contains company indicators (LLC, INC, CORP, VENTURES, etc.) → likely Risk
+    # FALLBACK for description-only mode: Wire transfer / Company name detection
     if description_only_mode:
+        # Wire transfer indicators (use original description for "=" detection)
+        wire_indicators = ['YOUR REF=', 'FED ID=', 'B/O BANK=', 'REC FROM=', 'REMARK=', 
+                          'FED REF=', 'B/O CUSTOMER=', 'CUSTOMER=']
+        has_wire_indicator = any(indicator in desc_original for indicator in wire_indicators)
+        
+        # Company name suffixes
         company_indicators = ['LLC', 'INC', 'CORP', 'CORPORATION', 'VENTURES', 'COMPANY', 
-                             'PARTNERS', 'LIMITED', 'LTD', 'ASSOCIATION', 'CO ', ' CO,']
+                             'PARTNERS', 'LIMITED', 'LTD', 'ASSOCIATION', 'CO ', ' CO,', 'GROUP']
         has_company = any(indicator in desc for indicator in company_indicators)
         
-        # Also check for CUSTOMER= field (already checked above, but as final fallback)
-        if has_company or 'CUSTOMER=' in desc or 'B/O CUSTOMER=' in desc:
+        # If wire indicators present AND no "GUSTO" → likely external wire (Risk)
+        if has_wire_indicator and 'GUSTO' not in desc_original:
+            return 'Risk', 'rule-based', 'Wire transfer indicators with non-Gusto entity', 0.88
+        
+        # If company name present → likely Risk
+        if has_company:
             return 'Risk', 'rule-based', 'Company name detected in description (likely wire transaction)', 0.85
     
     return None, None, None, 0
@@ -232,7 +241,8 @@ LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Fundi
 
 HINTS:
 - CHECK/Check→Check | NYS DTF→NY WH | OH WH→OH WH | JPMORGAN→ICP Funding | CSC→CSC | LOCKBOX→Lockbox | State tax/UI→State label
-- CUSTOMER= with non-Gusto company→Risk
+- Wire indicators (YOUR REF=, FED ID=, REC FROM=, etc.) + non-Gusto company→Risk
+- Company name (even without LLC/INC) + wire transfer→Risk
 - NEVER return "Unknown"! Always provide best guess(es)
 - If very confident: return "Label1"
 - If uncertain: return "Label1 or Label2"
@@ -243,7 +253,7 @@ Label:"""
         prompt = f"""Label this bank transaction (internal data only, no web search).
 
 RULES:
-Wire In→Risk | CUSTOMER= (non-Gusto)→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
+Wire In→Risk | CUSTOMER= (non-Gusto)→Risk | Wire indicators (YOUR REF=, FED ID=, etc.) + non-Gusto→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
 
 LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire
 
