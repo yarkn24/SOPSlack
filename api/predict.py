@@ -351,13 +351,13 @@ Label:"""
         # Even if AI fails, provide best guess based on available info
         desc_upper = desc[:100].upper()
         if 'CHECK' in desc_upper:
-            return 'Check', 'rule-based-fallback', '⚠️ AI unavailable, best guess from description keywords', 0.40
+            return 'Check', 'rule-based-fallback', "⚠️ I couldn't find it with the given info. Best guess: Check (found CHECK keyword)", 0.40
         elif 'NYS DTF' in desc_upper:
-            return 'NY WH', 'rule-based-fallback', '⚠️ AI unavailable, best guess from description keywords', 0.40
+            return 'NY WH', 'rule-based-fallback', "⚠️ I couldn't find it with the given info. Best guess: NY WH (found NYS DTF keyword)", 0.40
         elif 'WIRE' in desc_upper or 'CUSTOMER' in desc_upper:
-            return 'Risk', 'rule-based-fallback', '⚠️ AI unavailable, best guess: likely wire transaction', 0.35
+            return 'Risk', 'rule-based-fallback', "⚠️ I couldn't find it with the given info. Best guess: Risk (found wire indicators)", 0.35
         else:
-            return 'ACH', 'rule-based-fallback', '⚠️ AI unavailable, defaulting to most common label (ACH, Risk, or LOI)', 0.25
+            return 'ACH', 'rule-based-fallback', "⚠️ I couldn't find it with the given info. Best guess: ACH (or possibly: Risk, LOI)", 0.25
 
 def gemini_quick_triage(transaction):
     """Quick Gemini check: Is this a rule-based transaction? (~50 tokens)"""
