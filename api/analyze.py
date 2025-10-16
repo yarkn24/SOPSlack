@@ -24,6 +24,70 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-pro')
 
+def ask_gemini_about_transaction(question):
+    """
+    Chat mode: Answer questions about transactions using Gemini
+    """
+    if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
+        return {
+            'response': 'Gemini is not configured. Please check API key.',
+            'suggested_label': None
+        }
+    
+    # Build prompt with SOP context
+    agent_list = ', '.join(sorted(set(COMPLETE_SOP_MAPPING.keys())))
+    
+    prompt = f"""You are an expert bank reconciliation assistant for Gusto. Answer this question about bank transactions:
+
+Question: {question}
+
+Context:
+- Available agent labels: {agent_list}
+- You should suggest ONE specific agent label if the question is about a transaction
+- Reference SOPs when appropriate
+- Keep answers concise and actionable
+
+Instructions:
+1. If the question includes a transaction, analyze it and suggest the correct agent label
+2. Explain WHY that label is correct
+3. Provide reconciliation guidance if relevant
+4. Keep response under 200 words
+
+Response:"""
+
+    try:
+        response = model.generate_content(prompt)
+        result_text = response.text.strip()
+        
+        # Try to extract suggested label from response
+        suggested_label = None
+        for agent in COMPLETE_SOP_MAPPING.keys():
+            if agent.upper() in result_text.upper():
+                suggested_label = agent
+                break
+        
+        # Get SOP info if label found
+        sop_info = {}
+        if suggested_label and suggested_label in COMPLETE_SOP_MAPPING:
+            sop_data = COMPLETE_SOP_MAPPING[suggested_label]
+            sop_info = {
+                'sop_title': sop_data.get('sop_page', ''),
+                'sop_link': sop_data.get('sop_link', '')
+            }
+        
+        return {
+            'response': result_text,
+            'suggested_label': suggested_label,
+            'confidence': 'High' if suggested_label else 'Medium',
+            **sop_info
+        }
+        
+    except Exception as e:
+        return {
+            'response': f'Error: {str(e)}',
+            'suggested_label': None
+        }
+
 def predict_label_rule_based(transaction):
     """Rule-based prediction (same as static-predictor.js)"""
     desc = (transaction.get('description', '')).upper()
@@ -108,6 +172,26 @@ class handler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data.decode('utf-8'))
             
+            # Check if this is a chat mode request
+            if data.get('mode') == 'chat':
+                question = data.get('question', '')
+                if not question:
+                    self.send_error(400, 'No question provided')
+                    return
+                
+                # Ask Gemini
+                result = ask_gemini_about_transaction(question)
+                
+                # Send response
+                self.send_response(200)
+                self.send_header('Content-type', 'application/json')
+                self.send_header('Access-Control-Allow-Origin', '*')
+                self.end_headers()
+                
+                self.wfile.write(json.dumps(result).encode())
+                return
+            
+            # Normal transaction analysis mode
             transactions = data.get('transactions', [])
             use_ai = data.get('use_ai', True)
             
