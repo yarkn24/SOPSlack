@@ -230,16 +230,62 @@ Label (one word):"""
     except Exception as e:
         return 'Unknown', 'unknown', f'AI call failed', 0
 
+def gemini_quick_triage(transaction):
+    """Quick Gemini check: Is this a rule-based transaction? (~50 tokens)"""
+    if not GEMINI_API_KEY or not gemini_model:
+        return True  # No Gemini available, default to rule-based
+    
+    desc = transaction.get('description', '')
+    method = transaction.get('payment_method', '')
+    account = transaction.get('origination_account_id', '')
+    
+    # If we have clear indicators, skip Gemini triage
+    if any(keyword in desc.upper() for keyword in ['CHECK', 'NYS DTF', 'OH WH', 'JPMORGAN', 'CSC']):
+        return True  # Definitely rule-based
+    
+    if any(keyword in method.lower() for keyword in ['check', 'zero balance']):
+        return True  # Definitely rule-based
+    
+    if any(keyword in account.upper() for keyword in ['PNC WIRE', 'CHASE WIRE', 'CHASE PAYROLL', 'CHASE RECOVERY']):
+        return True  # Definitely rule-based
+    
+    # Edge case - ask Gemini for quick triage (saves tokens on complex cases)
+    try:
+        prompt = f"""Quick analysis: Is this a standard rule-based transaction?
+Description: {desc[:100]}
+Payment: {method}
+Account: {account[:50]}
+
+Answer ONLY: "RULE-BASED" or "COMPLEX"
+RULE-BASED = obvious patterns (Check, Wire, NYS DTF, OH WH, etc)
+COMPLEX = needs deeper AI analysis"""
+        
+        response = gemini_model.generate_content(prompt)
+        result = response.text.strip().upper()
+        return 'RULE' in result
+    except:
+        return True  # Default to rule-based on error
+
 def predict_transaction(transaction):
-    """2-Tier prediction: Rule-based (95%+) → Gemini AI (fallback only)"""
+    """Smart 3-Tier Prediction System:
+    1. Quick Triage (Gemini or pattern check) - decide approach
+    2. Rule-Based (if triage says yes) - 0 tokens, fast
+    3. Full Gemini Analysis (if complex) - deep analysis
+    """
     
-    # Tier 1: Rule-based (fastest, most accurate, NO tokens!)
-    label, method, reason, confidence = predict_rule_based(transaction)
-    if label and confidence > 0.9:
-        return label, method, reason, confidence
+    # Step 1: Quick triage - is this rule-based?
+    is_rule_based = gemini_quick_triage(transaction)
     
-    # Tier 2: Gemini AI (ONLY when rule-based fails - saves tokens!)
-    # Most transactions (95%+) handled by rules, so Gemini rarely called
+    if is_rule_based:
+        # Tier 1: Rule-based (fastest, most accurate, NO tokens!)
+        label, method, reason, confidence = predict_rule_based(transaction)
+        if label != 'Unknown' and confidence > 0.9:
+            return label, method, reason, confidence
+    
+    # Tier 2: Gemini AI (for complex/edge cases only)
+    # Only called when:
+    # - Triage says "complex" OR
+    # - Rule-based returned Unknown/low confidence
     label, method, reason, confidence = predict_gemini(transaction)
     return label, method, reason, confidence
 
