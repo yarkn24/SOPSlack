@@ -93,9 +93,12 @@ def predict_rule_based(transaction):
     if 'CHASE RECOVERY' in account:
         return 'Recovery Wire', 'rule-based', 'Account is Chase Recovery', 0.99
     
+    # ICP Funding: JPMORGAN in description (works for description-only mode too)
+    if 'JPMORGAN ACCESS TRANSFER' in desc or 'JPMORGAN' in desc:
+        return 'ICP Funding', 'rule-based', "Description contains 'JPMORGAN ACCESS TRANSFER'", 0.99
+    
     if 'CHASE INTERNATIONAL CONTRACTOR PAYMENT' in account or 'CHASE ICP' in account:
-        if 'JPMORGAN ACCESS TRANSFER' in desc:
-            return 'ICP Funding', 'rule-based', "Description contains 'JPMORGAN ACCESS TRANSFER'", 0.99
+        return 'ICP Funding', 'rule-based', "Account is Chase ICP", 0.99
     
     # Check rule: Payment method "check" or "check paid" OR "CHECK" in description
     if 'check' in method or 'check paid' in method or 'CHECK' in desc:
@@ -114,8 +117,9 @@ def predict_rule_based(transaction):
     if 'NYS DOL UI' in desc:
         return 'NY UI', 'rule-based', "Description contains 'NYS DOL UI'", 0.99
     
-    if 'CSC' in desc and re.search(r'CSC\d{6}', desc):
-        return 'CSC', 'rule-based', "Description contains 'CSC' with number", 0.99
+    # CSC: If CSC in description, label it (works for description-only mode)
+    if 'CSC' in desc:
+        return 'CSC', 'rule-based', "Description contains 'CSC'", 0.99
     
     if 'ACH RETURN SETTLEMENT' in desc or 'CREDIT MEMO' in desc:
         return 'LOI', 'rule-based', 'Description indicates LOI', 0.99
@@ -189,8 +193,26 @@ def predict_gemini(transaction):
         cached = _gemini_cache[cache_key]
         return cached[0], cached[1] + ' (cached-0tk)', cached[2], cached[3]
     
+    # Check if this is description-only mode (unknown account/payment_method)
+    account_val = transaction.get('origination_account_id', 'N/A')
+    is_description_only = account_val in ['unknown', 'N/A', '']
+    
     # ULTRA-SHORT prompt to minimize token usage (free tier limit!)
-    prompt = f"""Label this bank transaction (internal data only, no web search).
+    if is_description_only:
+        prompt = f"""Label this bank transaction using ONLY the description (account info unavailable).
+
+Description: {transaction.get('description', 'N/A')[:80]}
+
+LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire, Brex
+
+HINTS:
+- CHECK/Check→Check | NYS DTF→NY WH | OH WH→OH WH | JPMORGAN→ICP Funding | CSC→CSC | LOCKBOX→Lockbox | State tax/UI→State label
+- If unclear, give your BEST GUESS based on description keywords
+- Return 1 label (most confident), or if uncertain: "Label1 or Label2"
+
+Label:"""
+    else:
+        prompt = f"""Label this bank transaction (internal data only, no web search).
 
 RULES:
 Wire In→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
@@ -198,7 +220,7 @@ Wire In→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCK
 LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC
 
 Transaction:
-Account: {transaction.get('origination_account_id', 'N/A')[:40]}
+Account: {account_val[:40]}
 Description: {transaction.get('description', 'N/A')[:60]}
 
 Label (one word):"""
@@ -208,19 +230,42 @@ Label (one word):"""
         _gemini_call_count += 1
         
         response = gemini_model.generate_content(prompt)
-        label = response.text.strip()
+        label_text = response.text.strip()
         
-        # Validate against known labels
+        # Parse response: might be "Label1" or "Label1 or Label2" (for low confidence cases)
+        alternatives = []
+        if ' or ' in label_text.lower():
+            # Extract alternatives: "Check or CSC" → ["Check", "CSC"]
+            parts = label_text.replace(' OR ', ' or ').split(' or ')
+            label = parts[0].strip()
+            if len(parts) > 1:
+                alternatives = [p.strip() for p in parts[1:]]
+        else:
+            label = label_text
+        
+        # Validate primary label against known labels
         if label in COMPLETE_SOP_MAPPING:
-            result = (label, f'ml-based (Gemini-{_gemini_call_count})', f'AI-based pattern analysis', 0.75)
+            confidence = 0.65 if alternatives else 0.75  # Lower confidence if multiple options
+            reason = f'AI-based pattern analysis'
+            if alternatives and confidence < 0.70:
+                # Show alternatives in reason
+                alt_str = ' or '.join([a for a in alternatives if a in COMPLETE_SOP_MAPPING][:1])  # Max 1 alternative
+                if alt_str:
+                    reason = f'AI suggests: {label} (or possibly {alt_str})'
+            result = (label, f'ml-based (Gemini-{_gemini_call_count})', reason, confidence)
             _gemini_cache[cache_key] = result
             return result
         
-        # Try fuzzy match
+        # Try fuzzy match on primary label
         label_upper = label.upper()
         for known_label in COMPLETE_SOP_MAPPING.keys():
             if known_label.upper() in label_upper or label_upper in known_label.upper():
-                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', f'Similar to "{label}" (AI suggestion)', 0.70)
+                reason = f'Similar to "{label}" (AI suggestion)'
+                if alternatives:
+                    alt_str = ' or '.join([a for a in alternatives if a in COMPLETE_SOP_MAPPING][:1])
+                    if alt_str:
+                        reason = f'AI suggests: {known_label} (or possibly {alt_str})'
+                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', reason, 0.65)
                 _gemini_cache[cache_key] = result
                 return result
         
