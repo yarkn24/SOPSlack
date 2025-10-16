@@ -366,10 +366,32 @@
                 </div>
 
                 <div id="text-tab" class="tab-content active">
-                    <textarea id="text-input" placeholder="🤖 Paste transaction in ANY format - Gemini will understand!&#10;&#10;Examples:&#10;&#10;Full structured (most common):&#10;59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF...&#10;&#10;Minimal (description only):&#10;CHECK NO=0000147751335,TIME=10151716&#10;NYS DTF WT payment&#10;&#10;Natural language:&#10;Transaction 59316175 for $80.76, ach from Grasshopper Operations&#10;&#10;✨ All formats work - Gemini AI will parse automatically!"></textarea>
+                    <textarea id="text-input" placeholder="🤖 Paste your transaction data below&#10;&#10;Full input example:&#10;59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF...&#10;&#10;Description only example:&#10;CHECK NO=0000147751335,TIME=10151716"></textarea>
+                    
+                    <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border: 2px solid #F4F4F3;">
+                        <div style="font-weight: 600; color: #222525; margin-bottom: 12px;">📋 Input Format:</div>
+                        <label style="display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#FEEFE8'" onmouseout="this.style.background='white'">
+                            <input type="checkbox" id="full-input-mode" checked onchange="handleInputModeChange('full')" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;">
+                            <span style="color: #222525; font-size: 1em;">
+                                ✅ <strong>Full input from reconciliation queue</strong>
+                                <span style="display: block; font-size: 0.85em; color: #666; margin-top: 4px; margin-left: 28px;">
+                                    Complete transaction data (ID, amount, date, payment method, account, description)
+                                </span>
+                            </span>
+                        </label>
+                        <label style="display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#FEEFE8'" onmouseout="this.style.background='white'">
+                            <input type="checkbox" id="description-only-mode" onchange="handleInputModeChange('description')" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;">
+                            <span style="color: #222525; font-size: 1em;">
+                                📝 <strong>Description only</strong>
+                                <span style="display: block; font-size: 0.85em; color: #666; margin-top: 4px; margin-left: 28px;">
+                                    Just the transaction description (e.g., "CHECK NO=123", "NYS DTF WT")
+                                </span>
+                            </span>
+                        </label>
+                    </div>
                     
                     <div class="sample-format">
-                        <strong>✨ Powered by Gemini AI:</strong> Just paste your transaction data in any format - no need to format it perfectly!
+                        <strong>✨ Powered by Gemini AI:</strong> Automatically parses and analyzes your transactions!
                     </div>
                 </div>
 
@@ -410,6 +432,45 @@
         let sopData = null;
         let currentTab = 'text';
         let uploadedData = null;
+        let inputMode = 'full';  // 'full' or 'description'
+        
+        // Handle input mode change (only one can be selected at a time)
+        function handleInputModeChange(mode) {
+            const fullCheckbox = document.getElementById('full-input-mode');
+            const descCheckbox = document.getElementById('description-only-mode');
+            
+            if (mode === 'full') {
+                if (fullCheckbox.checked) {
+                    inputMode = 'full';
+                    descCheckbox.checked = false;
+                } else {
+                    // If unchecking, keep description checked
+                    fullCheckbox.checked = false;
+                    descCheckbox.checked = true;
+                    inputMode = 'description';
+                }
+            } else {
+                if (descCheckbox.checked) {
+                    inputMode = 'description';
+                    fullCheckbox.checked = false;
+                } else {
+                    // If unchecking, keep full checked
+                    descCheckbox.checked = false;
+                    fullCheckbox.checked = true;
+                    inputMode = 'full';
+                }
+            }
+            
+            // Update placeholder based on mode
+            const textarea = document.getElementById('text-input');
+            if (inputMode === 'full') {
+                textarea.placeholder = "🤖 Paste your full transaction data from reconciliation queue\n\nExample:\n59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF 25/10/14...";
+            } else {
+                textarea.placeholder = "📝 Paste just the transaction description\n\nExamples:\nCHECK NO=0000147751335,TIME=10151716\nNYS DTF WT payment\nJPMORGAN ACCESS TRANSFER\nCASH CONCENTRATION TRANSFER";
+            }
+            
+            console.log('Input mode changed to:', inputMode);
+        }
 
         // Load SOP data from API
         fetch('/api/sop')
