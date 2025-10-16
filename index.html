@@ -368,25 +368,28 @@
                 <div id="text-tab" class="tab-content active">
                     <textarea id="text-input" placeholder="🤖 Paste your transaction data below&#10;&#10;Full input example:&#10;59315257 | $5,100.00 | 10/14/2025 | wire in | Chase Wire In | YOUR REF=POH OF...&#10;&#10;Description only example:&#10;CHECK NO=0000147751335,TIME=10151716"></textarea>
                     
-                    <div style="margin-top: 20px; padding: 15px; background: white; border-radius: 8px; border: 2px solid #F4F4F3;">
-                        <div style="font-weight: 600; color: #222525; margin-bottom: 12px;">📋 Input Format:</div>
-                        <label style="display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#FEEFE8'" onmouseout="this.style.background='white'">
-                            <input type="checkbox" id="full-input-mode" checked onchange="handleInputModeChange('full')" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;">
-                            <span style="color: #222525; font-size: 1em;">
-                                ✅ <strong>Full input from reconciliation queue</strong>
-                                <span style="display: block; font-size: 0.85em; color: #666; margin-top: 4px; margin-left: 28px;">
-                                    Complete transaction data (ID, amount, date, payment method, account, description)
-                                </span>
+                    <!-- Input Format Selection -->
+                    <div style="margin: 20px 0; padding: 20px; background: #FEEFE8; border-radius: 12px; border: 2px solid #F45D48;">
+                        <div style="font-weight: 700; color: #F45D48; margin-bottom: 15px; font-size: 1.1em;">📋 Select Input Format:</div>
+                        
+                        <label style="display: block; margin-bottom: 15px; cursor: pointer; padding: 12px; background: white; border-radius: 8px; border: 2px solid #F4F4F3;">
+                            <input type="checkbox" id="full-input-mode" checked onchange="handleInputModeChange('full')" style="width: 20px; height: 20px; margin-right: 12px; vertical-align: middle; cursor: pointer;">
+                            <span style="color: #222525; font-size: 1.05em; font-weight: 600;">
+                                ✅ Full input from reconciliation queue
                             </span>
+                            <div style="margin-left: 32px; margin-top: 8px; font-size: 0.9em; color: #666;">
+                                Complete transaction data (ID, amount, date, payment method, account, description)
+                            </div>
                         </label>
-                        <label style="display: flex; align-items: center; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;" onmouseover="this.style.background='#FEEFE8'" onmouseout="this.style.background='white'">
-                            <input type="checkbox" id="description-only-mode" onchange="handleInputModeChange('description')" style="width: 18px; height: 18px; margin-right: 10px; cursor: pointer;">
-                            <span style="color: #222525; font-size: 1em;">
-                                📝 <strong>Description only</strong>
-                                <span style="display: block; font-size: 0.85em; color: #666; margin-top: 4px; margin-left: 28px;">
-                                    Just the transaction description (e.g., "CHECK NO=123", "NYS DTF WT")
-                                </span>
+                        
+                        <label style="display: block; cursor: pointer; padding: 12px; background: white; border-radius: 8px; border: 2px solid #F4F4F3;">
+                            <input type="checkbox" id="description-only-mode" onchange="handleInputModeChange('description')" style="width: 20px; height: 20px; margin-right: 12px; vertical-align: middle; cursor: pointer;">
+                            <span style="color: #222525; font-size: 1.05em; font-weight: 600;">
+                                📝 Description only
                             </span>
+                            <div style="margin-left: 32px; margin-top: 8px; font-size: 0.9em; color: #666;">
+                                Just the transaction description (e.g., "CHECK NO=123", "NYS DTF WT")
+                            </div>
                         </label>
                     </div>
                     
