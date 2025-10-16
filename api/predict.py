@@ -31,7 +31,7 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
 
 def clean_text(text):
     """Clean transaction description"""
-    if not text:
+    if text is None or text == '':
         return ""
     text = str(text).upper()
     text = re.sub(r'[^\w\s]', ' ', text)
@@ -41,9 +41,9 @@ def clean_text(text):
 def predict_rule_based(transaction):
     """Tier 1: Rule-based prediction (98% accuracy)"""
     # Keep original description for special pattern matching (before clean_text removes punctuation)
-    desc_original = str(transaction.get('description', '')).upper()
-    desc = clean_text(transaction.get('description', ''))
-    account = clean_text(transaction.get('origination_account_id', ''))
+    desc_original = str(transaction.get('description') or '').upper()
+    desc = clean_text(transaction.get('description'))
+    account = clean_text(transaction.get('origination_account_id'))
     
     # Check if this is description-only mode (frontend sends this flag)
     description_only_mode = transaction.get('description_only_mode', False)
@@ -58,7 +58,7 @@ def predict_rule_based(transaction):
     else:
         amount = 0.0
     
-    method = (transaction.get('payment_method', '')).lower()
+    method = str(transaction.get('payment_method', '') or '').lower()
     
     # ⚠️ CRITICAL: ZBT CHECK FIRST - ABSOLUTE HIGHEST PRIORITY ⚠️
     # Zero Balance Transfer MUST be checked before ANY other rule!
@@ -114,13 +114,17 @@ def predict_rule_based(transaction):
     if 'CHASE INTERNATIONAL CONTRACTOR PAYMENT' in account or 'CHASE ICP' in account:
         return 'ICP Funding', 'rule-based', "Account is Chase ICP", 0.99
     
+    # ICP: DLocal transactions (works for description-only mode too)
+    if 'DLOCAL' in desc or 'D LOCAL' in desc:
+        return 'ICP', 'rule-based', "Description contains 'DLOCAL'", 0.99
+    
     # Check rule: Payment method "check" or "check paid" OR "CHECK" in description
     if 'check' in method or 'check paid' in method or 'CHECK' in desc:
         return 'Check', 'rule-based', "Payment method is Check or CHECK in description", 0.99
     
     # Description-based rules
-    if 'NYS DTF WT' in desc:
-        return 'NY WH', 'rule-based', "Description contains 'NYS DTF WT'", 0.99
+    if 'NYS DTF' in desc or 'NY DTF' in desc or 'NYS' in desc and 'WITHHOLDING' in desc:
+        return 'NY WH', 'rule-based', "Description contains 'NYS DTF' or NY withholding keywords", 0.99
     
     if 'OH WH TAX' in desc:
         return 'OH WH', 'rule-based', "Description contains 'OH WH TAX'", 0.99
