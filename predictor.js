@@ -150,7 +150,7 @@ function displayResults(results) {
             </div>
             
             <div class="transaction-detail">
-                <strong>📊 How we found this:</strong> ${firstResult.reason}${firstResult.method.includes('ML') ? ' (ML ile buldum)' : ''}
+                <strong>📊 How we found this:</strong> ${firstResult.reason}${firstResult.method.includes('ML') ? ' (found via ML)' : ''}
             </div>
             
             <div class="transaction-detail">
@@ -177,7 +177,7 @@ function displayResults(results) {
         if (firstResult.sop_content && Object.keys(firstResult.sop_content).length > 0) {
             html += `
                 <div class="sop-section">
-                    <h4>📚 SOP BİLGİLERİ (ONLY FROM SOP)</h4>
+                    <h4>📚 SOP INFORMATION (ONLY FROM SOP)</h4>
             `;
             
             // Labeling section

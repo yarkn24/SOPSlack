@@ -244,7 +244,7 @@ class handler(BaseHTTPRequestHandler):
                     if recon_text and len(recon_text) > 200 and GEMINI_API_KEY:
                         try:
                             _gemini_call_count += 1  # Count summary calls too!
-                            prompt = f"""Summarize in 2-3 bullets (Turkish):
+                            prompt = f"""Summarize in 2-3 bullets (English):
 
 {recon_text[:300]}
 
