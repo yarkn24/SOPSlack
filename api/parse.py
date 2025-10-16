@@ -218,11 +218,89 @@ def normalize_payment_method(method):
         # Return as-is if no match
         return method
 
+def parse_redash_format(raw_text):
+    """
+    Parse Redash queue format (tab-separated with specific structure)
+    Format: [claim]\tID\t$amount\tdate\tmethod\taccount\t\t\t\tdescription
+    """
+    try:
+        lines = raw_text.strip().split('\n')
+        transactions = []
+        current_transaction = None
+        
+        for line in lines:
+            if not line.strip():
+                continue
+            
+            # Check if this is a transaction line (has multiple tabs)
+            if '\t' in line:
+                parts = line.split('\t')
+                
+                # Filter out empty strings
+                non_empty_parts = [p.strip() for p in parts if p.strip()]
+                
+                # Check if this looks like a transaction line (has at least ID, amount, date)
+                if len(non_empty_parts) >= 4:
+                    # First part might be "claim" or the ID
+                    if non_empty_parts[0].lower() == 'claim':
+                        # Format: claim \t ID \t amount \t date \t method \t account \t ... \t description
+                        if len(non_empty_parts) >= 6:
+                            transaction_id = non_empty_parts[1]
+                            amount = non_empty_parts[2]
+                            date = non_empty_parts[3]
+                            method = non_empty_parts[4]
+                            account = non_empty_parts[5]
+                            description = ' '.join(non_empty_parts[6:]) if len(non_empty_parts) > 6 else ''
+                        else:
+                            continue
+                    else:
+                        # Format: ID \t amount \t date \t method \t account \t ... \t description
+                        transaction_id = non_empty_parts[0]
+                        amount = non_empty_parts[1] if len(non_empty_parts) > 1 else 'unknown'
+                        date = non_empty_parts[2] if len(non_empty_parts) > 2 else 'unknown'
+                        method = non_empty_parts[3] if len(non_empty_parts) > 3 else 'unknown'
+                        account = non_empty_parts[4] if len(non_empty_parts) > 4 else 'unknown'
+                        description = ' '.join(non_empty_parts[5:]) if len(non_empty_parts) > 5 else ''
+                    
+                    # Clean transaction ID
+                    transaction_id = transaction_id.replace('claim_', '').replace('claim', '').strip()
+                    
+                    # Save previous transaction if exists
+                    if current_transaction:
+                        transactions.append(current_transaction)
+                    
+                    # Create new transaction
+                    current_transaction = {
+                        'transaction_id': transaction_id,
+                        'amount': amount if amount else 'unknown',
+                        'date': date if date else 'unknown',
+                        'payment_method': normalize_payment_method(method) if method else 'unknown',
+                        'origination_account_id': account if account else 'unknown',
+                        'description': description
+                    }
+                elif current_transaction and len(non_empty_parts) > 0:
+                    # This might be a continuation of the description
+                    current_transaction['description'] += ' ' + ' '.join(non_empty_parts)
+        
+        # Don't forget the last transaction
+        if current_transaction:
+            transactions.append(current_transaction)
+        
+        return transactions if transactions else (None, "No valid data found")
+        
+    except Exception as e:
+        return None, str(e)
+
 def parse_csv(raw_text):
     """
     Parse CSV format (tab or comma separated)
     """
     try:
+        # First try Redash format
+        result = parse_redash_format(raw_text)
+        if result and not isinstance(result, tuple):
+            return result
+        
         lines = raw_text.strip().split('\n')
         transactions = []
         
