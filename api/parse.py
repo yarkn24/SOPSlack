@@ -228,7 +228,8 @@ class handler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data.decode('utf-8'))
             
-            raw_text = data.get('raw_text', '').strip()
+            # Accept both 'text' and 'raw_text' for flexibility
+            raw_text = data.get('text', data.get('raw_text', '')).strip()
             use_gemini = data.get('use_gemini', True)
             
             if not raw_text:
