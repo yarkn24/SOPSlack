@@ -24,12 +24,66 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
 
 def parse_with_gemini(raw_text):
     """
-    Use Gemini to intelligently parse any transaction format
+    Use Gemini to intelligently parse any transaction format (single or multiple)
     """
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return None, "Gemini not configured"
     
-    prompt = f"""You are an expert bank transaction parser. Extract structured data from this transaction text.
+    # Check if multiple transactions (multiple lines with "claim" prefix)
+    lines = raw_text.strip().split('\n')
+    is_multiple = len(lines) > 1 and sum(1 for line in lines if 'claim' in line.lower()) > 1
+    
+    if is_multiple:
+        prompt = f"""You are an expert bank transaction parser. Extract structured data from MULTIPLE transactions.
+
+Transaction data (multiple lines):
+{raw_text}
+
+For EACH transaction, extract:
+- transaction_id: The transaction/claim/BT ID (remove "claim_" or "claim" prefix)
+- amount: Dollar amount (keep $ sign, e.g., "$80.76")
+- date: Transaction date
+- payment_method: MUST be one of: "wire in", "ach", "check", "wire out", "ach external", "card", "ach return", "zero balance transfer", "check paid"
+- origination_account_id: Bank account name (e.g., "PNC Operations", "Chase Wire In")
+- description: Full transaction details
+
+**CRITICAL RULES:**
+- Return a JSON ARRAY of transaction objects
+- One object per transaction line
+- Remove "claim_" or "claim" prefix from transaction_id
+- Keep account names like "PNC Operations", "Chase Wire In" intact
+- For payment_method, look at the 5th column
+- Return ONLY valid JSON array, no markdown
+
+Example input:
+claim	59392989	$463.54	10/15/2025	check paid	PNC Operations
+CHECK 884892943
+claim	59370967	$841,340.16	10/15/2025	zero balance transfer	Chase Wire In
+CASH CONCENTRATION TRANSFER
+
+Example output:
+[
+  {{
+    "transaction_id": "59392989",
+    "amount": "$463.54",
+    "date": "10/15/2025",
+    "payment_method": "check paid",
+    "origination_account_id": "PNC Operations",
+    "description": "CHECK 884892943"
+  }},
+  {{
+    "transaction_id": "59370967",
+    "amount": "$841,340.16",
+    "date": "10/15/2025",
+    "payment_method": "zero balance transfer",
+    "origination_account_id": "Chase Wire In",
+    "description": "CASH CONCENTRATION TRANSFER"
+  }}
+]
+
+Now parse ALL transactions above:"""
+    else:
+        prompt = f"""You are an expert bank transaction parser. Extract structured data from this transaction text.
 
 Transaction text:
 {raw_text}
@@ -100,19 +154,40 @@ Now parse the transaction above:"""
         # Parse JSON
         parsed_data = json.loads(result_text)
         
-        # Validate and normalize required fields
-        required_fields = ['transaction_id', 'amount', 'date', 'payment_method', 'origination_account_id', 'description']
-        for field in required_fields:
-            if field not in parsed_data:
-                parsed_data[field] = 'unknown'
-        
-        # Normalize payment method
-        parsed_data['payment_method'] = normalize_payment_method(parsed_data.get('payment_method', 'unknown'))
-        
-        # Clean transaction ID (remove "claim_" prefix)
-        parsed_data['transaction_id'] = str(parsed_data.get('transaction_id', '')).replace('claim_', '').replace('claim', '').strip()
-        
-        return parsed_data, None
+        # Check if it's a list (multiple transactions) or dict (single)
+        if isinstance(parsed_data, list):
+            # Multiple transactions
+            transactions = []
+            for txn in parsed_data:
+                # Validate and normalize
+                required_fields = ['transaction_id', 'amount', 'date', 'payment_method', 'origination_account_id', 'description']
+                for field in required_fields:
+                    if field not in txn:
+                        txn[field] = 'unknown'
+                
+                # Normalize payment method
+                txn['payment_method'] = normalize_payment_method(txn.get('payment_method', 'unknown'))
+                
+                # Clean transaction ID
+                txn['transaction_id'] = str(txn.get('transaction_id', '')).replace('claim_', '').replace('claim', '').strip()
+                
+                transactions.append(txn)
+            
+            return transactions, None
+        else:
+            # Single transaction
+            required_fields = ['transaction_id', 'amount', 'date', 'payment_method', 'origination_account_id', 'description']
+            for field in required_fields:
+                if field not in parsed_data:
+                    parsed_data[field] = 'unknown'
+            
+            # Normalize payment method
+            parsed_data['payment_method'] = normalize_payment_method(parsed_data.get('payment_method', 'unknown'))
+            
+            # Clean transaction ID (remove "claim_" prefix)
+            parsed_data['transaction_id'] = str(parsed_data.get('transaction_id', '')).replace('claim_', '').replace('claim', '').strip()
+            
+            return [parsed_data], None
         
     except json.JSONDecodeError as e:
         return None, f"Failed to parse Gemini response as JSON: {str(e)}"
@@ -246,10 +321,10 @@ class handler(BaseHTTPRequestHandler):
                 parsed_transactions = transactions
                 parsing_method = 'traditional'
             elif use_gemini:
-                # Use Gemini for intelligent parsing
+                # Use Gemini for intelligent parsing (supports multiple transactions)
                 parsed_data, error = parse_with_gemini(raw_text)
                 if parsed_data:
-                    parsed_transactions = [parsed_data]
+                    parsed_transactions = parsed_data if isinstance(parsed_data, list) else [parsed_data]
                     parsing_method = 'gemini'
                 else:
                     self.send_error(400, f'Parsing failed: {error}')
