@@ -676,8 +676,21 @@
                         showError('No unlabeled transactions found in CSV. All transactions either have an agent assigned or are missing required columns (description, amount).');
                         return;
                     }
+                } else if (inputMode === 'description') {
+                    // Description-only mode: Create minimal transaction objects
+                    console.log('Description-only mode: Creating minimal transactions');
+                    const descriptions = inputData.split('\n').filter(line => line.trim());
+                    transactions = descriptions.map((desc, index) => ({
+                        transaction_id: `desc_${index + 1}`,
+                        amount: 'unknown',
+                        date: 'unknown',
+                        payment_method: 'unknown',
+                        origination_account_id: 'unknown',
+                        description: desc.trim()
+                    }));
+                    console.log(`Created ${transactions.length} minimal transaction(s)`);
                 } else {
-                    // Text mode: Use Gemini for smart parsing
+                    // Full input mode: Use Gemini for smart parsing
                     transactions = await parseTransactionsWithAI(inputData);
                 }
                 
