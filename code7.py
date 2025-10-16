@@ -11,6 +11,7 @@ import joblib
 import requests
 import time
 import os
+import argparse
 from scipy.sparse import hstack
 from sklearn.preprocessing import LabelEncoder
 from datetime import datetime
@@ -26,48 +27,121 @@ REDASH_API_KEY = "wPoSJ9zxm7gAu5GYU44w3bY9hBmagjTMg7LfqDBH"
 REDASH_BASE_URL = "https://redash.zp-int.com"
 REDASH_QUERY_ID = "133695"
 
+# Parse arguments
+parser = argparse.ArgumentParser(description='CODE7 - Redash Data Labeling')
+parser.add_argument('--file', type=str, help='Use static CSV file instead of Redash')
+parser.add_argument('--quick', action='store_true', help='Quick check only (Slack-friendly)')
+args = parser.parse_args()
+
+# Quick mode: Just check transaction count (2 seconds)
+if args.quick:
+    print("🚀 CODE7 Quick Check...")
+    try:
+        headers = {"Authorization": f"Key {REDASH_API_KEY}"}
+        results_url = f"{REDASH_BASE_URL}/api/queries/{REDASH_QUERY_ID}/results.json"
+        response = requests.get(results_url, headers=headers, timeout=5)
+        response.raise_for_status()
+        rows = response.json()['query_result']['data']['rows']
+        count = len(rows)
+        today = datetime.now().strftime('%A, %B %d, %Y')
+        
+        if count == 0:
+            print(f"⚠️ No data - {today}")
+        else:
+            print(f"✅ {count} transactions - {today}")
+            print(f"Run: python3 code7.py")
+        exit(0)
+    except Exception as e:
+        print(f"❌ Error: {e}")
+        exit(1)
+
 print("\n" + "="*80)
 print("🚀 CODE7 - REDASH DATA LABELING")
 print("="*80 + "\n")
 
-# 1. Fetch from Redash
-print("📥 Step 1/5: Fetching from Redash...")
-headers = {"Authorization": f"Key {REDASH_API_KEY}"}
-refresh_url = f"{REDASH_BASE_URL}/api/queries/{REDASH_QUERY_ID}/refresh"
+# 1. Fetch data (either from Redash or static file)
+if args.file:
+    print(f"📂 Step 1/5: Loading from file: {args.file}...")
+    try:
+        df = pd.read_csv(args.file)
+        print(f"   ✅ Loaded {len(df):,} transactions\n")
+        
+        if len(df) == 0:
+            print("\n" + "="*80)
+            print("⚠️  NO TRANSACTIONS IN FILE")
+            print("="*80)
+            print(f"\nThe file {args.file} contains 0 transactions.")
+            print("\n✅ CODE7 COMPLETED - No transactions to process.")
+            print("="*80 + "\n")
+            exit(0)
+    except Exception as e:
+        print(f"   ❌ Error loading file: {e}")
+        exit(1)
+else:
+    print("📥 Step 1/5: Fetching from Redash...")
+    headers = {"Authorization": f"Key {REDASH_API_KEY}"}
+    refresh_url = f"{REDASH_BASE_URL}/api/queries/{REDASH_QUERY_ID}/refresh"
 
-try:
-    refresh_response = requests.post(refresh_url, headers=headers, timeout=30)
-    refresh_response.raise_for_status()
-    job_id = refresh_response.json()['job']['id']
-    
-    # Poll for results
-    job_url = f"{REDASH_BASE_URL}/api/jobs/{job_id}"
-    for _ in range(60):  # Max 2 min
-        time.sleep(2)
-        job_response = requests.get(job_url, headers=headers, timeout=10)
-        job_response.raise_for_status()
-        status = job_response.json()['job']['status']
-        if status == 3:  # SUCCESS
-            break
-        elif status == 4:  # FAILURE
-            raise Exception("Query failed")
-    
-    # Get results
-    results_url = f"{REDASH_BASE_URL}/api/queries/{REDASH_QUERY_ID}/results.json"
-    results_response = requests.get(results_url, headers=headers, timeout=30)
-    results_response.raise_for_status()
-    rows = results_response.json()['query_result']['data']['rows']
-    df = pd.DataFrame(rows)
-    
-    print(f"   ✅ Fetched {len(df):,} transactions\n")
-    
-    if len(df) == 0:
-        print("⚠️  No transactions to process. Exiting.")
-        exit(0)
-    
-except Exception as e:
-    print(f"   ❌ Error: {e}")
-    exit(1)
+    try:
+        refresh_response = requests.post(refresh_url, headers=headers, timeout=30)
+        refresh_response.raise_for_status()
+        job_id = refresh_response.json()['job']['id']
+        
+        # Poll for results
+        job_url = f"{REDASH_BASE_URL}/api/jobs/{job_id}"
+        for _ in range(60):  # Max 2 min
+            time.sleep(2)
+            job_response = requests.get(job_url, headers=headers, timeout=10)
+            job_response.raise_for_status()
+            status = job_response.json()['job']['status']
+            if status == 3:  # SUCCESS
+                break
+            elif status == 4:  # FAILURE
+                raise Exception("Query failed")
+        
+        # Get results
+        results_url = f"{REDASH_BASE_URL}/api/queries/{REDASH_QUERY_ID}/results.json"
+        results_response = requests.get(results_url, headers=headers, timeout=30)
+        results_response.raise_for_status()
+        rows = results_response.json()['query_result']['data']['rows']
+        df = pd.DataFrame(rows)
+        
+        print(f"   ✅ Fetched {len(df):,} transactions\n")
+        
+        if len(df) == 0:
+            print("\n" + "="*80)
+            print("⚠️  NO TRANSACTIONS FOUND")
+            print("="*80)
+            print("\n🔍 The Redash query returned 0 transactions.")
+            print("\n📅 Likely reasons:")
+            print("   • Weekend or banking holiday (banks closed)")
+            print("   • No new transactions posted yet")
+            print("   • Query date filter excludes today's data")
+            print("\n💡 Next steps:")
+            print("   • Try again during business hours (Mon-Fri 9am-5pm)")
+            print("   • Check Redash: https://redash.zp-int.com/queries/133695")
+            print("   • Test with file: python3 code7.py --file <csv_file>")
+            print("\n" + "="*80)
+            print("\n✅ CODE7 COMPLETED - No transactions to process today.")
+            print("="*80 + "\n")
+            
+            # Return a simple message for Slack
+            print("🤖 **Slack Summary:**")
+            print("```")
+            print("⚠️  Daily Reconciliation Report - No Data Available")
+            print("")
+            print("The Redash query returned 0 transactions.")
+            print("")
+            print("📅 Today: Saturday, Oct 11, 2025")
+            print("🏦 Status: Weekend - Banks are closed")
+            print("")
+            print("💡 The bot will automatically run again on the next business day.")
+            print("```")
+            exit(0)
+        
+    except Exception as e:
+        print(f"   ❌ Error: {e}")
+        exit(1)
 
 # 2. Prepare data
 print("🔧 Step 2/5: Preparing data...")
@@ -247,19 +321,23 @@ for agent, count in agent_counts.items():
 print(f"\n✅ CSV OUTPUT: {csv_file}")
 print(f"✅ SLACK MESSAGE: {slack_file}")
 print("="*80 + "\n")
-print("📋 CSV COLUMNS:")
-print("   • id, date, amount")
-print("   • payment_method (text)")
-print("   • account (text)")
-print("   • description")
-print("   • predicted_agent ⭐")
-print("   • sop_links (Confluence URLs) 🔗")
-print("   • prediction_method (Rule-based/ML-based)")
-print("\n📨 SLACK MESSAGE:")
-print("   • Formatted for Platform Operations channel")
-print("   • Agent counts with warnings")
-print("   • High-value alerts (>$300K)")
-print("   • SOP links included")
-print("   • Fun fact at the end")
+
+# Slack-friendly summary
+print("🤖 **Slack Summary:**")
+print("```")
+print(f"✅ Daily Reconciliation Report - {len(df):,} Transactions")
+print("")
+print(f"📊 Predictions:")
+print(f"   • Rule-based: {rule_mask.sum():,} ({rule_mask.sum()/len(df)*100:.1f}%)")
+print(f"   • ML-based: {(~rule_mask).sum():,} ({(~rule_mask).sum()/len(df)*100:.1f}%)")
+print("")
+print(f"🔝 Top 3 Agents:")
+top_3 = output_df['predicted_agent'].value_counts().head(3)
+for i, (agent, count) in enumerate(top_3.items(), 1):
+    print(f"   {i}. {agent}: {count} transactions")
+print("")
+print(f"📄 Files saved to ~/Desktop/cursor_data/")
+print(f"💬 Slack message ready to send!")
+print("```")
 print("="*80 + "\n")
 

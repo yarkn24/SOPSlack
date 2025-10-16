@@ -1,0 +1,5 @@
+Title: International Contractor Payment Funding
+URL: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411829
+================================================================================
+
+International Contractor Payments Funding or ICP Funding These are internal transactions to transfer funds from one Gusto bank account to another Gusto bank account. A few ways to identify that these are ICP funding transactions: The BT will have Chase International Contractor Payments as it's Origination AccountThere will be another BT for the same amount from Chase OperationsLook up the amount in your Gmail and you will see Treasury's email confirming the transferLook up the amount in Payment-Alerts Channel in SlackThis type of BT will always have 2 transactions: Wire Out and Wire In. The Electronic Payment Creator Tool will be used to create an electronic payment

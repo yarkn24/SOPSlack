@@ -1,0 +1,6 @@
+{
+  "title": "International Contractor Payment Funding",
+  "id": "169411829",
+  "content": "<p><span>International Contractor Payments Funding or ICP Funding&nbsp;<br /></span></p><p><span>These are internal transactions to transfer funds&nbsp;from one Gusto bank account to another Gusto bank account. A few ways to identify that these are ICP funding transactions:&nbsp;</span></p><ul><li><span>The BT will have <span style=\"color: rgb(82,82,87);\">Chase International Contractor Payments as it's Origination Account</span></span></li><li><span>There will be another BT for the same amount from Chase Operations</span></li><li><span>Look up the amount in your Gmail and you will see Treasury's email confirming the transfer</span></li><li><span>Look up the amount in Payment-Alerts Channel in Slack<br /><ac:image ac:width=\"750\"><ri:attachment ri:filename=\"Screen Shot 2022-04-19 at 6.30.34 PM.png\" /></ac:image><br />This type of BT will <u>always</u> have 2 transactions: <strong>Wire Out</strong> and <strong>Wire In</strong>. The Electronic Payment Creator Tool will be used to create an electronic payment</span></li></ul>",
+  "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411829"
+}

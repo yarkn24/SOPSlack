@@ -1,0 +1,206 @@
+{
+  "fetched": [
+    {
+      "query": "Daily Operations : How to Label & Reconcile",
+      "found": "Daily Operations : How to Label & Reconcile",
+      "id": "535003232",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    {
+      "query": "Manual Reconciliation Checks",
+      "found": "Manual Reconciliation Checks",
+      "id": "169412024",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412024"
+    },
+    {
+      "query": "Labeling Bank Transactions",
+      "found": "Labeling Bank Transactions",
+      "id": "169411993",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411993"
+    },
+    {
+      "query": "Escalating Reconciliation Issues to Cross-Functional Stakeholders",
+      "found": "Escalating Reconciliation Issues to Cross-Functional Stakeholders",
+      "id": "460194134",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134"
+    },
+    {
+      "query": "BAI File Reconciliations",
+      "found": "BAI File Reconciliations",
+      "id": "169410816",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410816"
+    },
+    {
+      "query": "Timeline of Expected Reconciliations",
+      "found": "Timeline of Expected Reconciliations/Surfacing to Cross-functional partners",
+      "id": "169410853",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410853"
+    },
+    {
+      "query": "Repayment Reporter Tool SOP",
+      "found": "Repayment Reporter Tool SOP",
+      "id": "76383876",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76383876"
+    },
+    {
+      "query": "How to Create a New Electronic Payment",
+      "found": "How to Create a New Electronic Payment",
+      "id": "76385889",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76385889"
+    },
+    {
+      "query": "Microvariance Adjuster Tool",
+      "found": "Microvariance Adjuster Tool",
+      "id": "76385735",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76385735"
+    },
+    {
+      "query": "Reporting Data Corrector",
+      "found": "Reporting Data Corrector",
+      "id": "76384490",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76384490"
+    },
+    {
+      "query": "Reconciliation Queue & Dashboard Overview",
+      "found": "Reconciliation Queue & Dashboard Overview",
+      "id": "169410903",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410903"
+    },
+    {
+      "query": "Daily Bank Transaction Reconciliation by Bank Transaction Type",
+      "found": "Daily Bank Transaction Reconciliation by Bank Transaction Type",
+      "id": "169411126",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126"
+    },
+    {
+      "query": "Run Reconciler SOP for Electronic Payments",
+      "found": "Run Reconciler SOP for Electronic Payments",
+      "id": "169411456",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411456"
+    },
+    {
+      "query": "NACHA Batch codes",
+      "found": "NACHA Batch codes",
+      "id": "169411483",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411483"
+    },
+    {
+      "query": "Reconciling EFT Debit Payments",
+      "found": "Reconciling EFT Debit Payments",
+      "id": "169411500",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411500"
+    },
+    {
+      "query": "Manual Reconciliation by Agency",
+      "found": "Manual Reconciliation by Agency",
+      "id": "169411539",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539"
+    },
+    {
+      "query": "Letter of Indemnity Process and Reconciliation",
+      "found": "Letter of Indemnity Process and Reconciliation",
+      "id": "298583554",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/298583554"
+    },
+    {
+      "query": "How to use the Bulk Actions Tool SOP",
+      "found": "How to use the Bulk Actions Tool SOP",
+      "id": "169411366",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411366"
+    },
+    {
+      "query": "Bank Transaction Validator Alert",
+      "found": "Bank Transaction Validator Alert",
+      "id": "169411628",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411628"
+    },
+    {
+      "query": "Reconciling dLocal transactions manually",
+      "found": "Reconciling dLocal transactions manually",
+      "id": "169411668",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411668"
+    },
+    {
+      "query": "Lockbox Investigations",
+      "found": "Lockbox Investigations",
+      "id": "169411804",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411804"
+    },
+    {
+      "query": "International Contractor Payment Funding",
+      "found": "International Contractor Payment Funding",
+      "id": "169411829",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411829"
+    },
+    {
+      "query": "Update Reconciliation Cutoff Date",
+      "found": "Update Reconciliation Cutoff Date",
+      "id": "169412141",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412141"
+    },
+    {
+      "query": "Unintended Overpayment Account Use Cases",
+      "found": "Unintended Overpayment Account Use Cases",
+      "id": "169412167",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412167"
+    },
+    {
+      "query": "Transmission Reconciliation Alerts",
+      "found": "Transmission Reconciliation Alerts",
+      "id": "169410964",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169410964"
+    },
+    {
+      "query": "Zero Balance Transfer Reconciliation",
+      "found": "Zero Balance Transfer Reconciliation",
+      "id": "169411752",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411752"
+    },
+    {
+      "query": "Double Cashed Checks",
+      "found": "Double Cashed Checks",
+      "id": "169411043",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411043"
+    },
+    {
+      "query": "Aged Bank Transactions",
+      "found": "Aged Bank Transactions",
+      "id": "169411605",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411605"
+    },
+    {
+      "query": "End of Quarter Issues",
+      "found": "End of Quarter Issues",
+      "id": "169411096",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411096"
+    },
+    {
+      "query": "Unreconciled Transactions Due to Blueridge Ops Microvariance Write-offs",
+      "found": "Unreconciled Transactions Due to Blueridge Ops Microvariance Write-offs",
+      "id": "433849552",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/433849552"
+    },
+    {
+      "query": "Modern Treasury",
+      "found": "Modern Treasury",
+      "id": "76385861",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/76385861"
+    },
+    {
+      "query": "Manual Customer Cash Completeness Checks",
+      "found": "Manual Customer Cash Completeness Checks",
+      "id": "250479204",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/250479204"
+    },
+    {
+      "query": "Customer Cash Completeness Checks",
+      "found": "Manual Customer Cash Completeness Checks",
+      "id": "250479204",
+      "url": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/250479204"
+    }
+  ],
+  "not_found": [],
+  "total_queried": 33,
+  "success_count": 33,
+  "timestamp": "2025-10-15 17:11:45"
+}

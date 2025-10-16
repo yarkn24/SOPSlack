@@ -60,43 +60,46 @@ def apply_rules(row, icp_funding_amounts=None):
         return 'WA LNI'
     elif 'WA' in desc and ('L&I' in desc or 'LNI' in desc or 'LABOR' in desc or 'INDUSTRIES' in desc):
         return 'WA LNI'
-    # 11. Company Balance Transfers - GUSTO PAYROLL + ITL
+    # 11. Unclaimed Property - GUSTOCUSTDEP + PRFUND pattern
+    elif 'GUSTOCUSTDEP' in desc and 'PRFUND' in desc:
+        return 'Unclaimed Property'
+    # 12. Company Balance Transfers - GUSTO PAYROLL + ITL
     elif 'ENTRY DESCR=ITL' in desc and 'GUSTO PAYROLL' in desc:
         return 'Company Balance Transfers'
-    # 12. PNC LOI - Account 16 + CREDIT MEMO
+    # 13. PNC LOI - Account 16 + CREDIT MEMO
     elif acc == 16 and 'CREDIT MEMO' in desc:
         return 'LOI'
-    # 13. Treasury/Money Market
+    # 14. Treasury/Money Market
     elif '100% US TREASURY CAPITAL 3163' in desc or 'MONEY MKT MUTUAL FUND' in desc:
         return 'Money Market Transfer'
     elif 'JPMORGAN ACCESS TRANSFER' in desc:
         return 'Treasury Transfer'
     elif 'INTEREST ADJUSTMENT' in desc:
         return 'Interest Adjustment'
-    # 14. KEYSTONE
+    # 15. KEYSTONE
     elif 'KEYSTONE' in desc:
         return 'PA UI'
-    # 15. Payment method based (Check)
+    # 16. Payment method based (Check)
     elif pm == 2:
         return 'Check'
-    # 16. Risk accounts - PRIORITY! (ACC 6, 9, 18 are mostly Risk)
+    # 17. Risk accounts - PRIORITY! (ACC 6, 9, 18 are mostly Risk)
     elif acc in [6, 9, 18] and pm == 0:
         return 'Risk'
-    # 17. Recovery accounts - ACC=7, 28 (primary recovery accounts)
+    # 18. Recovery accounts - ACC=7, 28 (primary recovery accounts)
     elif acc in [7, 28]:
         if 'INTEREST' in desc:
             return 'Interest Payment'
         else:
             return 'Recovery Wire'
-    # 18. IL UI - BEFORE BRB! (ACC=26 but IL specific)
+    # 19. IL UI - BEFORE BRB! (ACC=26 but IL specific)
     elif 'IL DEPT EMPL' in desc or 'UNEMPL TAX' in desc:
         return 'IL UI'
     elif 'NAME=IL DEPT' in desc:
         return 'IL UI'
-    # 19. Canary Payments - CPP pattern (both formats)
+    # 20. Canary Payments - CPP pattern (both formats)
     elif 'ENTRY DESCR=CPP' in desc or 'DESC: CPP' in desc:
         return 'Canary Payments'
-    # 20. Blueridge Operations (after IL UI check!)
+    # 21. Blueridge Operations (after IL UI check!)
     elif acc == 26:
         if amt < 0.5:
             return 'Bad Debt'
@@ -179,75 +182,6 @@ def predict_with_rules(data, model, tfidf, le_agent, le_account, le_payment, icp
             rule_used.append(False)
     
     return predictions, rule_used
-
-# Test the hybrid approach
-print("=" * 100)
-print("🎯 TESTING HYBRID PREDICTION (Rules + ML)")
-print("=" * 100)
-
-# Load model
-model = joblib.load('ultra_fast_model.pkl')
-tfidf = joblib.load('ultra_fast_tfidf.pkl')
-le_agent = joblib.load('ultra_fast_agent_encoder.pkl')
-
-# Load data
-df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
-df['amount'] = df['amount'] / 100
-df['date'] = pd.to_datetime(df['date'], format='mixed')
-df = df[df['date'] >= '2024-01-01'].copy()
-df = df[df['agent'].notna()].copy()
-
-svb_accounts = [1, 2, 5, 10, 24]
-df = df[~df['origination_account_id'].isin(svb_accounts)].copy()
-
-# Remove problematic IDs (incorrect labels) - NONE FOR NOW
-# problematic_ids = []
-# df = df[~df['id'].isin(problematic_ids)].copy()
-
-df['agent'] = df['agent'].str.strip()
-
-# Apply rules to training data (same as before)
-print("\n📂 Preparing data...")
-
-# First pass: Find ICP Funding amounts
-icp_funding_amounts = set()
-for idx, row in df.iterrows():
-    if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
-        desc = str(row['description']).upper()
-        if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
-            icp_funding_amounts.add(float(row['amount']))
-
-print(f"   📌 Found {len(icp_funding_amounts)} ICP Funding amounts")
-
-# Second pass: Apply all rules
-for idx, row in df.iterrows():
-    rule_agent = apply_rules(row, icp_funding_amounts)
-    if rule_agent:
-        df.at[idx, 'agent'] = rule_agent
-
-print(f"✅ {len(df):,} transactions | {df['agent'].nunique()} agents")
-
-# Split
-test_end = int(len(df) * 0.85)
-val_data = df.iloc[test_end:].copy()
-
-# Prepare encoders
-le_account = LabelEncoder()
-le_payment = LabelEncoder()
-le_account.fit(df['origination_account_id'].fillna(0).astype(int).astype(str))
-le_payment.fit(df['payment_method'].fillna(-1).astype(int).astype(str))
-
-# Filter validation to agents in training
-train_agents = set(le_agent.classes_)
-val_data_filtered = val_data[val_data['agent'].isin(train_agents)].copy().reset_index(drop=True)
-
-print(f"✅ Validation: {len(val_data_filtered):,} transactions")
-
-# Hybrid prediction
-print("\n🔧 Running hybrid prediction...")
-start = datetime.now()
-predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
-elapsed = (datetime.now() - start).total_seconds()
 
 # Label unification (normalize similar labels)
 def normalize_label(label):
@@ -336,48 +270,119 @@ def normalize_label(label):
     
     return label
 
-# Apply normalization
-val_data_filtered['agent_normalized'] = val_data_filtered['agent'].apply(normalize_label)
-val_data_filtered['predicted_normalized'] = [normalize_label(p) for p in predictions]
+# Test the hybrid approach (only when run directly, not when imported)
+if __name__ == "__main__":
+    print("=" * 100)
+    print("🎯 TESTING HYBRID PREDICTION (Rules + ML)")
+    print("=" * 100)
 
-val_data_filtered['predicted'] = predictions
-val_data_filtered['rule_used'] = rule_used
-val_data_filtered['correct'] = (val_data_filtered['agent_normalized'] == val_data_filtered['predicted_normalized']).astype(int)
+    # Load model
+    model = joblib.load('ultra_fast_model.pkl')
+    tfidf = joblib.load('ultra_fast_tfidf.pkl')
+    le_agent = joblib.load('ultra_fast_agent_encoder.pkl')
 
-# Results
-overall_acc = val_data_filtered['correct'].mean() * 100
-rule_count = sum(rule_used)
-ml_count = len(rule_used) - rule_count
-
-rule_data = val_data_filtered[val_data_filtered['rule_used']]
-ml_data = val_data_filtered[~val_data_filtered['rule_used']]
-
-rule_acc = rule_data['correct'].mean() * 100 if len(rule_data) > 0 else 0
-ml_acc = ml_data['correct'].mean() * 100 if len(ml_data) > 0 else 0
-
-print(f"\n✅ Prediction time: {elapsed:.2f}s ({elapsed/len(val_data_filtered)*1000:.2f}ms per BT)")
-
-print("\n" + "=" * 100)
-print("🏆 HYBRID RESULTS")
-print("=" * 100)
-print(f"📊 Overall Accuracy: {overall_acc:.2f}%")
-print(f"\n🔹 Rule-based: {rule_count:,} BTs ({rule_count/len(val_data_filtered)*100:.1f}%) → {rule_acc:.2f}% accurate")
-print(f"🔹 ML-based:   {ml_count:,} BTs ({ml_count/len(val_data_filtered)*100:.1f}%) → {ml_acc:.2f}% accurate")
-
-# Top agents analysis
-print("\n" + "=" * 100)
-print("📊 TOP 10 AGENTS - HYBRID PERFORMANCE")
-print("=" * 100)
-
-agent_counts = val_data_filtered['agent'].value_counts().head(10)
-for rank, (agent, count) in enumerate(agent_counts.items(), 1):
-    agent_data = val_data_filtered[val_data_filtered['agent'] == agent]
-    correct = agent_data['correct'].sum()
-    accuracy = correct / count * 100
-    rule_pct = agent_data['rule_used'].sum() / count * 100
+    # Load data
+    df = pd.read_csv('/Users/yarkin.akcil/Downloads/Unrecon_2025_10_05_updated.csv', low_memory=False)
+    df['amount'] = df['amount'] / 100
+    df['date'] = pd.to_datetime(df['date'], format='mixed')
+    df = df[df['date'] >= '2024-01-01'].copy()
+    df = df[df['agent'].notna()].copy()
     
-    print(f"{rank:2d}. {agent:30s}: {accuracy:6.2f}% ({count:5,} BTs, {rule_pct:5.1f}% via rules)")
-
-print("\n" + "=" * 100)
-print("✅ COMPLETE!")
-print("=" * 100)
+    svb_accounts = [1, 2, 5, 10, 24]
+    df = df[~df['origination_account_id'].isin(svb_accounts)].copy()
+    
+    # Remove problematic IDs (incorrect labels) - NONE FOR NOW
+    # problematic_ids = []
+    # df = df[~df['id'].isin(problematic_ids)].copy()
+    
+    df['agent'] = df['agent'].str.strip()
+    
+    # Apply rules to training data (same as before)
+    print("\n📂 Preparing data...")
+    
+    # First pass: Find ICP Funding amounts
+    icp_funding_amounts = set()
+    for idx, row in df.iterrows():
+        if pd.notna(row['origination_account_id']) and int(row['origination_account_id']) == 21:
+            desc = str(row['description']).upper()
+            if 'REMARK=JPMORGAN ACCESS TRANSFER FROM' in desc:
+                icp_funding_amounts.add(float(row['amount']))
+    
+    print(f"   📌 Found {len(icp_funding_amounts)} ICP Funding amounts")
+    
+    # Second pass: Apply all rules
+    for idx, row in df.iterrows():
+        rule_agent = apply_rules(row, icp_funding_amounts)
+        if rule_agent:
+            df.at[idx, 'agent'] = rule_agent
+    
+    print(f"✅ {len(df):,} transactions | {df['agent'].nunique()} agents")
+    
+    # Split
+    test_end = int(len(df) * 0.85)
+    val_data = df.iloc[test_end:].copy()
+    
+    # Prepare encoders
+    le_account = LabelEncoder()
+    le_payment = LabelEncoder()
+    le_account.fit(df['origination_account_id'].fillna(0).astype(int).astype(str))
+    le_payment.fit(df['payment_method'].fillna(-1).astype(int).astype(str))
+    
+    # Filter validation to agents in training
+    train_agents = set(le_agent.classes_)
+    val_data_filtered = val_data[val_data['agent'].isin(train_agents)].copy().reset_index(drop=True)
+    
+    print(f"✅ Validation: {len(val_data_filtered):,} transactions")
+    
+    # Hybrid prediction
+    print("\n🔧 Running hybrid prediction...")
+    start = datetime.now()
+    predictions, rule_used = predict_with_rules(val_data_filtered, model, tfidf, le_agent, le_account, le_payment, icp_funding_amounts)
+    elapsed = (datetime.now() - start).total_seconds()
+    
+    
+    # Apply normalization
+    val_data_filtered['agent_normalized'] = val_data_filtered['agent'].apply(normalize_label)
+    val_data_filtered['predicted_normalized'] = [normalize_label(p) for p in predictions]
+    
+    val_data_filtered['predicted'] = predictions
+    val_data_filtered['rule_used'] = rule_used
+    val_data_filtered['correct'] = (val_data_filtered['agent_normalized'] == val_data_filtered['predicted_normalized']).astype(int)
+    
+    # Results
+    overall_acc = val_data_filtered['correct'].mean() * 100
+    rule_count = sum(rule_used)
+    ml_count = len(rule_used) - rule_count
+    
+    rule_data = val_data_filtered[val_data_filtered['rule_used']]
+    ml_data = val_data_filtered[~val_data_filtered['rule_used']]
+    
+    rule_acc = rule_data['correct'].mean() * 100 if len(rule_data) > 0 else 0
+    ml_acc = ml_data['correct'].mean() * 100 if len(ml_data) > 0 else 0
+    
+    print(f"\n✅ Prediction time: {elapsed:.2f}s ({elapsed/len(val_data_filtered)*1000:.2f}ms per BT)")
+    
+    print("\n" + "=" * 100)
+    print("🏆 HYBRID RESULTS")
+    print("=" * 100)
+    print(f"📊 Overall Accuracy: {overall_acc:.2f}%")
+    print(f"\n🔹 Rule-based: {rule_count:,} BTs ({rule_count/len(val_data_filtered)*100:.1f}%) → {rule_acc:.2f}% accurate")
+    print(f"🔹 ML-based:   {ml_count:,} BTs ({ml_count/len(val_data_filtered)*100:.1f}%) → {ml_acc:.2f}% accurate")
+    
+    # Top agents analysis
+    print("\n" + "=" * 100)
+    print("📊 TOP 10 AGENTS - HYBRID PERFORMANCE")
+    print("=" * 100)
+    
+    agent_counts = val_data_filtered['agent'].value_counts().head(10)
+    for rank, (agent, count) in enumerate(agent_counts.items(), 1):
+        agent_data = val_data_filtered[val_data_filtered['agent'] == agent]
+        correct = agent_data['correct'].sum()
+        accuracy = correct / count * 100
+        rule_pct = agent_data['rule_used'].sum() / count * 100
+        
+        print(f"{rank:2d}. {agent:30s}: {accuracy:6.2f}% ({count:5,} BTs, {rule_pct:5.1f}% via rules)")
+    
+    print("\n" + "=" * 100)
+    print("✅ COMPLETE!")
+    print("=" * 100)

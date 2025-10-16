@@ -1,0 +1,227 @@
+#!/usr/bin/env python3
+"""
+Complete SOP Mapping - ALL labels from SOP
+Extracted from: Daily Operations : How to Label & Reconcile
+"""
+
+COMPLETE_SOP_MAPPING = {
+    # EXISTING LABELS
+    "Risk": {
+        "labeling": "If the account is 'PNC Wire In, or Chase Wire In' you should label that BT as Risk",
+        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 10 am PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. If the account of the BT is Payroll/wireins you should reach out to the credit ops team through the risk-payments channel. (Recovery) —> Risk Channel —> collections (Payroll/wireins) —> Risk Channel —> credit ops You should link BT, company, and payroll to your message.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Recovery Wire": {
+        "labeling": "If the account is 'Chase Recovery' you should label that BT as Recovery Wire",
+        "reconciliation": "If there is a BT that is labeled as Risk, you should wait until 10 am PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. (Recovery) —> Risk Channel —> collections",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Check": {
+        "labeling": "When you see check paid as the BT's payment method, you should label that BT as Check",
+        "reconciliation": "If there is a BT that the agent is Check, you will see a customer reference number. This number contains zeros at the beginning. You should copy this number without the zeros and paste that number to the 'Mastertax Check Numbers' at the Mastertax Check Tracker and also select the relevant bank account. With this tool, you import check. This check will appear as a check payment. That check payment may appear as a suggested transmission in the reconciliation queue. If it will not appear, you should find it in the check payments section. You should enter the same check number to the check number section in the check payment filter. You should copy that ID and select check payment as the transmission type and reconcile.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "NY WH": {
+        "labeling": "When you see NYS DTF WT on BT's description you should label that BT as NY WH",
+        "reconciliation": "If there is a BT that the agent is NY WTH, you will see some suggested transmissions. You should reconcile it with the oldest transmission since NY WTH BTs don't give us any identifying information",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "OH WH": {
+        "labeling": "When you see OH WH TAX on BT's description you should label that BT as OH WH",
+        "reconciliation": "If there is a BT that the agent is OH WH, you will see an IN ID NO in the description. This description contains zeros at the beginning. You should copy the ID number without the zeros and paste that number to the OH WTH section in the reconciliation cleanup dashboard (redash). Then, you will have the electronic payment ID. You should enter this ID as the transmission ID and select the electronic payment as the transmission type.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "CSC": {
+        "labeling": "When you see CSCXXXXXX on BT's description you should label that BT as CSC",
+        "reconciliation": "If there is a BT that the agent is CSC, you will see some suggested transmissions. The description of the transmission (CSC 123456) should match with the description in the transaction (DESC=CSC123456). If they match, you should also check the origination account and the amount.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "LOI": {
+        "labeling": "When you see Remark: ACH RETURN SETTLEMENT on BT's description you should label that BT as LOI. If the description includes 'CREDIT MEMO', the BT should be labeled as 'LOI'.",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Lockbox": {
+        "labeling": "When you see Lockbox on the BT's description you should label that BT as Lockbox",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "OH SDWH": {
+        "labeling": "When you see OH SDWH on BT's description you should label that BT as OH SDWH",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ICP Funding": {
+        "labeling": "When you see Chase International Contractor Payment as the account and 'TRANSFER FROM ACCOUNT000000807737908' in the description, you should label that BT as ICP Funding. In total, there will be 2 BTs to be labeled as ICP Funding and both of them will have 'REMARK=JPMORGAN ACCESS TRANSFER' on their description. When you see 'REMARK=JPMORGAN ACCESS TRANSFER' on BT's description label that BT as ICP Funding. There will be two ICP funding BTs, one from Chase ICP account and one from Chase Ops.",
+        "reconciliation": "First, you should search the amount in your mail. If no relative email exists you should search for electronic payment. You start to reconcile with wire out. If the electronic payment with the same amount does not exist, you should use the Electronic Payment Creator Tool. For the payment account information section, after completing payment account type section and memo section in order to your unreconciled ICP BT, you should complete grouping attribute key value pairs. Click Payment Account Types and find the 12th item. This item shows Company ID and Payroll ID. Copy them to the grouping attribute key value pairs section. With the created EP you can now reconcile the wire out. After that, you should reconcile wire in. For the wire in, you should use the payment reporter tool and reconcile it.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "NY UI": {
+        "labeling": "When you see NYS DOL UI on BT's description you should label that BT as NY UI",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    # NEW LABELS FROM SOP
+    "Bad Debt": {
+        "labeling": "When you see various transmissions with an amount less than $1.00 you should label them as Bad Debt (For Example: $0.01, $0.02, $0.03…)",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ICP Return": {
+        "labeling": "When you see Chase International Contractor Payment as the account and 'ach external' as the method you should label that BT as ICP Return",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ICP": {
+        "labeling": "When you see 'ORIG CO NAME=DLOCAL' (sometimes it might be DLOCL) on BT's description label that BT as ICP",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "NM UI": {
+        "labeling": "When you see STATE OF NM DWS ENTRY DESCR: UI PAYMENT on BT's description you should label that BT as NM UI",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "WA ESD": {
+        "labeling": "If the account is Chase Operations and the description contains STATE OF WA ESD you should label that BT as WA ESD. If the account is PNC Operations and the description contains ESD WA UI-TAX you should label that BT as WA ESD",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "IL UI": {
+        "labeling": "When you see IL DEPT EMPL SEC on BT's description you should label that BT as IL UI",
+        "reconciliation": "If there is a BT that is labeled as IL UI you should find the company name in the description. You should write this company name to Reconciliation Clean Up on redash. (https://redash.zp-int.com/dashboard/reconciliation-cleanup) You can find the agent payment link and electronic payment id. You should reconcile with the electronic payment ip.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "MT UI": {
+        "labeling": "When you see MT TAX or STATE OF MONTANA on BT's description you should label that BT as MT UI",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "York Adams Tax": {
+        "labeling": "When you see YORK ADAMS TAX on BT's description you should label that BT as York Adams Tax",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "WA LNI": {
+        "labeling": "When you see L&I or Labor&Industries on BT's description you should label that BT as WA LNI",
+        "reconciliation": "WA LNI : It could be checked by the Reconciliation Cleanup board",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Berks Tax": {
+        "labeling": "When you see Berks EIT on BT's description you should label that BT as Berks Tax",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Money Market Fund": {
+        "labeling": "When you see MONEY MKT MUTUAL FUND on BT's description you should label that BT as Money Market Fund",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Blueridge Interest": {
+        "labeling": "When you see Accrued Int. on BT's description and its bank is Blueridge, you should label that BT as Blueridge Interest",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ACH Reversal": {
+        "labeling": "When you see ACH CREDIT SETTLEMENT on BT's description, you should label that BT as ACH Reversal",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ACH": {
+        "labeling": "When you see REMARK=EFT REVERSAL on BT's description, you should label that BT as ACH",
+        "reconciliation": "If there is a BT that is labeled as ACH you should reconcile with the recommended transmission including the same description. An example for CON12345, the description of the BT is DESC:CON750119. You can find the same description in the suggested BTs' description.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Interest Adjustment": {
+        "labeling": "When you see REMARK=INTEREST ADJUSTMENT on BT's description, you should label that BT as Interest Adjustment",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "ACH Return": {
+        "labeling": "When you see RTN OFFSET on BT's description, you should label that BT as ACH Return",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "VA UI": {
+        "labeling": "When you see VA. EMPLOY COMM on BT's description, you should label that BT as VA UI",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Treasury Transfer": {
+        "labeling": "When you see US TREASURY CAPITAL on BT's description, you should label that BT as Treasury Transfer",
+        "reconciliation": None,
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+    
+    "Brex": {
+        "labeling": "When you see Brex in transaction description",
+        "reconciliation": "If there is a BT that is labeled as Brex and the payment direction is credit, you should find the relevant EP and reconcile with it. If the payment direction is debit you should escalate this BT to the payment-ops-recon Slack channel.",
+        "sop_page": "Daily Operations : How to Label & Reconcile",
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    },
+}
+
+# Count total labels
+print(f"\n✅ Total labels in SOP: {len(COMPLETE_SOP_MAPPING)}")
+print("\nLabels with reconciliation info:")
+for label, info in COMPLETE_SOP_MAPPING.items():
+    if info['reconciliation']:
+        print(f"  - {label}")
+

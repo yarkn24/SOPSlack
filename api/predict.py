@@ -121,6 +121,12 @@ def predict_rule_based(transaction):
     if 'US TREASURY CAPITAL' in desc or 'TREASURY' in desc:
         return 'Treasury Transfer', 'rule-based', "Description contains 'TREASURY'", 0.99
     
+    if 'L I' in desc or 'LABOR INDUSTRIES' in desc or 'LABORINDUSTRIES' in desc:
+        return 'WA LNI', 'rule-based', "Description contains 'L&I' or 'Labor&Industries'", 0.99
+    
+    if 'VA. EMPLOY COMM' in desc or 'VA EMPLOY COMM' in desc:
+        return 'VA UI', 'rule-based', "Description contains 'VA. EMPLOY COMM'", 0.99
+    
     if amount < 1.0 and amount > 0:
         return 'Bad Debt', 'rule-based', 'Amount less than $1.00', 0.99
     

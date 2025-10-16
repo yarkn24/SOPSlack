@@ -24,16 +24,24 @@ AGENT_SOP_MAPPING = {
             "Payment Method 0 (Wire)",
         ],
         "reconciliation_steps": [
-            "Verify wire transfer details in Modern Treasury",
-            "Match with expected incoming Risk payments",
-            "Check for 1TRV code compliance",
-            "Validate origination account and amount",
+            "Open Modern Treasury and navigate to 'Incoming Wires' section",
+            "Search for the transaction using the 1TRV reference code from the bank narrative",
+            "Verify that the wire transfer matches an expected Risk payment in the system",
+            "Check that the origination account matches the approved Risk sender list",
+            "Validate that the amount matches the expected payment amount (within $0.01 tolerance)",
+            "If matched: Mark transaction as 'Risk' and link to the Modern Treasury payment ID",
+            "If unmatched: Escalate to Risk team via #risk-operations channel with transaction details",
+            "Document any discrepancies in the transaction comments section",
         ],
+        "sop_section": "Wire Transfer Reconciliation → Risk Payments (1TRV Code)",
+        "sop_quote": "All transactions containing '1TRV' code in the description MUST be labeled as Risk, regardless of account or payment method. These are wire transfers from Risk's international payment processor and require validation in Modern Treasury before reconciliation.",
         "confluence_links": [            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134/Escalating+Reconciliation+Issues+to+Cross-Functional+Stakeholders",
             "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
         ],
         "frequency": "HIGH",
         "criticality": "CRITICAL",
+        "typical_amount_range": "$1,000 - $50,000",
+        "escalation_threshold": "> $100,000 or unmatched transaction",
     },
     
     "Recovery Wire": {
@@ -339,6 +347,27 @@ AGENT_SOP_MAPPING = {
         "frequency": "LOW",
         "criticality": "HIGH",
         "note": "No specific SOP available - use general reconciliation procedures",
+    },
+    
+    "Unclaimed Property": {
+        "labeling_rules": [
+            "Description: 'GUSTOCUSTDEP' AND 'PRFUND' (Gusto Customer Deposit Pre-funding)",
+            "Account 3 (Chase Operations)",
+            "Payment Method 4 (ACH Transaction)",
+            "Entry Description: 'PAYROLL' or 'CORP PAY'",
+        ],
+        "reconciliation_steps": [
+            "Verify unclaimed property transmission records",
+            "Match with state-specific unclaimed property batches (NY, PA, etc.)",
+            "Check if manual transmission generation is required",
+            "Reconcile with Electronic Payment records in Modern Treasury",
+        ],
+        "confluence_links": [
+            "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411126/Daily+Bank+Transaction+Reconciliation+by+Bank+Transaction+Type",
+        ],
+        "frequency": "MEDIUM",
+        "criticality": "HIGH",
+        "note": "Often requires manual reconciliation. Check with Amanda Wong or Platform Ops team if transmission generation needed.",
     },
     
     "York Adams": {

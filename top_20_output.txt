@@ -1,0 +1,593 @@
+
+✅ Total labels in SOP: 30
+
+Labels with reconciliation info:
+  - Risk
+  - Recovery Wire
+  - Check
+  - NY WH
+  - OH WH
+  - CSC
+  - ICP Funding
+  - IL UI
+  - WA LNI
+  - ACH
+  - Brex
+
+================================================================================
+TOP 20 MOST COMMON LABELS - COMPLETE SOP ANALYSIS
+================================================================================
+
+✅ Analyzing 20 transactions
+
+
+================================================================================
+BATCH TRANSACTION ANALYSIS
+================================================================================
+
+================================================================================
+GROUP 1: Risk
+================================================================================
+
+🔢 Transaction IDs: 59315257
+
+🏷️  Label: Risk
+📊 How we found this: Account is PNC Wire In or Chase Wire In
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59315257 | $5,100.00 | Chase Wire In
+      YOUR REF=POH OF 25/10/14,REC FROM=00000000730103207 CHELSEA ...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "If the account is 'PNC Wire In, or Chase Wire In' you should label that BT as Risk"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that is labeled as Risk, you should wait until 10 am PST to reach out Risk Team. You can use the risk-payments slack channel to reach the Risk Team. There are two teams that record BTs. If the account of the BT is 'recovery' you should reach out collections team through the risk-payments channel. If the account of the BT is Payroll/wireins you should reach out to the credit ops team through the risk-payments channel. (Recovery) —> Risk Channel —> collections (Payroll/wireins) —> Risk Channel —> credit ops You should link BT, company, and payroll to your message."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 2: Check
+================================================================================
+
+🔢 Transaction IDs: 59318456
+
+🏷️  Label: Check
+📊 How we found this: Payment method is 'Check'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59318456 | $1,250.00 | Chase Operations
+      CHECK PAID 00123456789 PAYEE: ABC COMPANY...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see check paid as the BT's payment method, you should label that BT as Check"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that the agent is Check, you will see a customer reference number. This number contains zeros at the beginning. You should copy this number without the zeros and paste that number to the 'Mastertax Check Numbers' at the Mastertax Check Tracker and also select the relevant bank account. With this tool, you import check. This check will appear as a check payment. That check payment may appear as a suggested transmission in the reconciliation queue. If it will not appear, you should find it in the check payments section. You should enter the same check number to the check number section in the check payment filter. You should copy that ID and select check payment as the transmission type and reconcile."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 3: NY WH
+================================================================================
+
+🔢 Transaction IDs: 59319234
+
+🏷️  Label: NY WH
+📊 How we found this: Description contains 'NYS DTF WT'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59319234 | $850.00 | Chase Operations
+      NYS DTF WT WITHHOLDING TAX PAYMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see NYS DTF WT on BT's description you should label that BT as NY WH"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that the agent is NY WTH, you will see some suggested transmissions. You should reconcile it with the oldest transmission since NY WTH BTs don't give us any identifying information"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 4: OH WH
+================================================================================
+
+🔢 Transaction IDs: 59319567
+
+🏷️  Label: OH WH
+📊 How we found this: Description contains 'OH WH TAX'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59319567 | $620.00 | Chase Operations
+      OH WH TAX WITHHOLDING PAYMENT STATE OF OHIO...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see OH WH TAX on BT's description you should label that BT as OH WH"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that the agent is OH WH, you will see an IN ID NO in the description. This description contains zeros at the beginning. You should copy the ID number without the zeros and paste that number to the OH WTH section in the reconciliation cleanup dashboard (redash). Then, you will have the electronic payment ID. You should enter this ID as the transmission ID and select the electronic payment as the transmission type."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 5: NY UI
+================================================================================
+
+🔢 Transaction IDs: 59321123
+
+🏷️  Label: NY UI
+📊 How we found this: Description contains 'NYS DOL UI'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59321123 | $1,200.00 | Chase Operations
+      NYS DOL UI UNEMPLOYMENT INSURANCE PAYMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see NYS DOL UI on BT's description you should label that BT as NY UI"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 6: CSC
+================================================================================
+
+🔢 Transaction IDs: 59318890
+
+🏷️  Label: CSC
+📊 How we found this: Description contains 'CSC'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59318890 | $345.00 | Chase Operations
+      DESC=CSC123456 CHILD SUPPORT PAYMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see CSCXXXXXX on BT's description you should label that BT as CSC"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that the agent is CSC, you will see some suggested transmissions. The description of the transmission (CSC 123456) should match with the description in the transaction (DESC=CSC123456). If they match, you should also check the origination account and the amount."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 7: ICP Funding
+================================================================================
+
+🔢 Transaction IDs: 59319890
+
+🏷️  Label: ICP Funding
+📊 How we found this: Description contains 'JPMORGAN ACCESS TRANSFER'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59319890 | $25,000.00 | Chase International Contractor Payment
+      TRANSFER FROM ACCOUNT000000807737908 REMARK=JPMORGAN ACCESS ...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see Chase International Contractor Payment as the account and 'TRANSFER FROM ACCOUNT000000807737908' in the description, you should label that BT as ICP Funding. In total, there will be 2 BTs to be labeled as ICP Funding and both of them will have 'REMARK=JPMORGAN ACCESS TRANSFER' on their description. When you see 'REMARK=JPMORGAN ACCESS TRANSFER' on BT's description label that BT as ICP Funding. There will be two ICP funding BTs, one from Chase ICP account and one from Chase Ops."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "First, you should search the amount in your mail. If no relative email exists you should search for electronic payment. You start to reconcile with wire out. If the electronic payment with the same amount does not exist, you should use the Electronic Payment Creator Tool. For the payment account information section, after completing payment account type section and memo section in order to your unreconciled ICP BT, you should complete grouping attribute key value pairs. Click Payment Account Types and find the 12th item. This item shows Company ID and Payroll ID. Copy them to the grouping attribute key value pairs section. With the created EP you can now reconcile the wire out. After that, you should reconcile wire in. For the wire in, you should use the payment reporter tool and reconcile it."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 8: LOI
+================================================================================
+
+🔢 Transaction IDs: 59321789
+
+🏷️  Label: LOI
+📊 How we found this: Description indicates LOI
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59321789 | $100.00 | Chase Operations
+      REMARK=ACH RETURN SETTLEMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see Remark: ACH RETURN SETTLEMENT on BT's description you should label that BT as LOI. If the description includes 'CREDIT MEMO', the BT should be labeled as 'LOI'."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 9: Lockbox
+================================================================================
+
+🔢 Transaction IDs: 59320456
+
+🏷️  Label: Lockbox
+📊 How we found this: Description contains 'LOCKBOX'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59320456 | $15.00 | Chase Operations
+      LOCKBOX PAYMENT PROCESSING FEE...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see Lockbox on the BT's description you should label that BT as Lockbox"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 10: OH SDWH
+================================================================================
+
+🔢 Transaction IDs: 59320789
+
+🏷️  Label: OH SDWH
+📊 How we found this: Description contains 'OH SDWH'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59320789 | $430.00 | Chase Operations
+      OH SDWH STATE TAX PAYMENT OHIO...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see OH SDWH on BT's description you should label that BT as OH SDWH"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 11: MT UI
+================================================================================
+
+🔢 Transaction IDs: 59321456
+
+🏷️  Label: MT UI
+📊 How we found this: Description contains 'STATE OF MONTANA'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59321456 | $550.00 | Chase Operations
+      STATE OF MONTANA UNEMPLOYMENT TAX...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see MT TAX or STATE OF MONTANA on BT's description you should label that BT as MT UI"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 12: IL UI
+================================================================================
+
+🔢 Transaction IDs: 59322100
+
+🏷️  Label: IL UI
+📊 How we found this: Description contains 'IL DEPT EMPL SEC'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322100 | $780.00 | Chase Operations
+      IL DEPT EMPL SEC UNEMPLOYMENT INSURANCE...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see IL DEPT EMPL SEC on BT's description you should label that BT as IL UI"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that is labeled as IL UI you should find the company name in the description. You should write this company name to Reconciliation Clean Up on redash. (https://redash.zp-int.com/dashboard/reconciliation-cleanup) You can find the agent payment link and electronic payment id. You should reconcile with the electronic payment ip."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 13: WA ESD
+================================================================================
+
+🔢 Transaction IDs: 59322200
+
+🏷️  Label: WA ESD
+📊 How we found this: Description contains 'STATE OF WA ESD'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322200 | $920.00 | Chase Operations
+      STATE OF WA ESD UNEMPLOYMENT TAX...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "If the account is Chase Operations and the description contains STATE OF WA ESD you should label that BT as WA ESD. If the account is PNC Operations and the description contains ESD WA UI-TAX you should label that BT as WA ESD"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 14: ACH
+================================================================================
+
+🔢 Transaction IDs: 59322300
+
+🏷️  Label: ACH
+📊 How we found this: Description contains 'EFT REVERSAL'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322300 | $250.00 | Chase Operations
+      REMARK=EFT REVERSAL PAYMENT RETURN...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see REMARK=EFT REVERSAL on BT's description, you should label that BT as ACH"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "If there is a BT that is labeled as ACH you should reconcile with the recommended transmission including the same description. An example for CON12345, the description of the BT is DESC:CON750119. You can find the same description in the suggested BTs' description."
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 15: ACH Return
+================================================================================
+
+🔢 Transaction IDs: 59322400
+
+🏷️  Label: ACH Return
+📊 How we found this: Description contains 'RTN OFFSET'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322400 | $180.00 | Chase Operations
+      RTN OFFSET RETURN PAYMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see RTN OFFSET on BT's description, you should label that BT as ACH Return"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 16: Money Market Fund
+================================================================================
+
+🔢 Transaction IDs: 59322123
+
+🏷️  Label: Money Market Fund
+📊 How we found this: Description contains 'MONEY MARKET'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322123 | $50,000.00 | Chase Operations
+      MONEY MKT MUTUAL FUND TRANSFER...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see MONEY MKT MUTUAL FUND on BT's description you should label that BT as Money Market Fund"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 17: Treasury Transfer
+================================================================================
+
+🔢 Transaction IDs: 59322456
+
+🏷️  Label: Treasury Transfer
+📊 How we found this: Description contains 'TREASURY'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322456 | $100,000.00 | Chase Operations
+      US TREASURY CAPITAL TRANSFER...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see US TREASURY CAPITAL on BT's description, you should label that BT as Treasury Transfer"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 18: WA LNI
+================================================================================
+
+🔢 Transaction IDs: 59322500
+
+🏷️  Label: WA LNI
+📊 How we found this: Description contains 'L&I' or 'Labor&Industries'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322500 | $340.00 | Chase Operations
+      L&I LABOR&INDUSTRIES TAX PAYMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see L&I or Labor&Industries on BT's description you should label that BT as WA LNI"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+📖 How to Reconcile (from SOP):
+   "WA LNI : It could be checked by the Reconciliation Cleanup board"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 19: Bad Debt
+================================================================================
+
+🔢 Transaction IDs: 59322600
+
+🏷️  Label: Bad Debt
+📊 How we found this: Amount less than $1.00
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322600 | $0.03 | Chase Operations
+      MICROVARIANCE ADJUSTMENT...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see various transmissions with an amount less than $1.00 you should label them as Bad Debt (For Example: $0.01, $0.02, $0.03…)"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+GROUP 20: VA UI
+================================================================================
+
+🔢 Transaction IDs: 59322700
+
+🏷️  Label: VA UI
+📊 How we found this: Description contains 'VA. EMPLOY COMM'
+
+📋 Sample Transactions (1 total):
+
+   1. ID: 59322700 | $690.00 | Chase Operations
+      VA. EMPLOY COMM UNEMPLOYMENT INSURANCE...
+
+────────────────────────────────────────────────────────────────────────────────
+📚 SOP BİLGİLERİ (ONLY FROM SOP):
+────────────────────────────────────────────────────────────────────────────────
+
+📝 How to Label (from SOP):
+   "When you see VA. EMPLOY COMM on BT's description, you should label that BT as VA UI"
+
+   Source: Daily Operations : How to Label & Reconcile
+   Link: https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232
+
+================================================================================
+
+
+================================================================================
+SUMMARY
+================================================================================
+
+Total Labels Analyzed: 20
+
+Labels WITH SOP Reconciliation Info:
+  ✅ Risk
+  ✅ Check
+  ✅ NY WH
+  ✅ OH WH
+  ✅ CSC
+  ✅ ICP Funding
+  ✅ IL UI
+  ✅ ACH
+  ✅ WA LNI
+
+Labels WITHOUT SOP Reconciliation Info:
+  ⚠️  NY UI
+  ⚠️  LOI
+  ⚠️  Lockbox
+  ⚠️  OH SDWH
+  ⚠️  MT UI
+  ⚠️  WA ESD
+  ⚠️  ACH Return
+  ⚠️  Money Market Fund
+  ⚠️  Treasury Transfer
+  ⚠️  Bad Debt
+  ⚠️  VA UI
