@@ -40,6 +40,8 @@ def clean_text(text):
 
 def predict_rule_based(transaction):
     """Tier 1: Rule-based prediction (98% accuracy)"""
+    # Keep original description for special pattern matching (before clean_text removes punctuation)
+    desc_original = str(transaction.get('description', '')).upper()
     desc = clean_text(transaction.get('description', ''))
     account = clean_text(transaction.get('origination_account_id', ''))
     
@@ -86,9 +88,10 @@ def predict_rule_based(transaction):
     
     # RISK DETECTION (High Priority)
     # If description has CUSTOMER= field with a company that's NOT Gusto → Risk
-    if 'CUSTOMER=' in desc or 'B/O CUSTOMER=' in desc:
+    # Use original description (before punctuation removal) to detect "CUSTOMER="
+    if 'CUSTOMER=' in desc_original or 'B/O CUSTOMER=' in desc_original:
         # Check if customer is NOT Gusto
-        if 'GUSTO' not in desc:
+        if 'GUSTO' not in desc_original:
             return 'Risk', 'rule-based', "Customer field present with non-Gusto company (wire to external party)", 0.99
     
     # Account-based rules (ONLY if NOT description-only mode)
