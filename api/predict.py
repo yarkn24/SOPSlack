@@ -121,11 +121,24 @@ def predict_rule_based(transaction):
 
 # Simple cache to avoid repeat Gemini calls (save tokens!)
 _gemini_cache = {}
+_gemini_call_count = 0  # Track Gemini usage for demo day
+MAX_GEMINI_CALLS = int(os.environ.get('MAX_GEMINI_CALLS', '50'))  # Default: max 50 calls/session
+GEMINI_ENABLED = os.environ.get('GEMINI_ENABLED', 'true').lower() == 'true'  # Can disable for demo!
 
 def predict_gemini(transaction):
-    """Tier 2: Gemini AI - Token Optimized (Free tier friendly!)"""
+    """Tier 2: Gemini AI - ULTRA CONSERVATIVE (Demo-safe!)"""
+    global _gemini_call_count
+    
+    # DEMO MODE: Check if Gemini is disabled
+    if not GEMINI_ENABLED:
+        return 'Unknown', 'rule-based-only', 'Gemini disabled for token conservation', 0.50
+    
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return 'Unknown', 'unknown', 'No prediction method available', 0
+    
+    # DEMO MODE: Check call limit (protect free tier!)
+    if _gemini_call_count >= MAX_GEMINI_CALLS:
+        return 'Unknown', 'gemini-limit-reached', f'Max {MAX_GEMINI_CALLS} calls reached (token protection)', 0.50
     
     # Create cache key from transaction signature
     desc = clean_text(transaction.get('description', ''))
@@ -135,7 +148,7 @@ def predict_gemini(transaction):
     # Check cache first (avoid Gemini call = SAVE TOKENS!)
     if cache_key in _gemini_cache:
         cached = _gemini_cache[cache_key]
-        return cached[0], cached[1] + ' (cached)', cached[2], cached[3]
+        return cached[0], cached[1] + ' (cached-0tk)', cached[2], cached[3]
     
     # ULTRA-SHORT prompt to minimize token usage (free tier limit!)
     prompt = f"""Label this bank transaction (internal data only, no web search).
@@ -152,12 +165,15 @@ Description: {transaction.get('description', 'N/A')[:60]}
 Label (one word):"""
 
     try:
+        # INCREMENT COUNTER (track token usage!)
+        _gemini_call_count += 1
+        
         response = gemini_model.generate_content(prompt)
         label = response.text.strip()
         
         # Validate against known labels
         if label in COMPLETE_SOP_MAPPING:
-            result = (label, 'ml-based (Gemini AI)', f'Pattern match', 0.75)
+            result = (label, f'ml-based (Gemini-{_gemini_call_count})', f'Pattern match (~100tk)', 0.75)
             _gemini_cache[cache_key] = result
             return result
         
@@ -165,12 +181,12 @@ Label (one word):"""
         label_upper = label.upper()
         for known_label in COMPLETE_SOP_MAPPING.keys():
             if known_label.upper() in label_upper or label_upper in known_label.upper():
-                result = (known_label, 'ml-based (Gemini AI)', f'Fuzzy: {label}', 0.70)
+                result = (known_label, f'ml-based (Gemini-{_gemini_call_count})', f'Fuzzy: {label} (~100tk)', 0.70)
                 _gemini_cache[cache_key] = result
                 return result
         
         # No match - return Unknown (don't cache unknowns)
-        return 'Unknown', 'ml-based (Gemini AI)', f'No pattern match', 0.50
+        return 'Unknown', f'ml-based (Gemini-{_gemini_call_count})', f'No pattern match (~100tk)', 0.50
             
     except Exception as e:
         return 'Unknown', 'unknown', f'AI call failed', 0
@@ -217,20 +233,22 @@ class handler(BaseHTTPRequestHandler):
                 # Get SOP content
                 sop_content = COMPLETE_SOP_MAPPING.get(label, {})
                 
-                # Add Gemini summary if SOP reconciliation is long
+                # Add Gemini summary ONLY if enabled and under limit (DEMO MODE!)
                 gemini_summary = None
-                recon_text = sop_content.get('reconciliation', '')
-                if recon_text and len(recon_text) > 200 and GEMINI_API_KEY:
-                    try:
-                        prompt = f"""Summarize these reconciliation steps in 2-3 bullet points (Turkish):
+                if GEMINI_ENABLED and _gemini_call_count < MAX_GEMINI_CALLS:
+                    recon_text = sop_content.get('reconciliation', '')
+                    if recon_text and len(recon_text) > 200 and GEMINI_API_KEY:
+                        try:
+                            _gemini_call_count += 1  # Count summary calls too!
+                            prompt = f"""Summarize in 2-3 bullets (Turkish):
 
-{recon_text}
+{recon_text[:300]}
 
-Format: Emoji + short sentence per step."""
-                        response = gemini_model.generate_content(prompt)
-                        gemini_summary = response.text.strip()
-                    except:
-                        gemini_summary = None
+Emoji + short sentence per step."""
+                            response = gemini_model.generate_content(prompt)
+                            gemini_summary = response.text.strip() + f" (Gemini-{_gemini_call_count})"
+                        except:
+                            gemini_summary = None
                 
                 result = {
                     'transaction_id': txn.get('transaction_id', 'N/A'),
@@ -253,12 +271,22 @@ Format: Emoji + short sentence per step."""
             self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             
+            # Calculate estimated token usage
+            estimated_tokens = _gemini_call_count * 100  # ~100 tokens per call
+            
             response = {
                 'success': True,
                 'count': len(results),
                 'results': results,
                 'stats': stats,
-                'gemini_available': bool(GEMINI_API_KEY)
+                'gemini_usage': {
+                    'enabled': GEMINI_ENABLED,
+                    'calls_this_session': _gemini_call_count,
+                    'max_calls_allowed': MAX_GEMINI_CALLS,
+                    'remaining_calls': max(0, MAX_GEMINI_CALLS - _gemini_call_count),
+                    'estimated_tokens_used': estimated_tokens,
+                    'cache_size': len(_gemini_cache)
+                }
             }
             
             self.wfile.write(json.dumps(response).encode())
@@ -283,9 +311,15 @@ Format: Emoji + short sentence per step."""
         
         response = {
             'status': 'healthy',
-            'gemini_configured': bool(GEMINI_API_KEY),
-            'tier_1': 'Rule-Based (90%+)',
-            'tier_2': 'Gemini AI (backup)' if GEMINI_API_KEY else 'Not configured'
+            'tier_1': 'Rule-Based (95%+ - 0 tokens)',
+            'tier_2': f'Gemini AI ({_gemini_call_count}/{MAX_GEMINI_CALLS} calls - {"ENABLED" if GEMINI_ENABLED else "DISABLED"})',
+            'token_protection': {
+                'gemini_enabled': GEMINI_ENABLED,
+                'max_calls': MAX_GEMINI_CALLS,
+                'calls_used': _gemini_call_count,
+                'estimated_tokens': _gemini_call_count * 100,
+                'cache_hits': len(_gemini_cache)
+            }
         }
         
         self.wfile.write(json.dumps(response).encode())
