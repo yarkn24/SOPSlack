@@ -9,11 +9,76 @@ const API_URL = window.location.hostname === 'localhost'
 function parseTransactions(inputData) {
     /**
      * Parse transaction data from text or CSV format
+     * Supports database export format with headers
      */
     const lines = inputData.trim().split('\n');
     const transactions = [];
     
-    for (let line of lines) {
+    // Check if first line is a header (contains common column names)
+    let headerLine = null;
+    let headerMap = {};
+    let startIndex = 0;
+    
+    if (lines.length > 0 && lines[0].toLowerCase().includes('description')) {
+        // Detect header row
+        headerLine = lines[0];
+        const headers = headerLine.split(',').map(h => h.trim().toLowerCase());
+        
+        // Smart header mapping - find these 6 columns: id, amount, date, payment_method, origination_account_id, description
+        headers.forEach((header, index) => {
+            const cleanHeader = header.replace(/_/g, '').replace(/\s+/g, '').toLowerCase();
+            
+            // ID column - exact match or contains 'id' but not 'account'
+            if (header === 'id' || (header.includes('id') && !header.includes('account') && !header.includes('customer') && !header.includes('bank'))) {
+                if (!headerMap['id']) headerMap['id'] = index;  // Take first match
+            }
+            // Amount column
+            else if (header === 'amount' || header === 'amt' || header === 'value') {
+                headerMap['amount'] = index;
+            }
+            // Date column
+            else if (header === 'date' || cleanHeader === 'date' || header === 'created' || header.includes('date')) {
+                if (!headerMap['date']) headerMap['date'] = index;
+            }
+            // Description column
+            else if (header === 'description' || header === 'desc' || cleanHeader.includes('desc')) {
+                headerMap['description'] = index;
+            }
+            // Payment method column - exact match preferred
+            else if (header === 'payment_method' || cleanHeader === 'paymentmethod' || 
+                     (header.includes('payment') && (header.includes('method') || header.includes('type')))) {
+                headerMap['payment_method'] = index;
+            }
+            // Origination account ID column - exact match preferred
+            else if (header === 'origination_account_id' || cleanHeader === 'originationaccountid' ||
+                     header === 'account_id' || cleanHeader === 'accountid' ||
+                     (header.includes('origination') && header.includes('account')) ||
+                     header === 'account') {
+                headerMap['origination_account_id'] = index;
+            }
+            // Agent/Label column (for validation) - exact match only
+            else if (header === 'agent' || header === 'label' || header === 'category') {
+                headerMap['agent'] = index;
+            }
+        });
+        
+        console.log('CSV with headers detected:', headers);
+        console.log('Mapped columns:', headerMap);
+        startIndex = 1; // Skip header row
+    }
+    
+    // Payment method mapping (database codes to text)
+    const paymentMethodMap = {
+        '0': 'wire in',
+        '2': 'check',
+        '4': 'wire in',
+        '8': 'internal transfer',
+        '10': 'ach',
+        '16': 'rtp'
+    };
+    
+    for (let i = startIndex; i < lines.length; i++) {
+        const line = lines[i];
         if (!line.trim() || line.startsWith('#')) continue;
         
         // Try different delimiters
@@ -23,30 +88,87 @@ function parseTransactions(inputData) {
         } else if (line.includes('\t')) {
             parts = line.split('\t').map(p => p.trim());
         } else if (line.includes(',')) {
-            // CSV format
-            parts = line.split(',').map(p => p.trim());
+            // CSV format - handle quoted values
+            parts = parseCSVLine(line);
         } else {
             continue;
         }
         
         if (parts.length < 5) continue;
         
-        // Clean transaction ID (remove "claim_" prefix if exists)
-        let transactionId = parts[0].replace(/^claim_/i, '').trim();
+        let transaction;
         
-        const transaction = {
-            transaction_id: transactionId,
-            amount: parts[1],
-            date: parts[2],
-            payment_method: parts[3] || 'wire in',
-            origination_account_id: parts[4] || 'Unknown',
-            description: parts.slice(5).join(' ').trim()
-        };
+        if (Object.keys(headerMap).length > 0) {
+            // Parse using header map (database export format)
+            // Only extract 5 essential columns: id, amount, description, payment_method, origination_account_id
+            const idIdx = headerMap['id'];
+            const amountIdx = headerMap['amount'];
+            const descIdx = headerMap['description'];
+            const pmIdx = headerMap['payment_method'];
+            const accountIdx = headerMap['origination_account_id'];
+            const agentIdx = headerMap['agent']; // For validation
+            
+            // Skip row if essential columns are missing
+            if (descIdx === undefined || amountIdx === undefined) {
+                console.warn('Skipping row - missing essential columns:', parts);
+                continue;
+            }
+            
+            const paymentMethodCode = pmIdx !== undefined ? (parts[pmIdx] || '') : '';
+            const paymentMethod = paymentMethodMap[paymentMethodCode] || 'wire in';
+            
+            transaction = {
+                transaction_id: idIdx !== undefined ? (parts[idIdx] || 'N/A') : 'N/A',
+                amount: parts[amountIdx] || '0',
+                date: '',  // Not needed for prediction
+                payment_method: paymentMethod,
+                origination_account_id: accountIdx !== undefined ? (parts[accountIdx] || 'Unknown') : 'Unknown',
+                description: parts[descIdx] || '',
+                actual_agent: agentIdx !== undefined ? (parts[agentIdx] || null) : null  // For comparison/validation
+            };
+        } else {
+            // Traditional format (transaction_id, amount, date, payment_method, account, description)
+            let transactionId = parts[0].replace(/^claim_/i, '').trim();
+            
+            transaction = {
+                transaction_id: transactionId,
+                amount: parts[1],
+                date: parts[2],
+                payment_method: parts[3] || 'wire in',
+                origination_account_id: parts[4] || 'Unknown',
+                description: parts.slice(5).join(' ').trim()
+            };
+        }
         
         transactions.push(transaction);
     }
     
     return transactions;
+}
+
+function parseCSVLine(line) {
+    /**
+     * Parse CSV line handling quoted values with commas
+     */
+    const parts = [];
+    let current = '';
+    let inQuotes = false;
+    
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            parts.push(current.trim());
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    
+    parts.push(current.trim());
+    return parts;
 }
 
 async function parseTransactionsWithAI(rawText) {
@@ -150,6 +272,33 @@ function displayResults(results) {
         return;
     }
     
+    // Calculate accuracy if actual_agent exists (CSV validation mode)
+    const hasValidation = results.some(r => r.actual_agent);
+    if (hasValidation) {
+        let correct = 0;
+        let total = 0;
+        results.forEach(r => {
+            if (r.actual_agent) {
+                total++;
+                if (r.actual_agent === r.label) {
+                    correct++;
+                }
+            }
+        });
+        
+        const accuracy = ((correct / total) * 100).toFixed(1);
+        const accuracyColor = accuracy >= 90 ? '#28a745' : accuracy >= 80 ? '#ffc107' : '#dc3545';
+        
+        resultsDiv.innerHTML += `
+            <div class="transaction-group" style="background: ${accuracyColor}15; border-left: 4px solid ${accuracyColor};">
+                <h3 style="color: ${accuracyColor};">📊 Validation Results</h3>
+                <div class="transaction-detail">
+                    <strong>Accuracy:</strong> ${accuracy}% (${correct}/${total} correct predictions)
+                </div>
+            </div>
+        `;
+    }
+    
     // Group by label
     const grouped = {};
     results.forEach(result => {
@@ -189,9 +338,20 @@ function displayResults(results) {
         `;
         
         group.slice(0, 3).forEach(txn => {
+            // Check if actual_agent exists (from CSV) for validation
+            let validationBadge = '';
+            if (txn.actual_agent) {
+                const isCorrect = txn.actual_agent === label;
+                if (isCorrect) {
+                    validationBadge = `<span style="color: #28a745; font-weight: 600;">✓ Correct</span>`;
+                } else {
+                    validationBadge = `<span style="color: #dc3545; font-weight: 600;">✗ Expected: ${txn.actual_agent}</span>`;
+                }
+            }
+            
             html += `
                 <li style="margin-bottom: 10px;">
-                    ID: ${txn.transaction_id} | ${txn.amount} | ${txn.account}<br>
+                    ID: ${txn.transaction_id} | ${txn.amount} | ${txn.account}${validationBadge ? ' | ' + validationBadge : ''}<br>
                     <span style="color: #666; font-size: 0.9em;">${txn.description}</span>
                 </li>
             `;

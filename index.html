@@ -361,8 +361,8 @@
                 
                 <div class="input-tabs">
                     <button class="tab-button active" onclick="switchTab('text')">Analyze Transactions</button>
-                    <button class="tab-button" onclick="switchTab('ask')">Ask Gemini <span style="font-size: 0.8em; opacity: 0.7;">(Beta)</span></button>
                     <button class="tab-button" onclick="switchTab('csv')">CSV Upload</button>
+                    <button class="tab-button" onclick="switchTab('ask')" style="opacity: 0.7; font-size: 0.9em;">Ask Gemini <span style="font-size: 0.8em;">(Beta)</span></button>
                 </div>
 
                 <div id="text-tab" class="tab-content active">
@@ -373,22 +373,22 @@
                     </div>
                 </div>
 
+                <div id="csv-tab" class="tab-content">
+                    <div class="file-upload" onclick="document.getElementById('csv-file').click()">
+                        <input type="file" id="csv-file" accept=".csv" onchange="handleFileUpload(event)">
+                        <div class="file-upload-icon">📄</div>
+                        <h3>Drop CSV file here or click to browse</h3>
+                        <p>Supports database exports with columns: id, amount, description, payment_method, origination_account_id</p>
+                    </div>
+                    <div id="file-name" style="margin-top: 15px; text-align: center; color: #F45D48; font-weight: 600;"></div>
+                </div>
+
                 <div id="ask-tab" class="tab-content">
                     <textarea id="ask-input" placeholder="💬 Ask Gemini about transactions or BT descriptions!&#10;&#10;Examples:&#10;&#10;❓ What does this transaction mean?&#10;claim 59370551 $1,020.00 10/15/2025 wire in Chase Recovery&#10;YOUR REF=NOTPROVIDED,REC FROM=PIMA FEDERAL...&#10;&#10;❓ Which agent should I use for INTEREST PAYMENT transactions?&#10;&#10;❓ How do I label ACH RETURN transactions?&#10;&#10;❓ What is the difference between ZBT and Wire In?&#10;&#10;✨ Gemini will analyze and suggest the correct label + SOP guidance!"></textarea>
                     
                     <div class="sample-format">
                         <strong>🤖 Chat Mode (Beta):</strong> Ask questions about transactions, labels, or descriptions. Gemini will check rules first, then provide AI insights! This feature is in beta - results may vary.
                     </div>
-                </div>
-
-                <div id="csv-tab" class="tab-content">
-                    <div class="file-upload" onclick="document.getElementById('csv-file').click()">
-                        <input type="file" id="csv-file" accept=".csv" onchange="handleFileUpload(event)">
-                        <div class="file-upload-icon">📄</div>
-                        <h3>Drop CSV file here or click to browse</h3>
-                        <p>Supports CSV files with transaction data</p>
-                    </div>
-                    <div id="file-name" style="margin-top: 15px; text-align: center; color: #F45D48; font-weight: 600;"></div>
                 </div>
 
                 <button class="analyze-button" id="action-button" onclick="handleAction()">
@@ -602,8 +602,17 @@
             document.getElementById('results').innerHTML = '';
 
             try {
-                // Step 1: Parse with Gemini AI (smart parsing)
-                const transactions = await parseTransactionsWithAI(inputData);
+                // Step 1: Parse data
+                let transactions;
+                
+                if (currentTab === 'csv') {
+                    // CSV: Direct parse without Gemini (faster, saves tokens)
+                    console.log('CSV mode: Direct parsing (no Gemini)');
+                    transactions = parseTransactions(inputData);
+                } else {
+                    // Text mode: Use Gemini for smart parsing
+                    transactions = await parseTransactionsWithAI(inputData);
+                }
                 
                 if (!transactions || transactions.length === 0) {
                     // Fallback: Force Gemini to parse messy/incomplete data
