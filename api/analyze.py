@@ -27,6 +27,7 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
 def ask_gemini_about_transaction(question):
     """
     Chat mode: Answer questions about transactions using Gemini
+    IMPORTANT: Uses ONLY internal SOP data, no external web search
     """
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return {
@@ -34,26 +35,39 @@ def ask_gemini_about_transaction(question):
             'suggested_label': None
         }
     
-    # Build prompt with SOP context
+    # Build SOP context (internal documentation only)
     agent_list = ', '.join(sorted(set(COMPLETE_SOP_MAPPING.keys())))
     
-    prompt = f"""You are an expert bank reconciliation assistant for Gusto. Answer this question about bank transactions:
+    # Get relevant SOP content
+    sop_context = ""
+    for agent, sop_data in COMPLETE_SOP_MAPPING.items():
+        labeling = sop_data.get('labeling', '')
+        if labeling and len(labeling) < 500:  # Keep context short
+            sop_context += f"\n{agent}: {labeling[:200]}"
+    
+    prompt = f"""You are a Gusto internal bank reconciliation assistant. Answer using ONLY the internal SOP documentation provided below.
+
+⚠️ CRITICAL RULES:
+- DO NOT use external knowledge or web search
+- ONLY use the SOP documentation provided below
+- If the answer is not in the SOP, say "This information is not in our SOPs"
+- All information MUST come from Gusto's internal documentation
 
 Question: {question}
 
-Context:
-- Available agent labels: {agent_list}
-- You should suggest ONE specific agent label if the question is about a transaction
-- Reference SOPs when appropriate
-- Keep answers concise and actionable
+INTERNAL SOP DOCUMENTATION:
+Available Agent Labels: {agent_list}
+
+Key Agent Definitions (from internal SOPs):{sop_context}
 
 Instructions:
-1. If the question includes a transaction, analyze it and suggest the correct agent label
-2. Explain WHY that label is correct
-3. Provide reconciliation guidance if relevant
+1. If question is about a transaction, suggest the correct agent label from the list above
+2. Explain using ONLY information from the SOP documentation
+3. If asking about differences between agents, compare using SOP definitions
 4. Keep response under 200 words
+5. Reference specific SOP when possible
 
-Response:"""
+Response (using ONLY internal SOP data):"""
 
     try:
         response = model.generate_content(prompt)
