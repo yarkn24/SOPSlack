@@ -43,6 +43,9 @@ def predict_rule_based(transaction):
     desc = clean_text(transaction.get('description', ''))
     account = clean_text(transaction.get('origination_account_id', ''))
     
+    # Check if this is description-only mode (frontend sends this flag)
+    description_only_mode = transaction.get('description_only_mode', False)
+    
     # Handle amount - safely convert to float, default to 0 if invalid
     amount_str = str(transaction.get('amount', '0')).replace('$', '').replace(',', '').strip()
     if amount_str and amount_str.lower() not in ['unknown', 'n/a', 'na', '']:
@@ -81,17 +84,18 @@ def predict_rule_based(transaction):
         except:
             pass
     
-    # Account-based rules
-    if 'PNC WIRE IN' in account or 'CHASE WIRE IN' in account:
-        return 'Risk', 'rule-based', 'Account is PNC Wire In or Chase Wire In', 0.99
-    
-    if 'CHASE PAYROLL INCOMING WIRES' in account:
-        if is_same_day:
-            return 'Risk', 'rule-based', '⚠️ Account is Chase Payroll Incoming Wires - SAME DAY TRANSACTION: Wait until tomorrow to label', 0.99
-        return 'Risk', 'rule-based', 'Account is Chase Payroll Incoming Wires', 0.99
-    
-    if 'CHASE RECOVERY' in account:
-        return 'Recovery Wire', 'rule-based', 'Account is Chase Recovery', 0.99
+    # Account-based rules (ONLY if NOT description-only mode)
+    if not description_only_mode:
+        if 'PNC WIRE IN' in account or 'CHASE WIRE IN' in account:
+            return 'Risk', 'rule-based', 'Account is PNC Wire In or Chase Wire In', 0.99
+        
+        if 'CHASE PAYROLL INCOMING WIRES' in account:
+            if is_same_day:
+                return 'Risk', 'rule-based', '⚠️ Account is Chase Payroll Incoming Wires - SAME DAY TRANSACTION: Wait until tomorrow to label', 0.99
+            return 'Risk', 'rule-based', 'Account is Chase Payroll Incoming Wires', 0.99
+        
+        if 'CHASE RECOVERY' in account:
+            return 'Recovery Wire', 'rule-based', 'Account is Chase Recovery', 0.99
     
     # ICP Funding: JPMORGAN in description (works for description-only mode too)
     if 'JPMORGAN ACCESS TRANSFER' in desc or 'JPMORGAN' in desc:

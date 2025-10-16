@@ -686,9 +686,10 @@
                         date: 'unknown',
                         payment_method: 'unknown',
                         origination_account_id: 'unknown',
-                        description: desc.trim()
+                        description: desc.trim(),
+                        description_only_mode: true  // FLAG for backend: ignore account constraints!
                     }));
-                    console.log(`Created ${transactions.length} minimal transaction(s)`);
+                    console.log(`Created ${transactions.length} minimal transaction(s) with description_only_mode=true`);
                 } else {
                     // Full input mode: Use Gemini for smart parsing
                     transactions = await parseTransactionsWithAI(inputData);
