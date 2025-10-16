@@ -45,11 +45,34 @@ def predict_rule_based(transaction):
     amount = float((transaction.get('amount', '0')).replace('$', '').replace(',', '')) if transaction.get('amount') else 0
     method = (transaction.get('payment_method', '')).lower()
     
+    # Get transaction date for same-day check
+    from datetime import datetime, timezone
+    import pytz
+    
+    txn_date = transaction.get('date', '')
+    is_same_day = False
+    if txn_date:
+        try:
+            # Parse transaction date
+            if isinstance(txn_date, str):
+                txn_dt = datetime.strptime(txn_date.split()[0], '%Y-%m-%d') if ' ' in txn_date else datetime.strptime(txn_date, '%Y-%m-%d')
+            else:
+                txn_dt = txn_date
+            
+            # Get current date in PST
+            pst = pytz.timezone('America/Los_Angeles')
+            now_pst = datetime.now(pst).date()
+            is_same_day = txn_dt.date() == now_pst if hasattr(txn_dt, 'date') else txn_dt == now_pst
+        except:
+            pass
+    
     # Account-based rules (highest priority)
     if 'PNC WIRE IN' in account or 'CHASE WIRE IN' in account:
         return 'Risk', 'rule-based', 'Account is PNC Wire In or Chase Wire In', 0.99
     
     if 'CHASE PAYROLL INCOMING WIRES' in account:
+        if is_same_day:
+            return 'Risk', 'rule-based', '⚠️ Account is Chase Payroll Incoming Wires - SAME DAY TRANSACTION: Wait until tomorrow to label', 0.99
         return 'Risk', 'rule-based', 'Account is Chase Payroll Incoming Wires', 0.99
     
     if 'CHASE RECOVERY' in account:
@@ -59,7 +82,10 @@ def predict_rule_based(transaction):
         if 'JPMORGAN ACCESS TRANSFER' in desc:
             return 'ICP Funding', 'rule-based', "Description contains 'JPMORGAN ACCESS TRANSFER'", 0.99
     
-    # Payment method rules
+    # Payment method rules (CRITICAL - HIGHEST PRIORITY)
+    if 'zero balance transfer' in method or method == 'zero balance transfer':
+        return 'ZBT', 'rule-based', "⚠️ Payment method is 'Zero Balance Transfer' - FOR INFO ONLY. We don't reconcile ZBT transactions.", 1.00
+    
     if 'check' in method:
         return 'Check', 'rule-based', "Payment method is 'Check'", 0.99
     
