@@ -504,6 +504,8 @@ Emoji + short sentence per step."""
             self.send_response(200)
             self.send_header('Content-type', 'application/json')
             self.send_header('Access-Control-Allow-Origin', '*')
+            self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+            self.send_header('Pragma', 'no-cache')
             self.end_headers()
             
             # Calculate estimated token usage
@@ -546,6 +548,7 @@ Emoji + short sentence per step."""
         self.send_header('Access-Control-Allow-Origin', '*')
         self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
         self.end_headers()
     
     def do_GET(self):
@@ -555,6 +558,8 @@ Emoji + short sentence per step."""
         self.send_response(200)
         self.send_header('Content-type', 'application/json')
         self.send_header('Access-Control-Allow-Origin', '*')
+        self.send_header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0')
+        self.send_header('Pragma', 'no-cache')
         self.end_headers()
         
         usage_percentage = (_gemini_call_count / MAX_GEMINI_CALLS * 100) if MAX_GEMINI_CALLS > 0 else 0
