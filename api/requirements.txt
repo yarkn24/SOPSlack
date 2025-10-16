@@ -1,3 +1,3 @@
 google-generativeai
-scikit-learn
-numpy
+xgboost==2.0.3
+scipy

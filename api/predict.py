@@ -27,54 +27,23 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     gemini_model = genai.GenerativeModel('gemini-pro')
 
-# Load ML Model (download from GitHub if needed)
-MODEL_DIR = '/tmp'  # Vercel's writable directory
+# Load ML Model (XGBoost + scipy, NO scikit-learn!)
+MODEL_DIR = os.path.dirname(__file__)
 ML_MODEL = None
 TFIDF = None
 LABEL_ENCODER = None
 
-def download_model_if_needed():
-    """Download ML models from GitHub on first run"""
-    global ML_MODEL, TFIDF, LABEL_ENCODER
-    
-    if ML_MODEL is not None:
-        return True
-    
-    import urllib.request
-    
-    base_url = "https://raw.githubusercontent.com/yarkn24/SOPSlack/main/api/"
-    model_files = {
-        'ultra_fast_model.pkl': 'ML_MODEL',
-        'ultra_fast_tfidf.pkl': 'TFIDF',
-        'ultra_fast_agent_encoder.pkl': 'LABEL_ENCODER'
-    }
-    
-    try:
-        for filename, var_name in model_files.items():
-            local_path = os.path.join(MODEL_DIR, filename)
-            
-            # Download if not exists
-            if not os.path.exists(local_path):
-                print(f"⬇️ Downloading {filename}...")
-                urllib.request.urlretrieve(f"{base_url}{filename}", local_path)
-            
-            # Load
-            with open(local_path, 'rb') as f:
-                if var_name == 'ML_MODEL':
-                    ML_MODEL = pickle.load(f)
-                elif var_name == 'TFIDF':
-                    TFIDF = pickle.load(f)
-                elif var_name == 'LABEL_ENCODER':
-                    LABEL_ENCODER = pickle.load(f)
-        
-        print("✅ ML Models loaded successfully")
-        return True
-    except Exception as e:
-        print(f"⚠️ ML Models not available: {e}")
-        return False
-
-# Try to load models
-download_model_if_needed()
+try:
+    # Load with encoding compatibility for different Python versions
+    with open(os.path.join(MODEL_DIR, 'ultra_fast_model.pkl'), 'rb') as f:
+        ML_MODEL = pickle.load(f, encoding='latin1')
+    with open(os.path.join(MODEL_DIR, 'ultra_fast_tfidf.pkl'), 'rb') as f:
+        TFIDF = pickle.load(f, encoding='latin1')
+    with open(os.path.join(MODEL_DIR, 'ultra_fast_agent_encoder.pkl'), 'rb') as f:
+        LABEL_ENCODER = pickle.load(f, encoding='latin1')
+    print("✅ ML Models loaded successfully (XGBoost direct)")
+except Exception as e:
+    print(f"⚠️ ML Models not available: {e}")
 
 def clean_text(text):
     """Clean transaction description"""

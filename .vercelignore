@@ -1,7 +1,4 @@
-# ML Model files (downloaded at runtime from GitHub)
-*.pkl
-api/*.pkl
-
+# ML models are included (11MB total)
 # Training & test files
 *train*.py
 *test*.py
@@ -10,15 +7,15 @@ compare_*.py
 *_training.py
 proper_split.py
 
-# Slack bot (not used in web app)
+# Slack bot
 slack_bot.py
 gemini_confluence_bot.py
 
-# SOP fetch scripts (one-time use)
+# SOP fetch scripts
 fetch_*.py
 all_sops_reference.py
 
-# Analysis & batch scripts (not needed in production)
+# Analysis scripts
 analyze_*.py
 batch_predictor.py
 parse_and_analyze.py
@@ -32,14 +29,13 @@ simple_predictor.py
 transaction_predictor.py
 predict_with_rules.py
 
-# Documentation & setup
+# Documentation
 *.md
-SLACK_BOT_SETUP.md
 AI_*.md
 DEPLOYMENT.md
 VERCEL_*.md
 
-# SOP text files (embedded in complete_sop_mapping.py)
+# SOP text files
 sop_*.txt
 sop_*.json
 
