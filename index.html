@@ -390,10 +390,11 @@
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (file) {
-                document.getElementById('file-name').textContent = `📄 ${file.name}`;
+                document.getElementById('file-name').textContent = `📄 ${file.name} - ✨ Will be parsed by Gemini AI`;
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     uploadedData = e.target.result;
+                    console.log('File loaded, ready for Gemini parsing');
                 };
                 reader.readAsText(file);
             }

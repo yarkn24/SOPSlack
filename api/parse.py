@@ -72,11 +72,17 @@ Now parse the transaction above:"""
         # Parse JSON
         parsed_data = json.loads(result_text)
         
-        # Validate required fields
+        # Validate and normalize required fields
         required_fields = ['transaction_id', 'amount', 'date', 'payment_method', 'origination_account_id', 'description']
         for field in required_fields:
             if field not in parsed_data:
                 parsed_data[field] = 'unknown'
+        
+        # Normalize payment method
+        parsed_data['payment_method'] = normalize_payment_method(parsed_data.get('payment_method', 'unknown'))
+        
+        # Clean transaction ID (remove "claim_" prefix)
+        parsed_data['transaction_id'] = str(parsed_data.get('transaction_id', '')).replace('claim_', '').replace('claim', '').strip()
         
         return parsed_data, None
         
@@ -85,12 +91,73 @@ Now parse the transaction above:"""
     except Exception as e:
         return None, f"Gemini parsing error: {str(e)}"
 
+def normalize_payment_method(method):
+    """
+    Normalize payment method to standard format
+    """
+    method = str(method).lower().strip()
+    
+    # Common mappings
+    if 'ach' in method:
+        return 'ach'
+    elif 'wire' in method:
+        return 'wire in'
+    elif 'check' in method:
+        return 'check'
+    elif 'card' in method or 'credit' in method or 'debit' in method:
+        return 'card'
+    else:
+        return method
+
+def parse_csv(raw_text):
+    """
+    Parse CSV format (tab or comma separated)
+    """
+    try:
+        lines = raw_text.strip().split('\n')
+        transactions = []
+        
+        for line in lines:
+            if not line.strip():
+                continue
+            
+            # Try tab-separated first
+            if '\t' in line:
+                parts = [p.strip() for p in line.split('\t')]
+            # Then comma-separated
+            elif ',' in line:
+                parts = [p.strip() for p in line.split(',')]
+            else:
+                continue
+            
+            # Need at least 5 columns
+            if len(parts) >= 5:
+                transactions.append({
+                    'transaction_id': parts[0].replace('claim_', '').replace('claim', '').strip(),
+                    'amount': parts[1] if parts[1] else 'unknown',
+                    'date': parts[2] if len(parts) > 2 else 'unknown',
+                    'payment_method': normalize_payment_method(parts[3]) if len(parts) > 3 else 'unknown',
+                    'origination_account_id': parts[4] if len(parts) > 4 else 'unknown',
+                    'description': ' '.join(parts[5:]) if len(parts) > 5 else 'unknown'
+                })
+        
+        return transactions if transactions else (None, "No valid CSV data found")
+        
+    except Exception as e:
+        return None, str(e)
+
 def parse_traditional(raw_text):
     """
     Fallback: Traditional parsing for standard format
     Format: ID | Amount | Date | Method | Account | Description
     """
     try:
+        # First try CSV format
+        result = parse_csv(raw_text)
+        if result and not isinstance(result, tuple):
+            return result, None
+        
+        # Then try pipe-separated
         lines = raw_text.strip().split('\n')
         transactions = []
         
@@ -103,10 +170,10 @@ def parse_traditional(raw_text):
                 parts = [p.strip() for p in line.split('|')]
                 if len(parts) >= 6:
                     transactions.append({
-                        'transaction_id': parts[0],
+                        'transaction_id': parts[0].replace('claim_', '').replace('claim', '').strip(),
                         'amount': parts[1],
                         'date': parts[2],
-                        'payment_method': parts[3],
+                        'payment_method': normalize_payment_method(parts[3]),
                         'origination_account_id': parts[4],
                         'description': ' '.join(parts[5:])
                     })
@@ -114,7 +181,7 @@ def parse_traditional(raw_text):
                 # Single transaction, try Gemini
                 return None, "Use Gemini for non-standard format"
         
-        return transactions, None
+        return transactions if transactions else (None, "No valid data found"), None
         
     except Exception as e:
         return None, str(e)
