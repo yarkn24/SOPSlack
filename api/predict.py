@@ -120,33 +120,105 @@ def predict_rule_based(transaction):
 # ML model removed for faster deployment (Vercel Hobby plan limits)
 
 def predict_gemini(transaction):
-    """Tier 3: Gemini AI fallback"""
+    """Tier 2: Gemini AI with internal training data (NO Google search)"""
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return 'Unknown', 'unknown', 'No prediction method available', 0
     
-    prompt = f"""You are a bank transaction labeling expert. Analyze this transaction and predict the label.
+    # Build few-shot training examples from internal SOP data
+    training_examples = """
+INTERNAL TRAINING DATA - Learn from these examples ONLY (NO web search):
 
-Transaction:
+1. RISK LABEL EXAMPLES:
+   - Account: "PNC Wire In" or "Chase Wire In" → ALWAYS Risk
+   - Account: "Chase Payroll Incoming Wires" → ALWAYS Risk
+   - Account: "Chase Recovery" → Recovery Wire (NOT Risk)
+   Rule: Wire In accounts = Risk
+
+2. CHECK LABEL EXAMPLES:
+   - Payment Method: "Check" or "check paid" → ALWAYS Check
+   - Description contains check number
+   Rule: Any check payment = Check
+
+3. TAX WITHHOLDING EXAMPLES:
+   - Description: "NYS DTF WT" → NY WH
+   - Description: "OH WH TAX" → OH WH
+   - Description: "OH SDWH" → OH SDWH
+   Rule: State abbreviation + WH/tax keyword
+
+4. UNEMPLOYMENT INSURANCE EXAMPLES:
+   - Description: "NYS DOL UI" → NY UI
+   - Description: "IL DEPT EMPL SEC" → IL UI
+   - Description: "STATE OF WA ESD" → WA ESD
+   - Description: "VA. EMPLOY COMM" → VA UI
+   Rule: State + unemployment keywords
+
+5. LOCKBOX EXAMPLES:
+   - Description contains "LOCKBOX" → Lockbox
+   Rule: Exact keyword match
+
+6. LOI (Letter of Indemnity) EXAMPLES:
+   - Description: "ACH RETURN SETTLEMENT" → LOI
+   - Description: "CREDIT MEMO" → LOI
+   Rule: Return/reversal settlements
+
+7. ICP FUNDING EXAMPLES:
+   - Account: "Chase International Contractor Payment"
+   - Description: "JPMORGAN ACCESS TRANSFER" → ICP Funding
+   Rule: ICP account + JPMORGAN keyword
+
+8. CSC EXAMPLES:
+   - Description: "CSC123456" (CSC + 6 digits) → CSC
+   Rule: CSC with number pattern
+
+9. TREASURY/MONEY MARKET EXAMPLES:
+   - Description: "US TREASURY CAPITAL" → Treasury Transfer
+   - Description: "MONEY MKT MUTUAL FUND" → Money Market Fund
+   Rule: Treasury or Money Market keywords
+
+10. ACH EXAMPLES:
+    - Description: "EFT REVERSAL" → ACH
+    - Description: "RTN OFFSET" → ACH Return
+    Rule: EFT/RTN keywords
+
+ALL AVAILABLE LABELS:
+""" + ", ".join(COMPLETE_SOP_MAPPING.keys())
+
+    prompt = f"""{training_examples}
+
+CRITICAL INSTRUCTIONS:
+- Use ONLY the training examples above
+- DO NOT use external knowledge or web search
+- Match patterns from training data
+- These are internal company transactions
+
+NEW TRANSACTION TO LABEL:
 - Amount: {transaction.get('amount')}
 - Account: {transaction.get('origination_account_id')}
-- Method: {transaction.get('payment_method')}
+- Payment Method: {transaction.get('payment_method')}
 - Description: {transaction.get('description')}
 
-Available Labels: {', '.join(list(COMPLETE_SOP_MAPPING.keys())[:20])}
+Based ONLY on the training examples above, which label matches best?
 
-Respond with ONLY the label name."""
+Respond with ONLY the label name (no explanation)."""
 
     try:
         response = gemini_model.generate_content(prompt)
         label = response.text.strip()
         
+        # Validate against known labels
         if label in COMPLETE_SOP_MAPPING:
-            return label, 'ml-based (Gemini AI)', 'AI prediction (backup method)', 0.75
+            return label, 'ml-based (Gemini AI - Internal Training)', f'Matched pattern from training data', 0.80
         else:
-            return 'Unknown', 'ml-based (Gemini AI)', f'AI suggested: {label} (not validated)', 0.5
+            # Try fuzzy match
+            label_upper = label.upper()
+            for known_label in COMPLETE_SOP_MAPPING.keys():
+                if known_label.upper() in label_upper or label_upper in known_label.upper():
+                    return known_label, 'ml-based (Gemini AI - Internal Training)', f'Fuzzy matched: {label}', 0.70
+            
+            return 'Unknown', 'ml-based (Gemini AI)', f'No training pattern matched (suggested: {label})', 0.50
             
     except Exception as e:
-        return 'Unknown', 'unknown', f'All prediction methods failed', 0
+        return 'Unknown', 'unknown', f'AI prediction failed: {str(e)}', 0
 
 def predict_transaction(transaction):
     """2-Tier prediction: Rule-based → Gemini AI"""
