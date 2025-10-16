@@ -206,6 +206,18 @@ function displayResults(results) {
                         </div>
                     </div>
                 `;
+                
+                // Gemini Summary (if available)
+                if (firstResult.gemini_summary) {
+                    html += `
+                        <div class="gemini-summary">
+                            <strong>🤖 Gemini Özeti:</strong>
+                            <div style="background: #f0f9ff; padding: 12px; border-radius: 8px; margin-top: 8px; font-size: 0.95em;">
+                                ${firstResult.gemini_summary.split('\n').join('<br>')}
+                            </div>
+                        </div>
+                    `;
+                }
             }
             
             // Additional SOPs

@@ -237,6 +237,21 @@ class handler(BaseHTTPRequestHandler):
                 # Get SOP content
                 sop_content = COMPLETE_SOP_MAPPING.get(label, {})
                 
+                # Add Gemini summary if SOP reconciliation is long
+                gemini_summary = None
+                recon_text = sop_content.get('reconciliation', '')
+                if recon_text and len(recon_text) > 200 and GEMINI_API_KEY:
+                    try:
+                        prompt = f"""Summarize these reconciliation steps in 2-3 bullet points (Turkish):
+
+{recon_text}
+
+Format: Emoji + short sentence per step."""
+                        response = gemini_model.generate_content(prompt)
+                        gemini_summary = response.text.strip()
+                    except:
+                        gemini_summary = None
+                
                 result = {
                     'transaction_id': txn.get('transaction_id', 'N/A'),
                     'amount': txn.get('amount', 'N/A'),
@@ -246,7 +261,8 @@ class handler(BaseHTTPRequestHandler):
                     'method': method,
                     'reason': reason,
                     'confidence': f"{confidence:.0%}",
-                    'sop_content': sop_content
+                    'sop_content': sop_content,
+                    'gemini_summary': gemini_summary
                 }
                 
                 results.append(result)
