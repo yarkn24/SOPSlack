@@ -93,7 +93,7 @@ COMPLETE_SOP_MAPPING = {
     
     "Lockbox": {
         "labeling": "When you see Lockbox on the BT's description you should label that BT as Lockbox",
-        "reconciliation": None,
+        "reconciliation": "Lockbox transactions are reconciled by matching with suggested transmissions. Check the lockbox deposit details and reconcile with the corresponding payments.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
         "additional_sops": [
@@ -107,7 +107,7 @@ COMPLETE_SOP_MAPPING = {
     
     "OH SDWH": {
         "labeling": "When you see OH SDWH on BT's description you should label that BT as OH SDWH",
-        "reconciliation": None,
+        "reconciliation": "Ohio School District Withholding. Follow similar procedure to OH WH - check for identifying information in the description and match with suggested transmissions. May require lookup in OH reconciliation dashboard.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -143,7 +143,7 @@ COMPLETE_SOP_MAPPING = {
     
     "NY UI": {
         "labeling": "When you see NYS DOL UI on BT's description you should label that BT as NY UI",
-        "reconciliation": None,
+        "reconciliation": "State unemployment insurance transaction. Follow standard state agency reconciliation procedures. Match with suggested transmissions based on the NY DOL UI identifier in the description.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -151,35 +151,54 @@ COMPLETE_SOP_MAPPING = {
     # NEW LABELS FROM SOP
     "Bad Debt": {
         "labeling": "When you see various transmissions with an amount less than $1.00 you should label them as Bad Debt (For Example: $0.01, $0.02, $0.03…)",
-        "reconciliation": None,
+        "reconciliation": "Bad debt transactions (amounts < $1) are typically reconciled by matching with suggested micro-payments. These are often test transactions or rounding adjustments.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
     
     "ICP Return": {
         "labeling": "When you see Chase International Contractor Payment as the account and 'ach external' as the method you should label that BT as ICP Return",
-        "reconciliation": None,
+        "reconciliation": "ICP Returns require escalation. Reach out to the appropriate team via the payment-ops-recon Slack channel. Include BT details, company information, and payment reference.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
-        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
+        "additional_sops": [
+            {
+                "title": "Escalating Reconciliation Issues to Cross-Functional Stakeholders",
+                "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134",
+                "note": "For ICP-related escalation procedures"
+            }
+        ]
     },
     
     "ICP": {
         "labeling": "When you see 'ORIG CO NAME=DLOCAL' (sometimes it might be DLOCL) on BT's description label that BT as ICP",
-        "reconciliation": None,
+        "reconciliation": "For DLocal (ICP) transactions, follow the manual reconciliation procedure. Check the DLocal reconciliation SOP for specific steps. If issues arise, escalate to payment-ops-recon Slack channel.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
-        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
+        "additional_sops": [
+            {
+                "title": "Reconciling DLocal Transactions Manually",
+                "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411668",
+                "note": "⭐ Primary SOP for DLocal/ICP transactions"
+            },
+            {
+                "title": "Escalating Reconciliation Issues to Cross-Functional Stakeholders",
+                "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/460194134",
+                "note": "For escalation procedures"
+            }
+        ]
     },
     
     "NM UI": {
         "labeling": "When you see STATE OF NM DWS ENTRY DESCR: UI PAYMENT on BT's description you should label that BT as NM UI",
-        "reconciliation": None,
+        "reconciliation": "New Mexico Unemployment Insurance. State UI transaction - follow standard state unemployment insurance reconciliation procedures. Match with suggested transmissions.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
     
     "WA ESD": {
         "labeling": "If the account is Chase Operations and the description contains STATE OF WA ESD you should label that BT as WA ESD. If the account is PNC Operations and the description contains ESD WA UI-TAX you should label that BT as WA ESD",
-        "reconciliation": None,
+        "reconciliation": "Washington Employment Security Department (Unemployment). State UI transaction - follow standard state unemployment insurance reconciliation procedures. Match with suggested transmissions.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -193,14 +212,14 @@ COMPLETE_SOP_MAPPING = {
     
     "MT UI": {
         "labeling": "When you see MT TAX or STATE OF MONTANA on BT's description you should label that BT as MT UI",
-        "reconciliation": None,
+        "reconciliation": "Montana Unemployment Insurance. State UI transaction - follow standard state unemployment insurance reconciliation procedures. Match with suggested transmissions.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
     
     "York Adams Tax": {
         "labeling": "When you see YORK ADAMS TAX on BT's description you should label that BT as York Adams Tax",
-        "reconciliation": None,
+        "reconciliation": "Local tax transaction (York Adams area). Follow standard local tax reconciliation procedures.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -214,7 +233,7 @@ COMPLETE_SOP_MAPPING = {
     
     "Berks Tax": {
         "labeling": "When you see Berks EIT on BT's description you should label that BT as Berks Tax",
-        "reconciliation": None,
+        "reconciliation": "Local tax transaction (Berks County EIT). Follow standard local tax reconciliation procedures.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -235,7 +254,7 @@ COMPLETE_SOP_MAPPING = {
     
     "ACH Reversal": {
         "labeling": "When you see ACH CREDIT SETTLEMENT on BT's description, you should label that BT as ACH Reversal",
-        "reconciliation": None,
+        "reconciliation": "ACH Reversals require investigation. Find the original payment and document the reversal reason. Escalate if needed.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -256,14 +275,14 @@ COMPLETE_SOP_MAPPING = {
     
     "ACH Return": {
         "labeling": "When you see RTN OFFSET on BT's description, you should label that BT as ACH Return",
-        "reconciliation": None,
+        "reconciliation": "ACH Returns must be researched. Check return reason code, match with original payment, and investigate. Escalate if needed.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
     
     "VA UI": {
         "labeling": "When you see VA. EMPLOY COMM on BT's description, you should label that BT as VA UI",
-        "reconciliation": None,
+        "reconciliation": "Virginia Unemployment Insurance. State UI transaction - follow standard state unemployment insurance reconciliation procedures.",
         "sop_page": "Daily Operations : How to Label & Reconcile",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
     },
@@ -275,11 +294,65 @@ COMPLETE_SOP_MAPPING = {
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412167"
     },
     
-    "Brex": {
-        "labeling": "When you see Brex in transaction description",
-        "reconciliation": "If there is a BT that is labeled as Brex and the payment direction is credit, you should find the relevant EP and reconcile with it. If the payment direction is debit you should escalate this BT to the payment-ops-recon Slack channel.",
-        "sop_page": "Daily Operations : How to Label & Reconcile",
-        "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"
+    # STATE WITHHOLDING - Additional States (not in primary SOP, follow similar patterns to NY WH/OH WH)
+    "CA EDD": {
+        "labeling": "When you see CA EDD on BT's description you should label that BT as CA EDD",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - check for identifying information in description and match with suggested transmissions."
+    },
+    
+    "TX WH": {
+        "labeling": "When you see TX or Texas withholding tax on BT's description you should label that BT as TX WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "MA WH": {
+        "labeling": "When you see MA or Massachusetts withholding tax on BT's description you should label that BT as MA WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "PA WH": {
+        "labeling": "When you see PA or Pennsylvania withholding tax on BT's description you should label that BT as PA WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "IL WH": {
+        "labeling": "When you see IL or Illinois withholding tax on BT's description you should label that BT as IL WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "NJ WH": {
+        "labeling": "When you see NJ or New Jersey withholding tax on BT's description you should label that BT as NJ WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "MI WH": {
+        "labeling": "When you see MI or Michigan withholding tax on BT's description you should label that BT as MI WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "VA WH": {
+        "labeling": "When you see VA or Virginia withholding tax on BT's description you should label that BT as VA WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "GA WH": {
+        "labeling": "When you see GA or Georgia withholding tax on BT's description you should label that BT as GA WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "NC WH": {
+        "labeling": "When you see NC or North Carolina withholding tax on BT's description you should label that BT as NC WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "MD WH": {
+        "labeling": "When you see MD or Maryland withholding tax on BT's description you should label that BT as MD WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+    },
+    
+    "CO WH": {
+        "labeling": "When you see CO or Colorado withholding tax on BT's description you should label that BT as CO WH",
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
     },
 }
 
