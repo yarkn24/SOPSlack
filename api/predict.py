@@ -84,6 +84,13 @@ def predict_rule_based(transaction):
         except:
             pass
     
+    # RISK DETECTION (High Priority)
+    # If description has CUSTOMER= field with a company that's NOT Gusto → Risk
+    if 'CUSTOMER=' in desc or 'B/O CUSTOMER=' in desc:
+        # Check if customer is NOT Gusto
+        if 'GUSTO' not in desc:
+            return 'Risk', 'rule-based', "Customer field present with non-Gusto company (wire to external party)", 0.99
+    
     # Account-based rules (ONLY if NOT description-only mode)
     if not description_only_mode:
         if 'PNC WIRE IN' in account or 'CHASE WIRE IN' in account:
@@ -207,10 +214,11 @@ def predict_gemini(transaction):
 
 Description: {transaction.get('description', 'N/A')[:80]}
 
-LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire, Brex
+LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire
 
 HINTS:
 - CHECK/Check→Check | NYS DTF→NY WH | OH WH→OH WH | JPMORGAN→ICP Funding | CSC→CSC | LOCKBOX→Lockbox | State tax/UI→State label
+- CUSTOMER= with non-Gusto company→Risk
 - If unclear, give your BEST GUESS based on description keywords
 - Return 1 label (most confident), or if uncertain: "Label1 or Label2"
 
@@ -219,9 +227,9 @@ Label:"""
         prompt = f"""Label this bank transaction (internal data only, no web search).
 
 RULES:
-Wire In→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
+Wire In→Risk | CUSTOMER= (non-Gusto)→Risk | Check→Check | State+WH→Tax | State+UI→Unemployment | LOCKBOX→Lockbox | ACH RETURN→LOI | JPMORGAN ACCESS→ICP Funding | TREASURY→Treasury Transfer
 
-LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC
+LABELS: Risk, Check, NY WH, OH WH, NY UI, IL UI, WA ESD, Lockbox, LOI, ICP Funding, Treasury Transfer, Money Market Fund, ACH, ACH Return, CSC, Recovery Wire
 
 Transaction:
 Account: {account_val[:40]}
