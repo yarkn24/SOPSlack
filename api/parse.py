@@ -29,32 +29,60 @@ def parse_with_gemini(raw_text):
     if not GEMINI_API_KEY or not GEMINI_AVAILABLE:
         return None, "Gemini not configured"
     
-    prompt = f"""You are a bank transaction parser. Extract structured data from this transaction text.
+    prompt = f"""You are an expert bank transaction parser. Extract structured data from this transaction text.
 
 Transaction text:
 {raw_text}
 
 Extract these fields (if present):
-- transaction_id: The transaction/claim ID number
-- amount: Dollar amount (keep $ sign)
-- date: Transaction date
-- payment_method: Method like "wire in", "ach", "check", etc.
-- origination_account_id: Bank account name (e.g., "Chase Wire In", "Chase Operations")
-- description: Full transaction description/details
+- transaction_id: The transaction/claim/BT ID number (remove "claim_" or "claim" prefix)
+- amount: Dollar amount (keep $ sign, e.g., "$80.76")
+- date: Transaction date (any format)
+- payment_method: MUST be one of: "wire in", "ach", "check", "wire out", "ach external", "card"
+- origination_account_id: Bank account name - look for bank names like "Chase", "PNC", "Grasshopper", "Blueridge" followed by account type
+- description: Full transaction details (everything else)
+
+**CRITICAL PAYMENT METHOD RULES:**
+- If you see "wire", "wire transfer", "wire in" → use "wire in"
+- If you see "ach", "ach transaction", "ach external" → use "ach"  
+- If you see "check", "check paid" → use "check"
+- Default to "wire in" if unclear
+
+**CRITICAL ACCOUNT RULES:**
+- Look for bank names: Chase, PNC, Grasshopper, Blueridge, etc.
+- Common accounts: "Chase Wire In", "Chase Operations", "PNC Wire In", "Chase Payroll Incoming Wires"
+- Keep the FULL account name including bank + type
+- If you see "Chase" + "wire" → "Chase Wire In"
+- If you see "PNC" + "wire" → "PNC Wire In"
 
 **IMPORTANT:** 
-- If a field is not present, set it to "unknown"
+- Remove "claim_" or "claim" prefix from transaction_id
+- If a field is not clear, set it to "unknown"
 - Return ONLY valid JSON, no explanation
 - Use exact field names as shown above
 
-Example format:
+Example 1:
+Input: "59316175 $80.76 10/15/2025 ach transaction Grasshopper Operations vendor: GUSTO"
+Output:
 {{
   "transaction_id": "59316175",
   "amount": "$80.76",
   "date": "10/15/2025",
-  "payment_method": "ach transaction",
+  "payment_method": "ach",
   "origination_account_id": "Grasshopper Operations",
-  "description": "vendor description: GUSTO, receiver id number: null"
+  "description": "vendor: GUSTO"
+}}
+
+Example 2:
+Input: "claim_59315257 $5,100.00 10/14/2025 wire in Chase Wire In YOUR REF=POH OF 25/10/14"
+Output:
+{{
+  "transaction_id": "59315257",
+  "amount": "$5,100.00",
+  "date": "10/14/2025",
+  "payment_method": "wire in",
+  "origination_account_id": "Chase Wire In",
+  "description": "YOUR REF=POH OF 25/10/14"
 }}
 
 Now parse the transaction above:"""
@@ -94,19 +122,25 @@ Now parse the transaction above:"""
 def normalize_payment_method(method):
     """
     Normalize payment method to standard format
+    IMPORTANT: Keep different ACH types separate!
     """
     method = str(method).lower().strip()
     
-    # Common mappings
-    if 'ach' in method:
+    # Exact matches first (most specific)
+    if method in ['ach external', 'ach_external']:
+        return 'ach external'
+    elif method in ['ach transaction', 'ach_transaction', 'ach']:
         return 'ach'
-    elif 'wire' in method:
+    elif method in ['wire in', 'wire_in', 'wirein', 'wire transfer']:
         return 'wire in'
-    elif 'check' in method:
+    elif method in ['wire out', 'wire_out', 'wireout']:
+        return 'wire out'
+    elif method in ['check', 'check paid', 'check_paid']:
         return 'check'
     elif 'card' in method or 'credit' in method or 'debit' in method:
         return 'card'
     else:
+        # Return as-is if no match
         return method
 
 def parse_csv(raw_text):
