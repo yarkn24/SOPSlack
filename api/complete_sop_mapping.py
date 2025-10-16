@@ -297,62 +297,118 @@ COMPLETE_SOP_MAPPING = {
     # STATE WITHHOLDING - Additional States (not in primary SOP, follow similar patterns to NY WH/OH WH)
     "CA EDD": {
         "labeling": "When you see CA EDD on BT's description you should label that BT as CA EDD",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - check for identifying information in description and match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - check for identifying information in description and match with suggested transmissions.",
+        "suggested_sops": [
+            {
+                "title": "Manual Reconciliation by Agency",
+                "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539",
+                "note": "⭐ Follow NY WH / OH WH patterns for state agency reconciliation"
+            },
+            {
+                "title": "Daily Operations : How to Label & Reconcile",
+                "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232",
+                "note": "General labeling and reconciliation guidance"
+            }
+        ]
     },
     
     "TX WH": {
         "labeling": "When you see TX or Texas withholding tax on BT's description you should label that BT as TX WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "MA WH": {
         "labeling": "When you see MA or Massachusetts withholding tax on BT's description you should label that BT as MA WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "PA WH": {
         "labeling": "When you see PA or Pennsylvania withholding tax on BT's description you should label that BT as PA WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "IL WH": {
         "labeling": "When you see IL or Illinois withholding tax on BT's description you should label that BT as IL WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "NJ WH": {
         "labeling": "When you see NJ or New Jersey withholding tax on BT's description you should label that BT as NJ WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "MI WH": {
         "labeling": "When you see MI or Michigan withholding tax on BT's description you should label that BT as MI WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "VA WH": {
         "labeling": "When you see VA or Virginia withholding tax on BT's description you should label that BT as VA WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "GA WH": {
         "labeling": "When you see GA or Georgia withholding tax on BT's description you should label that BT as GA WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "NC WH": {
         "labeling": "When you see NC or North Carolina withholding tax on BT's description you should label that BT as NC WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "MD WH": {
         "labeling": "When you see MD or Maryland withholding tax on BT's description you should label that BT as MD WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
     
     "CO WH": {
         "labeling": "When you see CO or Colorado withholding tax on BT's description you should label that BT as CO WH",
-        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions."
+        "reconciliation": "State tax transaction. Similar to NY WH/OH WH - match with suggested transmissions.",
+        "suggested_sops": [
+            {"title": "Manual Reconciliation by Agency", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169411539", "note": "⭐ Follow NY WH / OH WH patterns"},
+            {"title": "Daily Operations : How to Label & Reconcile", "link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/535003232"}
+        ]
     },
 }
 
