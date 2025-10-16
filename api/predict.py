@@ -254,6 +254,23 @@ Emoji + short sentence per step."""
                         except:
                             gemini_summary = None
                 
+                # Determine confidence level and message
+                confidence_level = "High"
+                confidence_note = ""
+                
+                if confidence >= 0.95:
+                    confidence_level = "High"
+                    confidence_note = "✅ Strong match"
+                elif confidence >= 0.80:
+                    confidence_level = "Medium"
+                    confidence_note = "⚠️ Good match, but verify"
+                elif confidence >= 0.60:
+                    confidence_level = "Low"
+                    confidence_note = "🔍 Best guess - review recommended"
+                else:
+                    confidence_level = "Uncertain"
+                    confidence_note = "❓ Uncertain - manual review required"
+                
                 result = {
                     'transaction_id': txn.get('transaction_id', 'N/A'),
                     'amount': txn.get('amount', 'N/A'),
@@ -263,6 +280,8 @@ Emoji + short sentence per step."""
                     'method': method,
                     'reason': reason,
                     'confidence': f"{confidence:.0%}",
+                    'confidence_level': confidence_level,
+                    'confidence_note': confidence_note,
                     'sop_content': sop_content,
                     'gemini_summary': gemini_summary
                 }
