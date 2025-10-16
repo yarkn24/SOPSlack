@@ -196,31 +196,39 @@
         }
 
         .sop-section {
-            background: #f0f4ff;
-            padding: 25px;
-            border-radius: 10px;
-            margin-top: 20px;
+            background: linear-gradient(135deg, #e8f0fe 0%, #f0f4ff 100%);
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 25px;
+            border: 3px solid #667eea;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
         }
 
         .sop-section h4 {
             color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3em;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .sop-content {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 6px solid #667eea;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
 
         .sop-quote {
             font-style: italic;
-            color: #555;
-            margin-bottom: 10px;
-            line-height: 1.6;
+            color: #2d3748;
+            margin-bottom: 15px;
+            line-height: 1.8;
+            font-size: 1.1em;
+            font-weight: 500;
         }
 
         .sop-source {
@@ -240,15 +248,27 @@
         }
 
         .additional-sops {
-            margin-top: 20px;
+            margin-top: 25px;
         }
 
         .additional-sop-item {
             background: white;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            border-left: 4px solid #764ba2;
+            padding: 18px;
+            border-radius: 10px;
+            margin-bottom: 12px;
+            border-left: 5px solid #764ba2;
+            box-shadow: 0 2px 6px rgba(118, 75, 162, 0.15);
+            transition: transform 0.2s;
+        }
+
+        .additional-sop-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(118, 75, 162, 0.25);
+        }
+
+        .additional-sop-item strong {
+            font-size: 1.05em;
+            color: #764ba2;
         }
 
         .loading {
