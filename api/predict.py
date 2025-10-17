@@ -131,7 +131,7 @@ def predict_rule_based(transaction):
     if 'check' in method or 'check paid' in method or 'CHECK' in desc:
         return 'Check', 'rule-based', "Payment method is Check or CHECK in description", 0.99
     
-    # Description-based rules
+    # Description-based rules (check these BEFORE generic ACH Return)
     if 'NYS DTF' in desc or 'NY DTF' in desc or 'NYS' in desc and 'WITHHOLDING' in desc:
         return 'NY WH', 'rule-based', "Description contains 'NYS DTF' or NY withholding keywords", 0.99
     
@@ -203,6 +203,11 @@ def predict_rule_based(transaction):
         # If company name present → likely Risk
         if has_company:
             return 'Risk', 'rule-based', 'Company name detected in description (likely wire transaction)', 0.85
+    
+    # ACH Return: Last resort - if payment_method is "ach return" and no specific description rule matched
+    # This catches generic ACH returns without distinguishing keywords
+    if 'ach return' in method:
+        return 'ACH Return', 'rule-based', "Payment method is 'ach return' (generic return, no specific keywords)", 0.99
     
     return None, None, None, 0
 
