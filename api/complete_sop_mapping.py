@@ -267,7 +267,7 @@ COMPLETE_SOP_MAPPING = {
     },
     
     "Interest Adjustment": {
-        "labeling": "When you see REMARK=INTEREST ADJUSTMENT on BT's description, you should label that BT as Interest Adjustment",
+        "labeling": "When you see INTEREST ADJUSTMENT on BT's description, you should label that BT as Interest Adjustment (Note: This includes INTEREST ADJUSTMENT DEBIT or INTEREST ADJUSTMENT CREDIT)",
         "reconciliation": "Use the EP creator tool under the Custom Reporting flow. Use Unintended Overpayment Account as the Payment Account type and use the ZenPayroll ID as the company ID. Select Interest Income as both the Transaction Type and Transaction Category under Payment Record Information. You will not need to fill out the Optional Payment Record field.",
         "sop_page": "Unintended Overpayment Account Use Cases",
         "sop_link": "https://gustohq.atlassian.net/wiki/spaces/PlatformOperations/pages/169412167"
