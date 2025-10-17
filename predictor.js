@@ -70,16 +70,6 @@ function parseTransactions(inputData) {
         startIndex = 1; // Skip header row
     }
     
-    // Payment method mapping (database codes to text)
-    const paymentMethodMap = {
-        '0': 'wire in',
-        '2': 'check',
-        '4': 'wire in',
-        '8': 'internal transfer',
-        '10': 'ach',
-        '16': 'rtp'
-    };
-    
     for (let i = startIndex; i < lines.length; i++) {
         const line = lines[i];
         if (!line.trim() || line.startsWith('#')) continue;
@@ -123,9 +113,8 @@ function parseTransactions(inputData) {
                 continue;
             }
             
-            const paymentMethodCode = pmIdx !== undefined ? (parts[pmIdx] || '') : '';
-            // If paymentMethodCode is already text (not numeric), use it directly
-            const paymentMethod = isNaN(paymentMethodCode) ? paymentMethodCode : (paymentMethodMap[paymentMethodCode] || 'wire in');
+            // Payment method: Use directly from CSV (text format like "ach external", "check paid", "wire in")
+            const paymentMethod = pmIdx !== undefined ? (parts[pmIdx] || 'wire in') : 'wire in';
             
             transaction = {
                 transaction_id: idIdx !== undefined ? (parts[idIdx] || 'N/A') : 'N/A',
