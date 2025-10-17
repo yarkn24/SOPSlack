@@ -125,16 +125,22 @@ function parseTransactions(inputData) {
                 description: parts[descIdx] || ''
             };
         } else {
-            // Traditional format (transaction_id, amount, date, payment_method, account, description)
-            let transactionId = parts[0].replace(/^claim_/i, '').trim();
+            // Traditional format - check if first field is "claim" (status field)
+            let startIdx = 0;
+            if (parts[0].toLowerCase() === 'claim') {
+                startIdx = 1;  // Skip "claim" field
+            }
+            
+            // Format: [claim?], transaction_id, amount, date, payment_method, account, description
+            let transactionId = parts[startIdx].replace(/^claim_/i, '').trim();
             
             transaction = {
                 transaction_id: transactionId,
-                amount: parts[1],
-                date: parts[2],
-                payment_method: parts[3] || 'wire in',
-                origination_account_id: parts[4] || 'Unknown',
-                description: parts.slice(5).join(' ').trim()
+                amount: parts[startIdx + 1],
+                date: parts[startIdx + 2],
+                payment_method: parts[startIdx + 3] || 'wire in',
+                origination_account_id: parts[startIdx + 4] || 'Unknown',
+                description: parts.slice(startIdx + 5).join(' ').trim()
             };
         }
         
