@@ -29,9 +29,6 @@ _chat_call_count = 0
 MAX_CHAT_CALLS = 10
 
 # Daily token tracking (resets every day)
-DAILY_TOKEN_LIMIT = 50000  # Conservative limit for demo safety
-_daily_tokens_used = 0
-TOKENS_PER_CHAT = 500  # Estimated tokens per chat call
 
 def ask_gemini_about_transaction(question):
     """
@@ -229,28 +226,19 @@ class handler(BaseHTTPRequestHandler):
                         'suggested_label': None,
                         'limit_reached': True,
                         'calls_used': _chat_call_count,
-                        'estimated_tokens': _chat_call_count * TOKENS_PER_CHAT,
-                        'daily_tokens_used': _daily_tokens_used,
-                        'daily_tokens_limit': DAILY_TOKEN_LIMIT
                     }
                 else:
                     # Increment counters
                     _chat_call_count += 1
-                    _daily_tokens_used += TOKENS_PER_CHAT
                     
                     # Ask Gemini
                     result = ask_gemini_about_transaction(question)
                     
                     # Calculate daily usage
-                    daily_percent = (_daily_tokens_used / DAILY_TOKEN_LIMIT) * 100
-                    tokens_remaining = DAILY_TOKEN_LIMIT - _daily_tokens_used
                     
                     # Add usage stats
                     result['calls_used'] = _chat_call_count
                     result['calls_remaining'] = MAX_CHAT_CALLS - _chat_call_count
-                    result['daily_tokens_used'] = _daily_tokens_used
-                    result['daily_tokens_limit'] = DAILY_TOKEN_LIMIT
-                    result['daily_tokens_remaining'] = tokens_remaining
                     result['daily_percent'] = round(daily_percent, 1)
                     
                     # Session warning (near limit)
