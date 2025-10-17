@@ -172,6 +172,9 @@ def predict_rule_based(transaction):
     if 'MONEY MKT MUTUAL FUND' in desc:
         return 'Money Market Fund', 'rule-based', "Description contains 'MONEY MARKET'", 0.99
     
+    if 'INTEREST ADJUSTMENT' in desc:
+        return 'Interest Adjustment', 'rule-based', "Description contains 'INTEREST ADJUSTMENT'", 0.99
+    
     if 'US TREASURY CAPITAL' in desc or 'TREASURY' in desc:
         return 'Treasury Transfer', 'rule-based', "Description contains 'TREASURY'", 0.99
     
