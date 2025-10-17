@@ -86,6 +86,11 @@ def predict_rule_based(transaction):
         except:
             pass
     
+    # ⚠️ ICP RETURN - MUST CHECK BEFORE GENERAL RISK DETECTION! ⚠️
+    # TS FX ACCOUNTS + REF JPV = ICP Return (has higher priority than CUSTOMER= risk rule)
+    if 'TS FX ACCOUNTS' in desc and 'REF JPV' in desc:
+        return 'ICP Return', 'rule-based', "Description contains 'TS FX ACCOUNTS' and 'REF JPV' ticket number (ICP Return)", 0.99
+    
     # RISK DETECTION (High Priority)
     # If description has CUSTOMER= field with a company that's NOT Gusto → Risk
     # Use original description (before punctuation removal) to detect "CUSTOMER="
@@ -113,10 +118,6 @@ def predict_rule_based(transaction):
     
     if 'CHASE INTERNATIONAL CONTRACTOR PAYMENT' in account or 'CHASE ICP' in account:
         return 'ICP Funding', 'rule-based', "Account is Chase ICP", 0.99
-    
-    # ICP Return: TS FX ACCOUNTS + REF JPV (works for description-only mode too)
-    if 'TS FX ACCOUNTS' in desc and 'REF JPV' in desc:
-        return 'ICP Return', 'rule-based', "Description contains 'TS FX ACCOUNTS' and 'REF JPV' ticket number (ICP Return)", 0.99
     
     # ICP: DLocal transactions (works for description-only mode too)
     if 'DLOCAL' in desc or 'D LOCAL' in desc:
