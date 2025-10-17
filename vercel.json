@@ -20,6 +20,14 @@
     {
       "src": "*.gif",
       "use": "@vercel/static"
+    },
+    {
+      "src": "public/*.svg",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "public/*.png",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -38,6 +46,10 @@
     {
       "src": "/api/sop",
       "dest": "/api/sop.py"
+    },
+    {
+      "src": "/favicon\\.(svg|png|ico)",
+      "dest": "/public/favicon.$1"
     },
     {
       "src": "/(.*)",
