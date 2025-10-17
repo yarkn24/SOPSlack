@@ -348,7 +348,7 @@ function displayResults(results) {
         if (firstResult.sop_content && Object.keys(firstResult.sop_content).length > 0) {
             html += `
                 <div class="sop-section">
-                    <h4>📚 SOP INFORMATION (ONLY FROM SOP)</h4>
+                    <h4>📚 SOP INFORMATION</h4>
             `;
             
             // Labeling section
