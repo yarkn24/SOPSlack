@@ -12,7 +12,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
 try:
     import google.generativeai as genai
-    from complete_sop_mapping import COMPLETE_SOP_MAPPING
+    from api.complete_sop_mapping import COMPLETE_SOP_MAPPING
     GEMINI_AVAILABLE = True
 except ImportError:
     GEMINI_AVAILABLE = False
@@ -23,6 +23,15 @@ GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
 if GEMINI_API_KEY and GEMINI_AVAILABLE:
     genai.configure(api_key=GEMINI_API_KEY)
     model = genai.GenerativeModel('gemini-flash-latest')
+
+# Session tracking for chat mode
+_chat_call_count = 0
+MAX_CHAT_CALLS = 10
+
+# Daily token tracking (resets every day)
+DAILY_TOKEN_LIMIT = 50000  # Conservative limit for demo safety
+_daily_tokens_used = 0
+TOKENS_PER_CHAT = 500  # Estimated tokens per chat call
 
 def ask_gemini_about_transaction(question):
     """
@@ -45,13 +54,12 @@ def ask_gemini_about_transaction(question):
         if labeling and len(labeling) < 500:  # Keep context short
             sop_context += f"\n{agent}: {labeling[:200]}"
     
-    prompt = f"""You are a Gusto internal bank reconciliation assistant. Answer using ONLY the internal SOP documentation provided below.
+    prompt = f"""You are a Gusto internal bank reconciliation assistant. Answer questions using our internal SOP documentation first.
 
-⚠️ CRITICAL RULES:
-- DO NOT use external knowledge or web search
-- ONLY use the SOP documentation provided below
-- If the answer is not in the SOP, say "This information is not in our SOPs"
-- All information MUST come from Gusto's internal documentation
+⚠️ RESPONSE PRIORITY:
+1. FIRST: Check internal SOP documentation below
+2. If answer is in SOP: Use ONLY SOP information
+3. If answer is NOT in SOP: Say "📋 This information is not in our SOPs" then provide general banking knowledge as a helpful reference
 
 Question: {question}
 
@@ -61,13 +69,32 @@ Available Agent Labels: {agent_list}
 Key Agent Definitions (from internal SOPs):{sop_context}
 
 Instructions:
-1. If question is about a transaction, suggest the correct agent label from the list above
-2. Explain using ONLY information from the SOP documentation
-3. If asking about differences between agents, compare using SOP definitions
-4. Keep response under 200 words
-5. Reference specific SOP when possible
+1. Check if this topic is covered in our SOPs above
+2. If YES (in SOP):
+   - Start with: "This looks like a [AGENT_NAME] transaction because..."
+   - Explain using SOP documentation
+   - Provide 2-3 bullet SOP summary
+3. If NO (not in SOP):
+   - Start with: "📋 This information is not in our SOPs."
+   - Then provide general banking knowledge as reference
+   - Suggest consulting with team lead
 
-Response (using ONLY internal SOP data):"""
+Response format (if in SOP):
+"This looks like a [AGENT] transaction because [reason from SOP].
+
+📚 SOP Summary:
+• [How to label]
+• [How to reconcile]
+• [Additional notes]"
+
+Response format (if not in SOP):
+"📋 This information is not in our SOPs.
+
+As general banking reference: [general information]
+
+⚠️ Please consult with your team lead for Gusto-specific guidance."
+
+Response:"""
 
     try:
         response = model.generate_content(prompt)
@@ -180,6 +207,8 @@ Respond with ONLY the label name, nothing else."""
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
+        global _chat_call_count  # Track chat session usage
+        
         try:
             # Read request body
             content_length = int(self.headers['Content-Length'])
@@ -193,8 +222,49 @@ class handler(BaseHTTPRequestHandler):
                     self.send_error(400, 'No question provided')
                     return
                 
-                # Ask Gemini
-                result = ask_gemini_about_transaction(question)
+                # Check session limit
+                if _chat_call_count >= MAX_CHAT_CALLS:
+                    result = {
+                        'response': f'⚠️ Chat session limit reached ({MAX_CHAT_CALLS} questions). Please refresh the page to continue.',
+                        'suggested_label': None,
+                        'limit_reached': True,
+                        'calls_used': _chat_call_count,
+                        'estimated_tokens': _chat_call_count * TOKENS_PER_CHAT,
+                        'daily_tokens_used': _daily_tokens_used,
+                        'daily_tokens_limit': DAILY_TOKEN_LIMIT
+                    }
+                else:
+                    # Increment counters
+                    _chat_call_count += 1
+                    _daily_tokens_used += TOKENS_PER_CHAT
+                    
+                    # Ask Gemini
+                    result = ask_gemini_about_transaction(question)
+                    
+                    # Calculate daily usage
+                    daily_percent = (_daily_tokens_used / DAILY_TOKEN_LIMIT) * 100
+                    tokens_remaining = DAILY_TOKEN_LIMIT - _daily_tokens_used
+                    
+                    # Add usage stats
+                    result['calls_used'] = _chat_call_count
+                    result['calls_remaining'] = MAX_CHAT_CALLS - _chat_call_count
+                    result['daily_tokens_used'] = _daily_tokens_used
+                    result['daily_tokens_limit'] = DAILY_TOKEN_LIMIT
+                    result['daily_tokens_remaining'] = tokens_remaining
+                    result['daily_percent'] = round(daily_percent, 1)
+                    
+                    # Session warning (near limit)
+                    if _chat_call_count >= MAX_CHAT_CALLS - 2:
+                        result['session_warning'] = f'⚠️ Only {MAX_CHAT_CALLS - _chat_call_count} questions remaining in this session'
+                    
+                    # Daily token warning (50%+)
+                    if daily_percent >= 50:
+                        result['token_warning'] = f'⚠️ Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining)'
+                        
+                        if daily_percent >= 75:
+                            result['token_warning'] = f'🔴 Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining) - Use sparingly!'
+                        elif daily_percent >= 90:
+                            result['token_warning'] = f'🚨 Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining) - CRITICAL!'
                 
                 # Send response
                 self.send_response(200)
