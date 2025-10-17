@@ -696,8 +696,9 @@
                     }));
                     console.log(`Created ${transactions.length} minimal transaction(s) with description_only_mode=true`);
                 } else {
-                    // Full input mode: Use Gemini for smart parsing
-                    transactions = await parseTransactionsWithAI(inputData);
+                    // Full input mode: Direct parse (same as CSV, no Gemini)
+                    console.log('Full input mode: Direct parsing (no Gemini)');
+                    transactions = parseTransactions(inputData);
                 }
                 
                 if (currentTab !== 'csv' && (!transactions || transactions.length === 0)) {

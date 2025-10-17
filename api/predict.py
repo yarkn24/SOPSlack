@@ -207,7 +207,7 @@ def predict_rule_based(transaction):
     # ACH Return: Last resort - if payment_method is "ach return" and no specific description rule matched
     # This catches generic ACH returns without distinguishing keywords
     if 'ach return' in method:
-        return 'ACH Return', 'rule-based', "Payment method is 'ach return' (generic return, no specific keywords)", 0.99
+        return 'ACH Return', 'rule-based', "Payment method is 'ach return' and there are no rules that match the BT description (generic return)", 0.99
     
     return None, None, None, 0
 
