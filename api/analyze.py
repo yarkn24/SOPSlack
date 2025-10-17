@@ -207,7 +207,7 @@ Respond with ONLY the label name, nothing else."""
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
-        global _chat_call_count  # Track chat session usage
+        global _chat_call_count, _daily_tokens_used  # Track chat session usage
         
         try:
             # Read request body
