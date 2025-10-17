@@ -147,6 +147,16 @@ function parseTransactions(inputData) {
             };
         }
         
+        // If description is empty, check next line (multi-line format)
+        if (!transaction.description && i + 1 < lines.length) {
+            const nextLine = lines[i + 1].trim();
+            // If next line doesn't have tabs (pure text), it's the description
+            if (nextLine && !nextLine.includes('\t')) {
+                transaction.description = nextLine;
+                i++; // Skip next line since we used it
+            }
+        }
+        
         transactions.push(transaction);
     }
     
