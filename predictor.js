@@ -87,6 +87,9 @@ function parseTransactions(inputData) {
             continue;
         }
         
+        // Remove empty parts from leading/trailing delimiters
+        parts = parts.filter(p => p !== '');
+        
         if (parts.length < 5) continue;
         
         let transaction;
