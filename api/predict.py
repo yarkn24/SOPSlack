@@ -87,9 +87,13 @@ def predict_rule_based(transaction):
             pass
     
     # ⚠️ ICP RETURN - MUST CHECK BEFORE GENERAL RISK DETECTION! ⚠️
-    # TS FX ACCOUNTS + REF JPV = ICP Return (has higher priority than CUSTOMER= risk rule)
+    # TS FX ACCOUNTS + REF JPV = High confidence ICP Return
     if 'TS FX ACCOUNTS' in desc and 'REF JPV' in desc:
         return 'ICP Return', 'rule-based', "Description contains 'TS FX ACCOUNTS' and 'REF JPV' ticket number (ICP Return)", 0.99
+    
+    # TS FX ACCOUNTS (without ticket number) = Lower confidence ICP Return
+    if 'TS FX ACCOUNTS' in desc:
+        return 'ICP Return', 'rule-based', "Description contains 'TS FX ACCOUNTS' (likely ICP Return, but no ticket number found)", 0.50
     
     # RISK DETECTION (High Priority)
     # If description has CUSTOMER= field with a company that's NOT Gusto → Risk
