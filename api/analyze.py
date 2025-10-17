@@ -28,11 +28,6 @@ if GEMINI_API_KEY and GEMINI_AVAILABLE:
 _chat_call_count = 0
 MAX_CHAT_CALLS = 10
 
-# Daily token tracking (resets every day)
-DAILY_TOKEN_LIMIT = 50000  # Conservative limit for demo safety
-_daily_tokens_used = 0
-TOKENS_PER_CHAT = 500  # Estimated tokens per chat call
-
 def ask_gemini_about_transaction(question):
     """
     Chat mode: Answer questions about transactions using Gemini
@@ -207,7 +202,7 @@ Respond with ONLY the label name, nothing else."""
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         """Handle POST requests"""
-        global _chat_call_count, _daily_tokens_used  # Track chat session usage
+        global _chat_call_count  # Track chat session usage
         
         try:
             # Read request body
@@ -228,43 +223,22 @@ class handler(BaseHTTPRequestHandler):
                         'response': f'⚠️ Chat session limit reached ({MAX_CHAT_CALLS} questions). Please refresh the page to continue.',
                         'suggested_label': None,
                         'limit_reached': True,
-                        'calls_used': _chat_call_count,
-                        'estimated_tokens': _chat_call_count * TOKENS_PER_CHAT,
-                        'daily_tokens_used': _daily_tokens_used,
-                        'daily_tokens_limit': DAILY_TOKEN_LIMIT
+                        'calls_used': _chat_call_count
                     }
                 else:
-                    # Increment counters
+                    # Increment counter
                     _chat_call_count += 1
-                    _daily_tokens_used += TOKENS_PER_CHAT
                     
                     # Ask Gemini
                     result = ask_gemini_about_transaction(question)
                     
-                    # Calculate daily usage
-                    daily_percent = (_daily_tokens_used / DAILY_TOKEN_LIMIT) * 100
-                    tokens_remaining = DAILY_TOKEN_LIMIT - _daily_tokens_used
-                    
                     # Add usage stats
                     result['calls_used'] = _chat_call_count
                     result['calls_remaining'] = MAX_CHAT_CALLS - _chat_call_count
-                    result['daily_tokens_used'] = _daily_tokens_used
-                    result['daily_tokens_limit'] = DAILY_TOKEN_LIMIT
-                    result['daily_tokens_remaining'] = tokens_remaining
-                    result['daily_percent'] = round(daily_percent, 1)
                     
                     # Session warning (near limit)
                     if _chat_call_count >= MAX_CHAT_CALLS - 2:
                         result['session_warning'] = f'⚠️ Only {MAX_CHAT_CALLS - _chat_call_count} questions remaining in this session'
-                    
-                    # Daily token warning (50%+)
-                    if daily_percent >= 50:
-                        result['token_warning'] = f'⚠️ Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining)'
-                        
-                        if daily_percent >= 75:
-                            result['token_warning'] = f'🔴 Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining) - Use sparingly!'
-                        elif daily_percent >= 90:
-                            result['token_warning'] = f'🚨 Daily token usage: {daily_percent}% ({tokens_remaining:,} tokens remaining) - CRITICAL!'
                 
                 # Send response
                 self.send_response(200)
