@@ -124,7 +124,8 @@ function parseTransactions(inputData) {
             }
             
             const paymentMethodCode = pmIdx !== undefined ? (parts[pmIdx] || '') : '';
-            const paymentMethod = paymentMethodMap[paymentMethodCode] || 'wire in';
+            // If paymentMethodCode is already text (not numeric), use it directly
+            const paymentMethod = isNaN(paymentMethodCode) ? paymentMethodCode : (paymentMethodMap[paymentMethodCode] || 'wire in');
             
             transaction = {
                 transaction_id: idIdx !== undefined ? (parts[idIdx] || 'N/A') : 'N/A',
